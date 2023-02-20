@@ -1,15 +1,13 @@
 from unittest import TestCase
-from test_runner import TestSuite_BigBang
+from test_runner import JSONTestSuite
 import os
+from TestTestClient import funcTestee
 
-FOLDER      = "..\\..\\tests\\testTest"
-TEST_ONLY   = os.environ['TEST_ONLY']  if "TEST_ONLY"  in os.environ else ""            # Delimiter: ; without space, filenames without ext
 
-class test_TestTestClient(TestSuite_BigBang):
+class test_TestTestClient(JSONTestSuite):
+    FOLDER      = "..\\..\\tests\\testTest"
+    TEST_ONLY   = os.environ['TEST_ONLY']  if "TEST_ONLY"  in os.environ else ""            # Delimiter: ; without space, filenames without ext
+
     def __init__(self):
-        super(test_TestTestClient, self).__init__(p_folder=FOLDER, p_test_only=TEST_ONLY)
+        super(test_TestTestClient, self).__init__(function=funcTestee, folder=test_TestTestClient.FOLDER, case_only=test_TestTestClient.TEST_ONLY)
 
-
-class Test(TestCase):
-    def test_func_testee(self):
-        self.fail()

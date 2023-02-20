@@ -7,6 +7,7 @@ class DumperBase:
     def __init__(self):
         pass
 
+
 class JSONDumper(DumperBase):
     '''
     Decorator functor to modify the tested functions
@@ -15,7 +16,7 @@ class JSONDumper(DumperBase):
     #FIXME multiple results
     #FIXME Inheritance
 
-    def __init__(self, targetDir = ".", defaultName="current.json", isActive=False, nNameHex=8):
+    def __init__(self, testSuite=None, targetDir = ".", defaultName="current.json", isActive=False, nNameHex=8):
         super(DumperBase, self).__init__()
         self.targetDir = targetDir
         self.defaultName = defaultName

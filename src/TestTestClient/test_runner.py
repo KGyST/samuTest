@@ -2,59 +2,65 @@ import unittest
 import os
 import shutil
 import json
-from TestTestClient import funcTestee
 
-FOLDER      = "..\\..\\tests\\testTest"
-TEST_ONLY   = os.environ['TEST_ONLY']  if "TEST_ONLY"  in os.environ else ""            # Delimiter: ; without space, filenames without ext
 
-class TestSuite_BigBang(unittest.TestSuite):
-    def __init__(self, p_folder = FOLDER, p_test_only=TEST_ONLY):
+class JSONTestSuite(unittest.TestSuite):
+    @staticmethod
+    def case_filter(p_sOnly, p_sFileName, p_split ):
+        return not p_sOnly != "" and p_sFileName [:-5] not in p_split
+
+    @staticmethod
+    def filename_filter(p_sFileName):
+        return not p_sFileName.startswith('_') and os.path.splitext(p_sFileName)[1] == '.json'
+
+    def __init__(self, function, folder, case_only, filename_filter=filename_filter.__get__, case_filter=case_filter.__get__):
         try:
-            shutil.rmtree(p_folder + "_errors")
-            os.mkdir(p_folder + "_errors")
+            shutil.rmtree(folder + "_errors")
+            os.mkdir(folder + "_errors")
         except PermissionError:
             pass
         except OSError:
             pass
 
         self._tests = []
-        self._fileList = sorted([f for f in os.listdir(p_folder + "_suites")])
+        self._fileList = sorted([f for f in os.listdir(folder + "_suites")])
         for fileName in self._fileList:
-            split = p_test_only.split(";")
-            if p_test_only != "" and fileName [:-5] not in split:
+            split = case_only.split(";")
+            if case_filter(case_only, fileName, split):
                 continue
-            if not fileName.startswith('_') and os.path.splitext(fileName)[1] == '.json':
+            if filename_filter(fileName):
                 try:
-                    testData = json.load(open(os.path.join(p_folder + "_suites", fileName), "r"))
+                    testData = json.load(open(os.path.join(folder + "_suites", fileName), "r"))
 
-                    test_case = TestCase_BigBang(testData, p_folder, fileName)
+                    test_case = JSONTestCase(function, testData, folder, fileName)
                     test_case.maxDiff = None
                     self.addTest(test_case)
                 except json.decoder.JSONDecodeError:
                     print(f"JSONDecodeError - Filename: {fileName}")
 
-        super(TestSuite_BigBang, self).__init__(self._tests)
+        super(JSONTestSuite, self).__init__(self._tests)
 
-    def __contains__(self, inName):
+    def __contains__(self, p_Name):
         for test in self._tests:
-            if test._testMethodName == inName:
+            if test._testMethodName == p_Name:
                 return True
         return False
 
 
-class TestCase_BigBang(unittest.TestCase):
-    def __init__(self, inTestData, inDir, inFileName):
-        func = self.BigBangTestCaseFactory(inTestData, inDir, inFileName)
-        setattr(TestCase_BigBang, func.__name__, func)
-        super(TestCase_BigBang, self).__init__(func.__name__)
+class JSONTestCase(unittest.TestCase):
+    def __init__(self, function, inTestData, inDir, inFileName):
+        func = self.BigBangTestCaseFactory(function, inTestData, inDir, inFileName)
+        setattr(JSONTestCase, func.__name__, func)
+        super(JSONTestCase, self).__init__(func.__name__)
 
     @staticmethod
-    def BigBangTestCaseFactory(p_TestData, inDir, inFileName):
+    def BigBangTestCaseFactory(p_function, p_TestData, inDir, inFileName):
         def func(p_Obj):
             outFileName = os.path.join(inDir + "_errors", inFileName)
+            testResult = None
 
             try:
-                testResult = funcTestee(*p_TestData["args"], **p_TestData["kwargs"])
+                testResult = p_function(*p_TestData["args"], **p_TestData["kwargs"])
                 p_Obj.assertEqual(p_TestData["result"], testResult)
             except AssertionError:
                 # print(p_TestData["description"])
