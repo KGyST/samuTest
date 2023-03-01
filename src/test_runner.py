@@ -4,16 +4,17 @@ import shutil
 import json
 
 
+def case_filter(p_sOnly, p_sFileName, p_split):
+    return p_sOnly != "" and p_sFileName[:-5] not in p_split
+
+def filename_filter(p_sFileName):
+    return not p_sFileName.startswith('_') and os.path.splitext(p_sFileName)[1] == '.json'
+
+
 class JSONTestSuite(unittest.TestSuite):
-    @staticmethod
-    def case_filter(p_sOnly, p_sFileName, p_split ):
-        return not p_sOnly != "" and p_sFileName [:-5] not in p_split
-
-    @staticmethod
-    def filename_filter(p_sFileName):
-        return not p_sFileName.startswith('_') and os.path.splitext(p_sFileName)[1] == '.json'
-
-    def __init__(self, function, folder, case_only, filename_filter=filename_filter.__get__, case_filter=case_filter.__get__):
+    def __init__(self, function, folder, case_only,
+                 filename_filter=filename_filter,
+                 case_filter=case_filter):
         try:
             shutil.rmtree(folder + "_errors")
             os.mkdir(folder + "_errors")

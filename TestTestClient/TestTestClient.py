@@ -1,10 +1,10 @@
-from decorators import JSONDumper
+from decorator.decorators import JSONDumper
 from test_TestTestClient import test_TestTestClient
 
 glob_variable = 1
 
 
-@JSONDumper(targetDir="..\\..\\tests\\testTest_suites", isActive=True, testSuite=test_TestTestClient)
+@JSONDumper(testSuite=test_TestTestClient)
 def funcTestee(p_iNum):
     return 1 / p_iNum
 
