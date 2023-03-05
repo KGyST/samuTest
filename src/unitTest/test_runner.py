@@ -5,7 +5,7 @@ import json
 
 
 def case_filter(p_sOnly, p_sFileName, p_split):
-    return p_sOnly != "" and p_sFileName[:-5] not in p_split
+    return p_sOnly != "" and p_sFileName[:-5] not in p_split and p_sFileName not in p_split
 
 def filename_filter(p_sFileName):
     return not p_sFileName.startswith('_') and os.path.splitext(p_sFileName)[1] == '.json'
@@ -24,14 +24,14 @@ class JSONTestSuite(unittest.TestSuite):
             pass
 
         self._tests = []
-        self._fileList = sorted([f for f in os.listdir(folder + "_suites")])
+        self._fileList = sorted([f for f in os.listdir(folder)])
         for fileName in self._fileList:
             split = case_only.split(";")
             if case_filter(case_only, fileName, split):
                 continue
             if filename_filter(fileName):
                 try:
-                    testData = json.load(open(os.path.join(folder + "_suites", fileName), "r"))
+                    testData = json.load(open(os.path.join(folder, fileName), "r"))
 
                     test_case = JSONTestCase(function, testData, folder, fileName)
                     test_case.maxDiff = None
@@ -50,12 +50,12 @@ class JSONTestSuite(unittest.TestSuite):
 
 class JSONTestCase(unittest.TestCase):
     def __init__(self, function, inTestData, inDir, inFileName):
-        func = self.BigBangTestCaseFactory(function, inTestData, inDir, inFileName)
+        func = self.JSONTestCaseFactory(function, inTestData, inDir, inFileName)
         setattr(JSONTestCase, func.__name__, func)
         super(JSONTestCase, self).__init__(func.__name__)
 
     @staticmethod
-    def BigBangTestCaseFactory(p_function, p_TestData, inDir, inFileName):
+    def JSONTestCaseFactory(p_function, p_TestData, inDir, inFileName):
         def func(p_Obj):
             outFileName = os.path.join(inDir + "_errors", inFileName)
             testResult = None

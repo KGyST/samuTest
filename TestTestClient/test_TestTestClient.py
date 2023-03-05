@@ -1,13 +1,11 @@
-# from unittest import TestCase
-from test_runner import JSONTestSuite
+from unitTest.test_runner import JSONTestSuite
 import os
-from parameters import TestParameters
 
 
-class test_TestTestClient(JSONTestSuite, TestParameters):
-    testOnly    = os.environ['TEST_ONLY']  if "TEST_ONLY"  in os.environ else ""            # Delimiter: ; without space, filenames without ext
+class test_TestTestClient(JSONTestSuite):
+    testOnly    = os.environ['TEST_ONLY'] if "TEST_ONLY" in os.environ else ""            # Delimiter: ; without space, filenames without ext
     targetDir   ="..\\tests\\testTest"
-    isActive    =False
+    isActive    =True
 
     def __init__(self):
         from TestTestClient import funcTestee

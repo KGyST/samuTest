@@ -3,15 +3,14 @@ import os
 import hashlib
 
 
-class JSONDumper():
+class JSONDumper:
     """
     Decorator functor to modify the tested functions
     """
     # FIXME global vars
     # FIXME multiple results
-    # FIXME Inheritance
 
-    def __init__(self, testSuite=None, targetDir=".", defaultName="current.json", isActive=False, nNameHex=8):
+    def __init__(self, testSuite=None, targetDir=".", defaultName="current.json", isActive=False, nNameHex=12):
         self.targetDir = targetDir
         self.defaultName = defaultName
         self.isActive = isActive
@@ -34,18 +33,16 @@ class JSONDumper():
                 res = func(*argsWrap, **kwargsWrap)
                 if self.isActive:
                     raise Exception
-
                 return res
             except:
                 sJSON = jsonpickle.dumps({"args": [*argsWrap], "kwargs": kwargsWrap, "result": res}, indent=2)
                 sHash = hashlib.md5(sJSON.encode("ansi")).hexdigest()[:self.nNameHex]
                 fileName = func.__name__ + "_" + sHash + ".json"
 
-                with open(os.path.join(self.targetDir + "_suites", self.defaultName), "w") as f:
+                with open(os.path.join(self.targetDir, self.defaultName), "w") as f:
                     f.write(sJSON)
-
                 if self.isActive:
-                    with open(os.path.join(self.targetDir + "_suites", fileName), "w") as f:
+                    with open(os.path.join(self.targetDir, fileName), "w") as f:
                         f.write(sJSON)
                 return res
         return wrapped_function
