@@ -3,15 +3,18 @@ import os
 import shutil
 import json
 
-
 def case_filter(p_sOnly, p_sFileName, p_split):
     return p_sOnly != "" and p_sFileName[:-5] not in p_split and p_sFileName not in p_split
 
-def filename_filter(p_sFileName):
-    return not p_sFileName.startswith('_') and os.path.splitext(p_sFileName)[1] == '.json'
+def filename_filter(p_sFileName, p_ext):
+    return not p_sFileName.startswith('_') and os.path.splitext(p_sFileName)[1] == p_ext
 
 
-class JSONTestSuite(unittest.TestSuite):
+class TestSuiteBase(unittest.TestSuite):
+    pass
+
+
+class JSONTestSuite(TestSuiteBase):
     def __init__(self, function, folder, case_only,
                  filename_filter=filename_filter,
                  case_filter=case_filter):
@@ -29,7 +32,7 @@ class JSONTestSuite(unittest.TestSuite):
             split = case_only.split(";")
             if case_filter(case_only, fileName, split):
                 continue
-            if filename_filter(fileName):
+            if filename_filter(fileName, ".json"):
                 try:
                     testData = json.load(open(os.path.join(folder, fileName), "r"))
 
@@ -77,3 +80,5 @@ class JSONTestCase(unittest.TestCase):
         else:
             func.__name__ = "test_" + inFileName[:-5]
         return func
+
+
