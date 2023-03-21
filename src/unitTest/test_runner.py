@@ -2,6 +2,7 @@ import unittest
 import os
 import shutil
 import json
+#FIXME winmerge file generation
 
 def case_filter(p_sOnly, p_sFileName, p_split):
     return p_sOnly != "" and p_sFileName[:-5] not in p_split and p_sFileName not in p_split
@@ -20,11 +21,15 @@ class JSONTestSuite(TestSuiteBase):
                  case_filter=case_filter):
         try:
             shutil.rmtree(folder + "_errors")
-            os.mkdir(folder + "_errors")
-        except PermissionError:
-            pass
         except OSError:
             pass
+
+        try:
+            os.mkdir(folder + "_errors")
+        except PermissionError:
+            #FIXME
+            pass
+
 
         self._tests = []
         self._fileList = sorted([f for f in os.listdir(folder)])
