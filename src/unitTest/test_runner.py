@@ -2,7 +2,7 @@ import unittest
 import os
 import shutil
 import json
-#FIXME winmerge file generation
+#FIXME WinMerge file generation
 
 def case_filter(p_sOnly, p_sFileName, p_split):
     return p_sOnly != "" and p_sFileName[:-5] not in p_split and p_sFileName not in p_split
@@ -10,26 +10,27 @@ def case_filter(p_sOnly, p_sFileName, p_split):
 def filename_filter(p_sFileName, p_ext):
     return not p_sFileName.startswith('_') and os.path.splitext(p_sFileName)[1] == p_ext
 
+def defaultComparer(p_Obj, p_function, p_TestData):
+    testResult = p_function(*p_TestData["args"], **p_TestData["kwargs"])
+    p_Obj.assertEqual(p_TestData["result"], testResult)
 
-class TestSuiteBase(unittest.TestSuite):
-    pass
 
-
-class JSONTestSuite(TestSuiteBase):
-    def __init__(self, function, folder, case_only,
+class JSONTestSuite(unittest.TestSuite):
+    def __init__(self,
+                 folder, case_only,
+                 function=None,
                  filename_filter=filename_filter,
-                 case_filter=case_filter):
+                 case_filter=case_filter,
+                 comparer=defaultComparer):
         try:
             shutil.rmtree(folder + "_errors")
         except OSError:
             pass
-
         try:
             os.mkdir(folder + "_errors")
         except PermissionError:
-            #FIXME
+            #FIXME handling
             pass
-
 
         self._tests = []
         self._fileList = sorted([f for f in os.listdir(folder)])
@@ -41,7 +42,7 @@ class JSONTestSuite(TestSuiteBase):
                 try:
                     testData = json.load(open(os.path.join(folder, fileName), "r"))
 
-                    test_case = JSONTestCase(function, testData, folder, fileName)
+                    test_case = JSONTestCase(function, testData, folder, fileName, comparer)
                     test_case.maxDiff = None
                     self.addTest(test_case)
                 except json.decoder.JSONDecodeError:
@@ -57,20 +58,23 @@ class JSONTestSuite(TestSuiteBase):
 
 
 class JSONTestCase(unittest.TestCase):
-    def __init__(self, function, inTestData, inDir, inFileName):
-        func = self.JSONTestCaseFactory(function, inTestData, inDir, inFileName)
+    def __init__(self, p_function, p_TestData, p_Dir, p_FileName, p_comparer):
+        self.sDir = p_Dir
+        self.sFile = p_FileName
+        func = self.JSONTestCaseFactory(p_function, p_TestData, p_Dir, p_FileName, p_comparer)
         setattr(JSONTestCase, func.__name__, func)
         super(JSONTestCase, self).__init__(func.__name__)
 
     @staticmethod
-    def JSONTestCaseFactory(p_function, p_TestData, inDir, inFileName):
+    def JSONTestCaseFactory(p_function, p_TestData, p_Dir, p_FileName, p_comparer=defaultComparer):
         def func(p_Obj):
-            outFileName = os.path.join(inDir + "_errors", inFileName)
+            outFileName = os.path.join(p_Dir + "_errors", p_FileName)
             testResult = None
 
             try:
-                testResult = p_function(*p_TestData["args"], **p_TestData["kwargs"])
-                p_Obj.assertEqual(p_TestData["result"], testResult)
+                # testResult = p_function(*p_TestData["args"], **p_TestData["kwargs"], working_directory = p_Dir)
+                # p_Obj.assertEqual(p_TestData["result"], testResult)
+                p_comparer(p_Obj, p_function, p_TestData)
             except AssertionError:
                 # print(p_TestData["description"])
                 # print(f"Filename: {inFileName[:-5]}")
@@ -83,7 +87,7 @@ class JSONTestCase(unittest.TestCase):
         if "description" in p_TestData:
             func.__name__ = p_TestData["description"]
         else:
-            func.__name__ = "test_" + inFileName[:-5]
+            func.__name__ = "test_" + p_FileName[:-5]
         return func
 
 
