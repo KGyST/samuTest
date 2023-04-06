@@ -2,7 +2,7 @@ import unittest
 import os
 import shutil
 import json
-#FIXME WinMerge file generation
+
 
 def case_filter(p_sOnly, p_sFileName, p_split):
     return p_sOnly != "" and p_sFileName[:-5] not in p_split and p_sFileName not in p_split
@@ -12,52 +12,25 @@ def filename_filter(p_sFileName, p_ext):
 
 def defaultComparer(p_Obj, p_function, p_TestData):
     testResult = p_function(*p_TestData["args"], **p_TestData["kwargs"])
+    p_TestData.update({"result": testResult})
     p_Obj.assertEqual(p_TestData["result"], testResult)
 
-
-class JSONTestSuite(unittest.TestSuite):
-    def __init__(self,
-                 folder, case_only,
-                 function=None,
-                 filename_filter=filename_filter,
-                 case_filter=case_filter,
-                 comparer=defaultComparer):
-        try:
-            shutil.rmtree(folder + "_errors")
-        except OSError:
-            pass
-        try:
-            os.mkdir(folder + "_errors")
-        except PermissionError:
-            #FIXME handling
-            pass
-
-        self._tests = []
-        self._fileList = sorted([f for f in os.listdir(folder)])
-        for fileName in self._fileList:
-            split = case_only.split(";")
-            if case_filter(case_only, fileName, split):
-                continue
-            if filename_filter(fileName, ".json"):
-                try:
-                    testData = json.load(open(os.path.join(folder, fileName), "r"))
-
-                    test_case = JSONTestCase(function, testData, folder, fileName, comparer)
-                    test_case.maxDiff = None
-                    self.addTest(test_case)
-                except json.decoder.JSONDecodeError:
-                    print(f"JSONDecodeError - Filename: {fileName}")
-
-        super(JSONTestSuite, self).__init__(self._tests)
-
-    def __contains__(self, p_Name):
-        for test in self._tests:
-            if test._testMethodName == p_Name:
-                return True
-        return False
+def resultFileGenerator(p_sFolder, p_sTestFile):
+    sResultFolder = p_sFolder + "_errors"
+    try:
+        shutil.rmtree(sResultFolder)
+    except OSError:
+        pass
+    try:
+        os.mkdir(sResultFolder)
+    except PermissionError:
+        #FIXME handling
+        pass
+    return os.path.join(sResultFolder, p_sTestFile)
 
 
 class JSONTestCase(unittest.TestCase):
+    #FIXME rewrite to metaclasses
     def __init__(self, p_function, p_TestData, p_Dir, p_FileName, p_comparer):
         self.sDir = p_Dir
         self.sFile = p_FileName
@@ -72,12 +45,8 @@ class JSONTestCase(unittest.TestCase):
             testResult = None
 
             try:
-                # testResult = p_function(*p_TestData["args"], **p_TestData["kwargs"], working_directory = p_Dir)
-                # p_Obj.assertEqual(p_TestData["result"], testResult)
-                p_comparer(p_Obj, p_function, p_TestData)
+                p_comparer(p_Obj, p_function, p_TestData, file_name=p_FileName)
             except AssertionError:
-                # print(p_TestData["description"])
-                # print(f"Filename: {inFileName[:-5]}")
                 with open(outFileName, "w") as outputFile:
                     p_TestData.update({"result": testResult})
                     json.dump(p_TestData, outputFile, indent=4)
@@ -89,5 +58,58 @@ class JSONTestCase(unittest.TestCase):
         else:
             func.__name__ = "test_" + p_FileName[:-5]
         return func
+
+
+class JSONTestSuite(unittest.TestSuite):
+    def __init__(self,
+                 folder, case_only,
+                 function=None,
+                 filename_filter=filename_filter,
+                 case_filter=case_filter,
+                 comparer=defaultComparer,
+                 first_run=False):
+        self._tests = []
+        #FIXME folder doesn't exist:
+        self._fileList = sorted([f for f in os.listdir(folder)])
+        self._folder = folder
+        self._folderHandler(first_run)
+        for fileName in self._fileList:
+            split = case_only.split(";")
+            if case_filter(case_only, fileName, split):
+                continue
+            if filename_filter(fileName, ".json"):
+                try:
+                    testData = json.load(open(os.path.join(folder, fileName), "r"))
+
+                    testCase = JSONTestCase(function, testData, folder, fileName, comparer)
+                    testCase.maxDiff = None
+                    self.addTest(testCase)
+                except json.decoder.JSONDecodeError:
+                    print(f"JSONDecodeError - Filename: {fileName}")
+
+        super(JSONTestSuite, self).__init__(self._tests)
+
+    def __contains__(self, p_Name):
+        for test in self._tests:
+            if test._testMethodName == p_Name:
+                return True
+        return False
+
+    def _folderHandler(self, p_firstRun):
+        #FIXME add first_run
+        #FIXME WinMerge file generation
+
+        try:
+            shutil.rmtree(self._folder + "_errors")
+        except OSError:
+            pass
+
+        try:
+            os.mkdir(self._folder + "_errors")
+        except PermissionError:
+            #FIXME handling
+            pass
+
+
 
 
