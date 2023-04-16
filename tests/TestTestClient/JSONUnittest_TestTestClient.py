@@ -11,3 +11,4 @@ class test_JSONTestTestClient(JSONTestSuite):
         from TestTestClient import funcTestee
         super(test_JSONTestTestClient, self).__init__(function=funcTestee, folder=self.targetDir, case_only=self.testOnly)
 
+

@@ -1,5 +1,5 @@
 from decorator.decorators import JSONDumper
-from JSONtest_TestTestClient import test_JSONTestTestClient
+from JSONUnittest_TestTestClient import test_JSONTestTestClient
 
 glob_variable = 1
 
@@ -15,7 +15,7 @@ def funcTestee(p_iNum):
 # def simplestFunction(p_iNum):
 #     return 1+p_iNum
 
-
-for i in range(-1, 3):
-    i = funcTestee(i)
-    print(i)
+if __name__ == "__main__":
+    for i in range(-1, 3):
+        i = funcTestee(i)
+        print(i)

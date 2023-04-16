@@ -34,7 +34,9 @@ class DumperBase:
                 if self.isActive:
                     raise Exception
                 return res
-            except:
+            except TypeError as e:
+                pass
+            except Exception as e:
                 sXML = fExport({"args": argsWrap,
                                  "kwargs": kwargsWrap,
                                  "result": res,
