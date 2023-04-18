@@ -1,17 +1,15 @@
-from pyTest.pyTestFramework import getTests
+from pyTest.pyTestFramework import getTests, Test_Dummy, defaultComparer
 import os
 import pytest
 
-def defaultComparer(p_function, p_TestData):
-    testResult = p_function(*p_TestData["args"], **p_TestData["kwargs"])
-    p_TestData.update({"result": testResult})
-    assert p_TestData["result"] == testResult
 
-
-class Test_JSONpytestClient():
+class Test_JSONpytestClient(Test_Dummy):
     testOnly    = os.environ['TEST_ONLY'] if "TEST_ONLY" in os.environ else ""            # Delimiter: ; without space, filenames without ext
     targetDir   = "testJSONTest"
     isActive    = False
+
+    def __init__(self):
+        super(Dummy, self).__init__()
 
     @pytest.mark.parametrize(
         'p_testCase', getTests("testJSONTest")
@@ -22,3 +20,4 @@ class Test_JSONpytestClient():
         defaultComparer(funcTestee, p_testCase)
 
         print(p_testCase)
+
