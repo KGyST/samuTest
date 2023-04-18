@@ -1,15 +1,13 @@
-from pyTest.pyTestFramework import getTests, Test_Dummy, defaultComparer
+from pyTest.pyTestFramework import getTests, defaultComparer
 import os
 import pytest
 
+pytest_plugins = ("pyTest.conftest")
 
-class Test_JSONpytestClient(Test_Dummy):
+class Test_JSONpytestClient():
     testOnly    = os.environ['TEST_ONLY'] if "TEST_ONLY" in os.environ else ""            # Delimiter: ; without space, filenames without ext
     targetDir   = "testJSONTest"
     isActive    = False
-
-    def __init__(self):
-        super(Dummy, self).__init__()
 
     @pytest.mark.parametrize(
         'p_testCase', getTests("testJSONTest")

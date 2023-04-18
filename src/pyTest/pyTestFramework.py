@@ -3,9 +3,6 @@ import os
 import jsonpickle
 
 
-class Test_Dummy:
-    pass
-
 def getTests(dir_basename):
     tests = []
     for fileName in os.listdir(dir_basename):

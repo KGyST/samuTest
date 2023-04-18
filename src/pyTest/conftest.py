@@ -1,5 +1,4 @@
-# conftest.py
-
 def pytest_collection_modifyitems(items):
     for item in items:
-        item._nodeid = item._request.node.callspec.params['teszt'][0] + '::' + item._request.node.callspec.params['teszt'][1]
+        item._nodeid = f"{item._request.node.callspec.params['p_testCase']['args'][0]}::{item._request.node.callspec.params['p_testCase']['args'][0]}"
+
