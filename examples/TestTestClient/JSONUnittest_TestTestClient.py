@@ -1,7 +1,6 @@
 from unitTest.test_runner import JSONTestSuite
 import os
 import pytest
-# from pyTest.pyTestFramework import getTests, defaultComparer
 
 
 class Test_JSONTestTestClient(JSONTestSuite):

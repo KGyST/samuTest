@@ -30,7 +30,6 @@ def resultFileGenerator(p_sFolder, p_sTestFile):
 
 
 class JSONTestCase(unittest.TestCase):
-    #FIXME rewrite to metaclasses
     def __init__(self, p_function, p_TestData, p_Dir, p_FileName, p_comparer):
         self.sDir = p_Dir
         self.sFile = p_FileName
