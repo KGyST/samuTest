@@ -1,0 +1,25 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "args": {
+        "type": "list",
+        "description": "args of the function",
+        "default": []
+    },
+    "kwargs": {
+        "type": "dict",
+        "description": "kwargs of the function",
+        "default": {}
+    },
+    "result": {
+        "type": "any",
+        "description": "result(s) of the function"
+    },
+    "function": {
+        "type": "function",
+        "description": "result(s) of the function"
+    },
+    "module": {
+        "type": "module",
+        "description": "result(s) of the function"
+    }
+}

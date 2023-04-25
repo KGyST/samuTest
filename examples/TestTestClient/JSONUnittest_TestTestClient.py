@@ -1,6 +1,5 @@
 from unitTest.test_runner import JSONTestSuite
 import os
-import pytest
 
 
 class Test_JSONTestTestClient(JSONTestSuite):
