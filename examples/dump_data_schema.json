@@ -16,10 +16,17 @@
     },
     "function": {
         "type": "function",
-        "description": "result(s) of the function"
+        "description": "Actual function to be called",
+        "default": null
     },
     "module": {
         "type": "module",
-        "description": "result(s) of the function"
+        "description": "Module of the function, unused",
+        "default": null
+    },
+    "description": {
+        "type": "string",
+        "description": "Description",
+        "default": ""
     }
 }

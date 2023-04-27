@@ -9,7 +9,9 @@ class DumperBase:
     """
     # FIXME global vars
     # FIXME multiple results
-
+    #FIXME add first_run
+    #FIXME WinMerge file generation
+    
     def __init__(self, defaultName, testSuite=None, targetDir=".", isActive=False, nNameHex=12):
         self.targetDir = targetDir
         self.defaultName = defaultName

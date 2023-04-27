@@ -2,62 +2,34 @@ import unittest
 import os
 import shutil
 import json
-
-def case_filter_func(p_cases_to_be_tested:str, p_fileName:str) -> bool:
-    cases_to_be_tested = case_only.split(";")
-    return p_cases_to_be_tested \
-           and p_fileName[:-5] not in cases_to_be_tested \
-           and p_fileName not in cases_to_be_tested
-
-def filename_filter_func(p_fileName:str, p_ext:str) -> bool:
-    return not p_fileName.startswith('_') \
-           and os.path.splitext(p_fileName)[1] == p_ext
-
-def default_comparer_func(p_Obj:object, p_function:function, p_TestData:dict, *args, **kwargs):
-    testResult = p_function(*p_TestData["args"], **p_TestData["kwargs"])
-    p_TestData.update({"result": testResult})
-    p_Obj.assertEqual(p_TestData["result"], testResult)
-
-def resultFileGenerator(p_folder:str, p_testFile:str) -> str:
-    sResultFolder = p_folder + "_errors"
-    try:
-        shutil.rmtree(sResultFolder)
-    except OSError:
-        pass
-    try:
-        os.mkdir(sResultFolder)
-    except PermissionError:
-        #FIXME handling
-        pass
-    return os.path.join(sResultFolder, p_testFile)
-
+from common.commonFunctions import *
+from common.private import folderHandler, caseFileCollector
 
 class JSONTestSuite(unittest.TestSuite):
     def __init__(self,
-                 folder,
-                 case_only,
-                 function=None,
+                 cases_folder:str,
+                 function,
+                 cases_only:str="",
                  filename_filter_func=filename_filter_func,
                  case_filter_func=case_filter_func,
                  comparer_func=default_comparer_func,
-                 first_run=False):
+                 first_run:bool=False):
         self._tests = []
         #FIXME check if folder doesn't exist:
-        self._fileList = sorted([f for f in os.listdir(folder)])
-        self._folder = folder
-        self._folderHandler(first_run)
-        for fileName in self._fileList:
-            if case_filter_func(case_only, fileName):
-                continue
-            if filename_filter_func(fileName, ".json"):
-                try:
-                    testData = json.load(open(os.path.join(folder, fileName), "r"))
-
-                    testCase = JSONTestCase(function, testData, folder, fileName, comparer_func)
-                    testCase.maxDiff = None
-                    self.addTest(testCase)
-                except json.decoder.JSONDecodeError:
-                    print(f"JSONDecodeError - Filename: {fileName}")
+        self._folder = cases_folder
+        folderHandler(self._folder)
+        for fileName in caseFileCollector(self._folder,
+                                          case_filter_func,
+                                          cases_only,
+                                          filename_filter_func,
+                                          ".json"):
+            try:
+                testData = json.load(open(os.path.join(self._folder, fileName), "r"))
+                testCase = JSONTestCase(function, testData, self._folder, fileName, comparer_func)
+                testCase.maxDiff = None
+                self.addTest(testCase)
+            except json.decoder.JSONDecodeError:
+                print(f"JSONDecodeError - Filename: {fileName}")
 
         super(JSONTestSuite, self).__init__(self._tests)
 
@@ -66,21 +38,6 @@ class JSONTestSuite(unittest.TestSuite):
             if test._testMethodName == p_Name:
                 return True
         return False
-
-    def _folderHandler(self, p_firstRun):
-        #FIXME add first_run
-        #FIXME WinMerge file generation
-
-        try:
-            shutil.rmtree(self._folder + "_errors")
-        except OSError:
-            pass
-
-        try:
-            os.mkdir(self._folder + "_errors")
-        except PermissionError:
-            #FIXME handling
-            pass
 
 
 class JSONTestCase(unittest.TestCase):
