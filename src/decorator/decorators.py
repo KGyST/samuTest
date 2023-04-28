@@ -1,7 +1,7 @@
 import jsonpickle
 import os
 import hashlib
-
+from common.constants import ERROR
 
 class DumperBase:
     """
@@ -12,7 +12,12 @@ class DumperBase:
     #FIXME add first_run
     #FIXME WinMerge file generation
     
-    def __init__(self, defaultName, testSuite=None, targetDir=".", isActive=False, nNameHex=12):
+    def __init__(self, defaultName,
+                 testSuite=None,
+                 targetDir=".",
+                 isActive=False,
+                 generate_files=True,
+                 nNameHex=12):
         self.targetDir = targetDir
         self.defaultName = defaultName
         self.isActive = isActive
@@ -27,6 +32,14 @@ class DumperBase:
                 self.isActive = testSuite.isActive
             if "nNameHex" in testSuite.__dict__:
                 self.nNameHex = testSuite.nNameHex
+
+    def _initFiles(self):
+        import xml.etree.ElementTree as ET
+        tree = ET.parse(os.path.join('..', 'templates', 'WinMerge.xml'))
+        root = tree.getroot()
+        root.find('paths/left').text = self.targetDir
+        root.find('paths/right').text = self.targetDir + ERROR
+        # tree.write(os.path.join(self.targetDir, ))
 
     def __call__(self, func, fExport, sExt, *args, **kwargs):
         def wrapped_function(*argsWrap, **kwargsWrap):

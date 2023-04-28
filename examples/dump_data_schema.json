@@ -28,5 +28,10 @@
         "type": "string",
         "description": "Description",
         "default": ""
+    },
+    "name": {
+        "type": "string",
+        "description": "Short name of the test, to be shown by runner; if not present, the filename instead",
+        "default": ""
     }
 }
