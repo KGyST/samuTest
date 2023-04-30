@@ -2,9 +2,9 @@ import unittest
 import os
 import shutil
 import json
-from common.commonFunctions import *
-from common.private import folderHandler, caseFileCollector
-from common.constants import ERROR
+from common.publicFunctions import *
+from common.privateFunctions import generateFolder, caseFileCollector
+from common.constants import ERROR_STR
 
 
 class JSONTestSuite(unittest.TestSuite):
@@ -15,11 +15,12 @@ class JSONTestSuite(unittest.TestSuite):
                  filename_filter_func=filename_filter_func,
                  case_filter_func=case_filter_func,
                  comparer_func=default_comparer_func,
-                 first_run:bool=False):
-        #self._tests is an inherited name!
+                 first_run:bool=False,
+                 target_folder="."):
+        #self._tests is an inherited member!
         self._tests = []
-        self._folder = cases_folder
-        folderHandler(self._folder)
+        self._folder = os.path.join(target_folder, cases_folder, )
+        generateFolder(self._folder + ERROR_STR)
         for sFile in caseFileCollector(self._folder,
                                           case_filter_func,
                                           cases_only,
@@ -53,7 +54,7 @@ class JSONTestCase(unittest.TestCase):
     @staticmethod
     def JSONTestCaseFactory(p_function, p_TestData, p_Dir, p_FileName, p_comparer=default_comparer_func):
         def func(p_Obj):
-            sOutFile = os.path.join(p_Dir + ERROR, p_FileName)
+            sOutFile = os.path.join(p_Dir + ERROR_STR, p_FileName)
             testResult = None
 
             try:
@@ -64,7 +65,6 @@ class JSONTestCase(unittest.TestCase):
                     json.dump(p_TestData, fOutput, indent=4)
                 raise
 
-            #FIXME cleanup
         if "name" in p_TestData:
             func.__name__ = p_TestData["name"]
         else:

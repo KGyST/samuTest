@@ -10,61 +10,58 @@ class DumperBase:
     Decorator functor to modify the tested functions
     Reason for having a Base class is for potentially being able to inher into an xml or yaml writer
     """
-    #FIXME add first_run -> generate_files
-    # FIXME multiple results
+    # FIXME multiple results handling
     # FIXME global vars handling
     #FIXME mocked functions
-    #FIXME isActive: writing out the last tested function all the time including testset for an easy rerun
 
     class DumperException(Exception):
-        #FIXME doesn't work
         pass
 
     #FIXME devise actual function name test_func_name, first param
     def __init__(self,
-                 test_func_name,
                  testExt,  #test default name, like .json
                  fExport,
-                 currentTestName = "current",  #test default name, like current
+                 current_test_name ="current",  #test default name, like current
                  target_folder=".",  #place everything into this dir
-                 active=True,           #to switch on/off the test
-                 generate_files=True,   #generate files, typically for the first run
+                 active=True,  #global on/off switch of the test dumper
+                 generate_files=True,  #generate files, typically for the first run
                  nNameHex=12):          #for default testcase filename generating
         self.sTargetFolder = target_folder
-        self.sDefaultTest = currentTestName
-        self.sTest = test_func_name
+        self.sDefaultTest = current_test_name
         self.isActive = active
         self.nNameHex = nNameHex
         self.sExt = testExt
         self.fExport = fExport
-
-        self.sFolder = os.path.join(self.sTargetFolder, self.sTest)
-        generateFolder(self.sFolder + ERROR_STR, p_bForceDelete=True)
-
-        if generate_files:
-            self._initFiles()
+        self.bGenerateFiles = generate_files
 
     def _initFiles(self):
-        import xml.etree.ElementTree as ET
-        tree = ET.parse(StringIO(WINMERGE_TEMPLATE))
-        root = tree.getroot()
-        root.find('paths/left').text = os.path.join(os.getcwd(), self.sTargetFolder, self.sTest)
-        root.find('paths/right').text = os.path.join(os.getcwd(), self.sTargetFolder, self.sTest + ERROR_STR)
-        tree.write(os.path.join(self.sTargetFolder, self.sTest + ".WinMerge"))
+        if not os.path.exists(sWinMergePath := os.path.join(self.sTargetFolder, self.sTest + ".WinMerge")) \
+                and not os.path.exists(self.sFolder) \
+                and not os.path.exists(self.sFolder + ERROR_STR):
+            import xml.etree.ElementTree as ET
+            tree = ET.parse(StringIO(WINMERGE_TEMPLATE))
+            root = tree.getroot()
+            root.find('paths/left').text = self.sFolder
+            root.find('paths/right').text = self.sFolder + ERROR_STR
+            tree.write(sWinMergePath)
 
-        generateFolder(self.sFolder)
+            generateFolder(self.sFolder)
 
     def __call__(self, func, *args, **kwargs):
+        self.sTest = func.__name__
+        self.sFolder = os.path.join(os.getcwd(), self.sTargetFolder, self.sTest)
+        if self.bGenerateFiles:
+            self._initFiles()
+
         def wrapped_function(*argsWrap, **kwargsWrap):
             fResult = None
             try:
                 fResult = func(*argsWrap, **kwargsWrap)
                 if self.isActive:
-                    raise DumperException()
+                    raise self.DumperException()
                 return fResult
             except TypeError as e:
                 pass
-            #FIXME custom Exception class
             except Exception as e:
                 sOutput = self.fExport({"args": argsWrap,
                                  "kwargs": kwargsWrap,
@@ -89,8 +86,8 @@ class DumperBase:
 
 
 class JSONDumper(DumperBase):
-    def __init__(self, test_name, *args, **kwargs):
-        super(JSONDumper, self) .__init__(test_name, ".json", jsonpickle.dumps, *args, **kwargs)
+    def __init__(self, *args, **kwargs):
+        super(JSONDumper, self) .__init__(".json", jsonpickle.dumps, *args, **kwargs)
 
     def __call__(self, func, *args, **kwargs):
         return super(JSONDumper, self).__call__(func, *args, **kwargs)
