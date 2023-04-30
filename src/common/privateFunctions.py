@@ -1,12 +1,6 @@
 import os.path
 import shutil
 
-def folderHandler(p_sFolder):
-    sErrorFolder = p_sFolder + "_errors"
-    if os.path.exists(sErrorFolder):
-        shutil.rmtree(sErrorFolder)
-    os.mkdir(sErrorFolder)
-
 def caseFileCollector(p_sFolder:str,
                       p_case_filter_func,
                       p_cases_only,
@@ -23,4 +17,21 @@ def caseFileCollector(p_sFolder:str,
         return filename_filter_func(p_sFile, p_ext)
     filter(_nameFilter, resultCaseS)
     return resultCaseS
+
+def generateFolder(p_sFolderPath:str, p_bForceDelete:bool=False):
+    if os.path.exists(p_sFolderPath):
+        if p_bForceDelete:
+            try:
+                shutil.rmtree(p_sFolderPath)
+            except OSError:
+                #FIXME maybe removing all the files from the folder
+                pass
+        else:
+            #Common case
+            return
+    try:
+        os.mkdir(p_sFolderPath)
+    except PermissionError:
+        #FIXME handling
+        pass
 
