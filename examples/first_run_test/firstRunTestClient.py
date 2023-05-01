@@ -11,3 +11,5 @@ if __name__ == "__main__":
         i = funcTestee(i)
         print(i)
 
+    print(funcTestee(100))
+

@@ -12,20 +12,19 @@ class DumperBase:
     """
     # FIXME multiple results handling
     # FIXME global vars handling
-    #FIXME mocked functions
+    # FIXME mocked functions
 
     class DumperException(Exception):
         pass
 
-    #FIXME devise actual function name test_func_name, first param
     def __init__(self,
-                 testExt,  #test default name, like .json
-                 fExport,
+                 testExt,                       #test default name, like .json
+                 fExport,                       #data export function, like jsondumper
                  current_test_name ="current",  #test default name, like current
-                 target_folder=".",  #place everything into this dir
-                 active=True,  #global on/off switch of the test dumper
-                 generate_files=True,  #generate files, typically for the first run
-                 nNameHex=12):          #for default testcase filename generating
+                 target_folder=".",             #place everything into this dir
+                 active=True,                   #global on/off switch of the test dumper
+                 generate_files=True,           #generate files, typically for the first run
+                 nNameHex=12):                  #for default testcase filename generating
         self.sTargetFolder = target_folder
         self.sDefaultTest = current_test_name
         self.isActive = active
@@ -47,6 +46,7 @@ class DumperBase:
 
             generateFolder(self.sFolder)
 
+    # Very much misleading, this __call__ is called only once, at the beginning to create wrapped_function:
     def __call__(self, func, *args, **kwargs):
         self.sTest = func.__name__
         self.sFolder = os.path.join(os.getcwd(), self.sTargetFolder, self.sTest)
@@ -72,13 +72,12 @@ class DumperBase:
                                )
 
                 sHash = hashlib.md5(sOutput.encode("ansi")).hexdigest()[:self.nNameHex]
-                fileName = func.__name__ + "_" + sHash + self.sExt
+                fileName = self.sTest + "_" + sHash + self.sExt
 
-                #FIXME folder existance check
-                #Like current.json:
-                with open(os.path.join(self.sFolder, self.sDefaultTest + self.sExt), "w") as f:
-                    f.write(sOutput)
                 if self.isActive:
+                    #Like current.json:
+                    with open(os.path.join(self.sFolder, self.sDefaultTest + self.sExt), "w") as f:
+                        f.write(sOutput)
                     with open(os.path.join(self.sFolder, fileName), "w") as f:
                         f.write(sOutput)
                 return fResult
