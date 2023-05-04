@@ -9,17 +9,16 @@ from common.constants import ERROR_STR
 
 class JSONTestSuite(unittest.TestSuite):
     def __init__(self,
-                 cases_folder:str,
                  func,
+                 target_folder:str=".",
                  cases_only:str="",
                  filename_filter_func=filename_filter_func,
                  case_filter_func=case_filter_func,
                  comparer_func=default_comparer_func,
-                 first_run:bool=False,
-                 target_folder="."):
-        #self._tests is an inherited member!
+                 ):
+        # self._tests is an inherited member!
         self._tests = []
-        self._folder = os.path.join(target_folder, cases_folder, )
+        self._folder = os.path.join(target_folder, func.__name__, )
         generateFolder(self._folder + ERROR_STR)
         for sFile in caseFileCollector(self._folder,
                                           case_filter_func,

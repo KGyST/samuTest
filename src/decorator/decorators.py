@@ -10,9 +10,8 @@ class DumperBase:
     Decorator functor to modify the tested functions
     Reason for having a Base class is for potentially being able to inher into an xml or yaml writer
     """
-    # FIXME multiple results handling
-    # FIXME global vars handling
     # FIXME mocked functions
+    # FIXME global vars handling
 
     class DumperException(Exception):
         pass
@@ -20,8 +19,8 @@ class DumperBase:
     def __init__(self,
                  testExt,                       #test default name, like .json
                  fExport,                       #data export function, like jsondumper
-                 current_test_name ="current",  #test default name, like current
                  target_folder=".",             #place everything into this dir
+                 current_test_name ="current",  #test default name, like current
                  active=True,                   #global on/off switch of the test dumper
                  generate_files=True,           #generate files, typically for the first run
                  nNameHex=12):                  #for default testcase filename generating
@@ -81,12 +80,15 @@ class DumperBase:
                     with open(os.path.join(self.sFolder, fileName), "w") as f:
                         f.write(sOutput)
                 return fResult
+        wrapped_function.__name__ = func.__name__
         return wrapped_function
 
 
 class JSONDumper(DumperBase):
     def __init__(self, *args, **kwargs):
-        super(JSONDumper, self) .__init__(".json", jsonpickle.dumps, *args, **kwargs)
+        def jsonEx(p_sDict):
+            return jsonpickle.dumps(p_sDict, indent=4)
+        super(JSONDumper, self) .__init__(".json", jsonEx, *args, **kwargs)
 
     def __call__(self, func, *args, **kwargs):
         return super(JSONDumper, self).__call__(func, *args, **kwargs)

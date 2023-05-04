@@ -12,7 +12,7 @@ def filename_filter_func(file_name:str, extension:str) -> bool:
 
 def default_comparer_func(obj:object, tested_function, test_data:dict, *args, **kwargs):
     testResult = tested_function(*test_data["args"], **test_data["kwargs"])
-    test_data.update({"result": testResult})
+    # test_data.update({"result": testResult})
     #FIXME to modify into something like this:
     # test_data.update({"result": ResultClass(testResult)})
     # __eq__ etc being defined in ResultClass
