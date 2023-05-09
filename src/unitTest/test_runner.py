@@ -5,6 +5,7 @@ import json
 from common.publicFunctions import *
 from common.privateFunctions import generateFolder, caseFileCollector
 from common.constants import ERROR_STR
+import jsonpickle
 
 
 class JSONTestSuite(unittest.TestSuite):
@@ -26,7 +27,8 @@ class JSONTestSuite(unittest.TestSuite):
                                           filename_filter_func,
                                           ".json"):
             try:
-                testData = json.load(open(os.path.join(self._folder, sFile), "r"))
+                with open(os.path.join(self._folder, sFile), "r") as jf:
+                    testData = jsonpickle.loads(jf.read())
                 testCase = JSONTestCase(func, testData, self._folder, sFile, comparer_func)
                 testCase.maxDiff = None
                 self.addTest(testCase)

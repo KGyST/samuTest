@@ -75,9 +75,10 @@ class DumperBase:
 
                 if self.isActive:
                     #Like current.json:
-                    with open(os.path.join(self.sFolder, self.sDefaultTest + self.sExt), "w") as f:
-                        f.write(sOutput)
                     with open(os.path.join(self.sFolder, fileName), "w") as f:
+                        f.write(sOutput)
+                    # sOutput['name'] = 'Current test'
+                    with open(os.path.join(self.sFolder, self.sDefaultTest + self.sExt), "w") as f:
                         f.write(sOutput)
                 return fResult
         wrapped_function.__name__ = func.__name__
