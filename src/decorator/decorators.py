@@ -10,7 +10,6 @@ class DumperBase:
     Decorator functor to modify the tested functions
     Reason for having a Base class is for potentially being able to inher into an xml or yaml writer
     """
-    # FIXME mocked functions
     # FIXME global vars handling
 
     class DumperException(Exception):
@@ -74,9 +73,9 @@ class DumperBase:
                 fileName = self.sTest + "_" + sHash + self.sExt
 
                 if self.isActive:
-                    #Like current.json:
                     with open(os.path.join(self.sFolder, fileName), "w") as f:
                         f.write(sOutput)
+                    #Like current.json:
                     # sOutput['name'] = 'Current test'
                     with open(os.path.join(self.sFolder, self.sDefaultTest + self.sExt), "w") as f:
                         f.write(sOutput)
