@@ -15,3 +15,4 @@ def defaultComparer(p_function, p_TestData):
     testResult = p_function(*p_TestData["args"], **p_TestData["kwargs"])
     p_TestData.update({"result": testResult})
     assert p_TestData["result"] == testResult
+
