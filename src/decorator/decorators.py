@@ -4,11 +4,13 @@ import hashlib
 from common.constants import ERROR_STR, WINMERGE_TEMPLATE
 from common.privateFunctions import generateFolder
 from io import StringIO
+from typing import Callable
+
 
 class DumperBase:
     """
     Decorator functor to modify the tested functions
-    Reason for having a Base class is for potentially being able to inher into an xml or yaml writer
+    Reason for having a Base class is for potentially being able to inherit into an xml or yaml writer
     """
     # FIXME mocked functions
     # FIXME global vars handling
@@ -17,13 +19,13 @@ class DumperBase:
         pass
 
     def __init__(self,
-                 testExt,                       #test default name, like .json
-                 fExport,                       #data export function, like jsondumper
-                 target_folder=".",             #place everything into this dir
-                 current_test_name ="current",  #test default name, like current
-                 active=True,                   #global on/off switch of the test dumper
-                 generate_files=True,           #generate files, typically for the first run
-                 nNameHex=12):                  #for default testcase filename generating
+                 testExt: str,                       #test default name, like .json
+                 fExport: Callable,                  #data export function, like jsondumper
+                 target_folder: str=".",             #place everything into this dir
+                 current_test_name: str ="current",  #test default name, like current
+                 active: bool=True,                  #global on/off switch of the test dumper
+                 generate_files: bool=True,          #generate files, typically for the first run
+                 nNameHex: int=12):                  #for default testcase filename generating
         self.sTargetFolder = target_folder
         self.sDefaultTest = current_test_name
         self.isActive = active
@@ -32,7 +34,7 @@ class DumperBase:
         self.fExport = fExport
         self.bGenerateFiles = generate_files
 
-    def _initFiles(self):
+    def __initFiles(self):
         if not os.path.exists(sWinMergePath := os.path.join(self.sTargetFolder, self.sTest + ".WinMerge")) \
                 and not os.path.exists(self.sFolder) \
                 and not os.path.exists(self.sFolder + ERROR_STR):
@@ -46,11 +48,11 @@ class DumperBase:
             generateFolder(self.sFolder)
 
     # Very much misleading, this __call__ is called only once, at the beginning to create wrapped_function:
-    def __call__(self, func, *args, **kwargs):
+    def __call__(self, func: Callable, *args, **kwargs):
         self.sTest = func.__name__
         self.sFolder = os.path.join(os.getcwd(), self.sTargetFolder, self.sTest)
         if self.bGenerateFiles:
-            self._initFiles()
+            self.__initFiles()
 
         def wrapped_function(*argsWrap, **kwargsWrap):
             fResult = None
@@ -69,7 +71,6 @@ class DumperBase:
                                  "module": None,
                                 },
                                )
-
                 sHash = hashlib.md5(sOutput.encode("ansi")).hexdigest()[:self.nNameHex]
                 fileName = self.sTest + "_" + sHash + self.sExt
 
@@ -91,6 +92,31 @@ class JSONDumper(DumperBase):
             return jsonpickle.dumps(p_sDict, indent=4)
         super(JSONDumper, self) .__init__(".json", jsonEx, *args, **kwargs)
 
-    def __call__(self, func, *args, **kwargs):
+    def __call__(self, func: Callable, *args, **kwargs):
         return super(JSONDumper, self).__call__(func, *args, **kwargs)
+
+
+class JSONClassDumper:
+    def __init__(self,
+                 target_folder: str=".",             #place everything into this dir
+                 ):
+        self.sTargetFolder = target_folder
+        generateFolder(self.sTargetFolder)
+
+    def __call__(self, cls):
+        class DecoratedClass(cls):
+            def __init__(self, *args, **kwargs):
+                super().__init__(self, *args, **kwargs)
+
+                sDict = {"args": args,
+                         "kwargs": kwargs,
+                         "result": self}
+                sOutput = jsonpickle.dumps(sDict, indent=4)
+                sHash = hashlib.md5(sOutput.encode("ansi")).hexdigest()[:self.nNameHex]
+                fileName = self.sTest + "_" + sHash + self.sExt
+
+                with open(os.path.join(self.sFolder, fileName), "w") as f:
+                    f.write(sOutput)
+
+        return DecoratedClass
 

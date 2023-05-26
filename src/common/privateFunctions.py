@@ -1,10 +1,12 @@
 import os.path
 import shutil
+from typing import Callable
+
 
 def caseFileCollector(p_sFolder:str,
-                      p_case_filter_func,
-                      p_cases_only,
-                      p_filename_filter_func,
+                      p_case_filter_func: Callable,
+                      p_cases_only: Callable,
+                      p_filename_filter_func: Callable,
                       p_ext) -> list:
     resultCaseS = []
     if not os.path.exists(p_sFolder):
@@ -14,7 +16,7 @@ def caseFileCollector(p_sFolder:str,
         return p_sFile in p_cases_only
     filter(_onlyFilter, resultCaseS)
     def _nameFilter(p_sFile):
-        return filename_filter_func(p_sFile, p_ext)
+        return p_filename_filter_func(p_sFile, p_ext)
     filter(_nameFilter, resultCaseS)
     return resultCaseS
 
