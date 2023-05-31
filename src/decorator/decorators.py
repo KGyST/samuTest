@@ -5,6 +5,7 @@ from common.constants import ERROR_STR, WINMERGE_TEMPLATE
 from common.privateFunctions import generateFolder
 from io import StringIO
 from typing import Callable
+import importlib, inspect
 
 
 class DumperBase:
@@ -97,26 +98,39 @@ class JSONDumper(DumperBase):
 
 
 class JSONClassDumper:
+    # FIXME class variables as properties?
     def __init__(self,
                  target_folder: str=".",             #place everything into this dir
+                 nNameHex: int = 12
                  ):
         self.sTargetFolder = target_folder
-        generateFolder(self.sTargetFolder)
+        self.nNameHex = nNameHex
+        self.sExt = ".json"
+
 
     def __call__(self, cls):
+        generateFolder(os.path.join(self.sTargetFolder, cls.__name__))
+
         class DecoratedClass(cls):
+            sTargetFolder = self.sTargetFolder
+            nNameHex = self.nNameHex
+            sExt = self.sExt
+            sTest = cls.__name__
+
             def __init__(self, *args, **kwargs):
-                super().__init__(self, *args, **kwargs)
+                super().__init__(*args, **kwargs)
 
                 sDict = {"args": args,
                          "kwargs": kwargs,
-                         "result": self}
+                         # "module": importlib.import_module(cls.__module__),
+                         "path": inspect.getsourcefile(importlib.import_module(cls.__module__)),
+                         "result": cls(*args, **kwargs)}
                 sOutput = jsonpickle.dumps(sDict, indent=4)
                 sHash = hashlib.md5(sOutput.encode("ansi")).hexdigest()[:self.nNameHex]
                 fileName = self.sTest + "_" + sHash + self.sExt
 
-                with open(os.path.join(self.sFolder, fileName), "w") as f:
+                with open(os.path.join(os.getcwd(), self.sTargetFolder, self.sTest, fileName), "w") as f:
                     f.write(sOutput)
-
+        DecoratedClass.__name__ = cls.__name__
         return DecoratedClass
 

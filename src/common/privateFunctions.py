@@ -3,21 +3,21 @@ import shutil
 from typing import Callable
 
 
-def caseFileCollector(p_sFolder:str,
+def caseFileCollector(folder:str,
                       p_case_filter_func: Callable,
-                      p_cases_only: Callable,
-                      p_filename_filter_func: Callable,
-                      p_ext) -> list:
+                      cases_only: str,
+                      filename_filter_func: Callable,
+                      ext:str) -> list[str]:
     resultCaseS = []
-    if not os.path.exists(p_sFolder):
+    if not os.path.exists(folder):
         return resultCaseS
-    resultCaseS = sorted([f for f in os.listdir(p_sFolder)])
-    def _onlyFilter(p_sFile):
-        return p_sFile in p_cases_only
-    filter(_onlyFilter, resultCaseS)
-    def _nameFilter(p_sFile):
-        return p_filename_filter_func(p_sFile, p_ext)
-    filter(_nameFilter, resultCaseS)
+    resultCaseS = sorted([f for f in os.listdir(folder)])
+    def _onlyFilter(file_name:str)->bool:
+        return file_name in cases_only
+    resultCaseS = list(filter(_onlyFilter, resultCaseS))
+    def _nameFilter(file_name:str):
+        return filename_filter_func(file_name, ext)
+    resultCaseS = list(filter(_nameFilter, resultCaseS))
     return resultCaseS
 
 def generateFolder(p_sFolderPath:str, p_bForceDelete:bool=False):
