@@ -3,8 +3,8 @@ from decorator.decorators import JSONDumper
 
 glob_variable = 1
 
-
-# @JSONDumper('''testSuite=Test_JSONTestTestClient''')
+'''testSuite=Test_JSONTestTestClient'''
+@JSONDumper()
 def funcTestee(p_iNum):
     return 1 / p_iNum
 

@@ -1,6 +1,8 @@
 from common.constants import ERROR_STR
 import os
 import jsonpickle
+import importlib
+import sys
 
 def case_filter_func(cases_to_be_tested:str, file_name:str) -> bool:
     lCaseS = cases_to_be_tested.split(";")
@@ -12,8 +14,12 @@ def filename_filter_func(file_name:str, extension:str) -> bool:
     return not file_name.startswith('_') \
            and os.path.splitext(file_name)[1] == extension
 
-def default_comparer_func(obj:object, tested_function, test_data:dict, *args, **kwargs):
-    testResult = tested_function(*test_data["args"], **test_data["kwargs"])
+def default_comparer_func(obj:object, test_data:dict, *args, **kwargs):
+    if "module_path" in test_data:
+        sys.path.append(test_data["module_path"])
+    module = importlib.import_module(test_data["module"])
+    func = getattr(module, test_data["function"])
+    testResult = func(*test_data["args"], **test_data["kwargs"])
     # test_data.update({"result": testResult})
     #FIXME to modify into something like this:
     # test_data.update({"result": ResultClass(testResult)})

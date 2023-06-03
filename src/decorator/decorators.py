@@ -15,6 +15,7 @@ class DumperBase:
     """
     # FIXME mocked functions
     # FIXME global vars handling
+    active = True
 
     class DumperException(Exception):
         pass
@@ -50,6 +51,8 @@ class DumperBase:
 
     # Very much misleading, this __call__ is called only once, at the beginning to create wrapped_function:
     def __call__(self, func: Callable, *args, **kwargs):
+        if not self.active:
+            return func
         self.sTest = func.__name__
         self.sFolder = os.path.join(os.getcwd(), self.sTargetFolder, self.sTest)
         if self.bGenerateFiles:
@@ -91,10 +94,10 @@ class JSONDumper(DumperBase):
     def __init__(self, *args, **kwargs):
         def jsonEx(p_sDict):
             return jsonpickle.dumps(p_sDict, indent=4)
-        super(JSONDumper, self) .__init__(".json", jsonEx, *args, **kwargs)
+        super() .__init__(".json", jsonEx, *args, **kwargs)
 
     def __call__(self, func: Callable, *args, **kwargs):
-        return super(JSONDumper, self).__call__(func, *args, **kwargs)
+        return super().__call__(func, *args, **kwargs)
 
 
 class JSONClassDumper:

@@ -1,19 +1,24 @@
+import glob
 import os.path
 import shutil
 from typing import Callable
 
 
 def caseFileCollector(folder:str,
-                      p_case_filter_func: Callable,
+                      case_filter_func: Callable,
                       cases_only: str,
                       filename_filter_func: Callable,
                       ext:str) -> list[str]:
     resultCaseS = []
     if not os.path.exists(folder):
         return resultCaseS
-    resultCaseS = sorted([f for f in os.listdir(folder)])
+    # resultCaseS = sorted([f for f in os.listdir(folder)])
+    resultCaseS = glob.glob('**/*' + ext, root_dir=folder, recursive=True)
     def _onlyFilter(file_name:str)->bool:
-        return file_name in cases_only
+        if not cases_only:
+            return True
+        _cases_only = cases_only.split(";")
+        return any((case in file_name) for case in _cases_only)
     resultCaseS = list(filter(_onlyFilter, resultCaseS))
     def _nameFilter(file_name:str):
         return filename_filter_func(file_name, ext)
