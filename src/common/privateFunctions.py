@@ -12,7 +12,6 @@ def caseFileCollector(folder:str,
     resultCaseS = []
     if not os.path.exists(folder):
         return resultCaseS
-    # resultCaseS = sorted([f for f in os.listdir(folder)])
     resultCaseS = glob.glob('**/*' + ext, root_dir=folder, recursive=True)
     def _onlyFilter(file_name:str)->bool:
         if not cases_only:

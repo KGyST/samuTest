@@ -1,5 +1,3 @@
-import os
-import sys
 import unittest
 import json
 from common.publicFunctions import *
@@ -7,12 +5,11 @@ from common.privateFunctions import generateFolder, caseFileCollector
 from common.constants import ERROR_STR
 import jsonpickle
 from typing import Callable
-import importlib
 from decorator.decorators import DumperBase
+
 
 class JSONTestSuite(unittest.TestSuite):
     def __init__(self,
-                 # func: Callable,
                  target_folder: str="test",
                  cases_only: str="",
                  filename_filter_func: Callable=filename_filter_func,
@@ -25,20 +22,19 @@ class JSONTestSuite(unittest.TestSuite):
         DumperBase.active = False
         generateFolder(self._folder + ERROR_STR)
 
-        for sFile in caseFileCollector(self._folder,
-                                          case_filter_func,
-                                          cases_only,
-                                          filename_filter_func,
+        for sFilePath in caseFileCollector(self._folder,
+                                           case_filter_func,
+                                           cases_only,
+                                           filename_filter_func,
                                           ".json"):
             try:
-                with open(os.path.join(self._folder, sFile), "r") as jf:
+                with open(os.path.join(self._folder, sFilePath), "r") as jf:
                     testData = jsonpickle.loads(jf.read())
-                testCase = JSONTestCase(testData, self._folder, sFile, comparer_func)
+                testCase = JSONTestCase(testData, self._folder, sFilePath, comparer_func)
                 testCase.maxDiff = None
                 self.addTest(testCase)
             except json.decoder.JSONDecodeError:
-                # FIXME exception handling for the functions (if the func raises an exception)
-                print(f"JSONDecodeError - Filename: {sFile}")
+                print(f"JSONDecodeError - Filename: {sFilePath}")
                 continue
         super().__init__(self._tests)
 
@@ -66,11 +62,14 @@ class JSONTestCase(unittest.TestCase):
 
             try:
                 p_comparer(p_Obj, p_TestData, file_name=p_FileName)
-            except AssertionError:
+            except Exception as e:
+                # FIXME exception to json TypeError: Object of type ZeroDivisionError is not JSON serializable
+                # "exception": JSONSeriazable(e)
+                p_TestData.update({"result": testResult,})
                 with open(sOutFile, "w") as fOutput:
-                    p_TestData.update({"result": testResult})
                     json.dump(p_TestData, fOutput, indent=4)
                 raise
+
 
         if "name" in p_TestData:
             func.__name__ = p_TestData["name"]

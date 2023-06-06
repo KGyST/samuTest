@@ -1,10 +1,9 @@
-import json
-
 from decorator.decorators import JSONClassDumper
 
 
-@JSONClassDumper(target_folder="test_folder")
+@JSONClassDumper()
 class ClassTestee():
+    # FIXME class variables: how to deal with them?
     # classVariable = 0
     def __init__(self, p_a: int):
         self.a = p_a

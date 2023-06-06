@@ -15,15 +15,15 @@ class DumperBase:
     """
     # FIXME mocked functions
     # FIXME global vars handling
-    active = True
+    isActive = True
 
     class DumperException(Exception):
         pass
 
     def __init__(self,
-                 testExt: str,                       #test default name, like .json
+                 testExt: str,                       #test default name, like '.json'
                  fExport: Callable,                  #data export function, like jsondumper
-                 target_folder: str=".",             #place everything into this dir
+                 target_folder: str="test",          #place everything into this dir
                  current_test_name: str ="current",  #test default name, like current
                  active: bool=True,                  #global on/off switch of the test dumper
                  generate_files: bool=True,          #generate files, typically for the first run
@@ -51,7 +51,7 @@ class DumperBase:
 
     # Very much misleading, this __call__ is called only once, at the beginning to create wrapped_function:
     def __call__(self, func: Callable, *args, **kwargs):
-        if not self.active:
+        if not self.isActive:
             return func
         self.sTest = func.__name__
         self.sFolder = os.path.join(os.getcwd(), self.sTargetFolder, self.sTest)
@@ -62,29 +62,26 @@ class DumperBase:
             fResult = None
             try:
                 fResult = func(*argsWrap, **kwargsWrap)
-                if self.isActive:
-                    raise self.DumperException()
-                return fResult
-            except TypeError as e:
+            except (Exception, TypeError) as e:
                 pass
-            except Exception as e:
+            else:
+                import inspect
                 sOutput = self.fExport({"args": argsWrap,
                                  "kwargs": kwargsWrap,
                                  "result": fResult,
-                                 "function": None,
-                                 "module": None,
+                                 "function": func.__name__,
+                                 "module": os.path.splitext(os.path.basename(inspect.getmodule(func).__file__))[0],
                                 },
                                )
                 sHash = hashlib.md5(sOutput.encode("ansi")).hexdigest()[:self.nNameHex]
                 fileName = self.sTest + "_" + sHash + self.sExt
 
-                if self.isActive:
-                    #Like current.json:
-                    with open(os.path.join(self.sFolder, fileName), "w") as f:
-                        f.write(sOutput)
-                    # sOutput['name'] = 'Current test'
-                    with open(os.path.join(self.sFolder, self.sDefaultTest + self.sExt), "w") as f:
-                        f.write(sOutput)
+                #Like current.json:
+                with open(os.path.join(self.sFolder, fileName), "w") as f:
+                    f.write(sOutput)
+                # sOutput['name'] = 'Current test'
+                with open(os.path.join(self.sFolder, self.sDefaultTest + self.sExt), "w") as f:
+                    f.write(sOutput)
                 return fResult
         wrapped_function.__name__ = func.__name__
         return wrapped_function
@@ -93,23 +90,23 @@ class DumperBase:
 class JSONDumper(DumperBase):
     def __init__(self, *args, **kwargs):
         def jsonEx(p_sDict):
-            return jsonpickle.dumps(p_sDict, indent=4)
+            return jsonpickle.dumps(p_sDict, indent=4, make_refs=False)
         super() .__init__(".json", jsonEx, *args, **kwargs)
-
-    def __call__(self, func: Callable, *args, **kwargs):
-        return super().__call__(func, *args, **kwargs)
 
 
 class JSONClassDumper:
     # FIXME class variables as properties?
+    isActive = False
+
     def __init__(self,
-                 target_folder: str=".",             #place everything into this dir
-                 nNameHex: int = 12
+                 target_folder: str="test",             #place everything into this dir
+                 nNameHex: int = 12,
+                 active=False
                  ):
         self.sTargetFolder = target_folder
         self.nNameHex = nNameHex
         self.sExt = ".json"
-
+        JSONClassDumper.isActive = active
 
     def __call__(self, cls):
         generateFolder(os.path.join(self.sTargetFolder, cls.__name__))
@@ -122,11 +119,13 @@ class JSONClassDumper:
 
             def __init__(self, *args, **kwargs):
                 super().__init__(*args, **kwargs)
+                if JSONClassDumper.isActive:
+                    return
 
                 sDict = {"args": args,
                          "kwargs": kwargs,
-                         # "module": importlib.import_module(cls.__module__),
-                         "path": inspect.getsourcefile(importlib.import_module(cls.__module__)),
+                         "function": cls.__name__,
+                         "module": os.path.splitext(os.path.basename(inspect.getmodule(cls).__file__))[0],
                          "result": cls(*args, **kwargs)}
                 sOutput = jsonpickle.dumps(sDict, indent=4)
                 sHash = hashlib.md5(sOutput.encode("ansi")).hexdigest()[:self.nNameHex]
