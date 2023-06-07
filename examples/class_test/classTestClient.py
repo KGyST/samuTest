@@ -1,7 +1,10 @@
 from decorator.decorators import JSONClassDumper
 
+# ------- Settings -----------------------------------
+isJSONClassDumperActive = True
+# ----------------------------------------------------
 
-@JSONClassDumper()
+@JSONClassDumper(active=isJSONClassDumperActive)
 class ClassTestee():
     # FIXME class variables: how to deal with them?
     # classVariable = 0

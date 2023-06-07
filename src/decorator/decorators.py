@@ -4,28 +4,23 @@ import hashlib
 from common.constants import ERROR_STR, WINMERGE_TEMPLATE
 from common.privateFunctions import generateFolder
 from io import StringIO
-from typing import Callable
-import importlib, inspect
+from typing import Callable, Type
+import inspect
 
 
 class DumperBase:
-    """
-    Decorator functor to modify the tested functions
-    Reason for having a Base class is for potentially being able to inherit into an xml or yaml writer
-    """
     # FIXME mocked functions
     # FIXME global vars handling
-    isActive = True
+    isActive = False
 
     class DumperException(Exception):
         pass
-
     def __init__(self,
                  testExt: str,                       #test default name, like '.json'
                  fExport: Callable,                  #data export function, like jsondumper
                  target_folder: str="test",          #place everything into this dir
                  current_test_name: str ="current",  #test default name, like current
-                 active: bool=True,                  #global on/off switch of the test dumper
+                 active: bool=False,                 #global on/off switch of the test dumper
                  generate_files: bool=True,          #generate files, typically for the first run
                  nNameHex: int=12):                  #for default testcase filename generating
         self.sTargetFolder = target_folder
@@ -35,6 +30,14 @@ class DumperBase:
         self.sExt = testExt
         self.fExport = fExport
         self.bGenerateFiles = generate_files
+
+    def __call__(self, func_or_class, *args, **kwargs):
+        if not self.isActive:
+            return func_or_class
+        self.sTest = func_or_class.__name__
+        self.sFolder = os.path.join(self.sTargetFolder, self.sTest)
+        if self.bGenerateFiles:
+            self.__initFiles()
 
     def __initFiles(self):
         if not os.path.exists(sWinMergePath := os.path.join(self.sTargetFolder, self.sTest + ".WinMerge")) \
@@ -49,67 +52,79 @@ class DumperBase:
 
             generateFolder(self.sFolder)
 
+    def dump(self, argsWrap, kwargsWrap, func_or_class, dResult: dict):
+        _dict = {"args": argsWrap,
+                "kwargs": kwargsWrap,
+                "function": func_or_class.__name__,
+                "module": os.path.splitext(os.path.basename(inspect.getmodule(func_or_class).__file__))[0],
+                }
+        sHash = hashlib.md5(self.fExport(_dict).encode("ansi")).hexdigest()[:self.nNameHex]
+
+        fileName = "".join((self.sTest, "_", sHash, self.sExt))
+
+        _dict.update(dResult)
+
+        sOutput = self.fExport(_dict)
+
+        # Like current.json:
+        with open(os.path.join(self.sFolder, fileName), "w") as f:
+            f.write(sOutput)
+        # sOutput['name'] = 'Current test'
+        with open(os.path.join(self.sTargetFolder, self.sDefaultTest + self.sExt), "w") as f:
+            f.write(sOutput)
+        with open(os.path.join(os.getcwd(), self.sTargetFolder, self.sTest, fileName), "w") as f:
+            f.write(sOutput)
+
+
+class FunctionDumper(DumperBase):
+    """
+    Decorator functor to modify the tested functions
+    Reason for having a Base class is for potentially being able to inherit into an xml or yaml writer
+    """
+    isActive = False
+
     # Very much misleading, this __call__ is called only once, at the beginning to create wrapped_function:
-    def __call__(self, func: Callable, *args, **kwargs):
+    def __call__(self, func, *args, **kwargs):
+        super().__call__(func, *args, **kwargs)
+        fDump = super().dump
         if not self.isActive:
             return func
-        self.sTest = func.__name__
-        self.sFolder = os.path.join(os.getcwd(), self.sTargetFolder, self.sTest)
-        if self.bGenerateFiles:
-            self.__initFiles()
 
         def wrapped_function(*argsWrap, **kwargsWrap):
             fResult = None
             try:
                 fResult = func(*argsWrap, **kwargsWrap)
-            except (Exception, TypeError) as e:
-                pass
+            except (Exception, TypeError, ZeroDivisionError) as e:
+                # FIXME
+                raise
             else:
-                import inspect
-                sOutput = self.fExport({"args": argsWrap,
-                                 "kwargs": kwargsWrap,
-                                 "result": fResult,
-                                 "function": func.__name__,
-                                 "module": os.path.splitext(os.path.basename(inspect.getmodule(func).__file__))[0],
-                                },
-                               )
-                sHash = hashlib.md5(sOutput.encode("ansi")).hexdigest()[:self.nNameHex]
-                fileName = self.sTest + "_" + sHash + self.sExt
+                dResult = {"result": fResult}
 
-                #Like current.json:
-                with open(os.path.join(self.sFolder, fileName), "w") as f:
-                    f.write(sOutput)
-                # sOutput['name'] = 'Current test'
-                with open(os.path.join(self.sFolder, self.sDefaultTest + self.sExt), "w") as f:
-                    f.write(sOutput)
+                fDump(argsWrap, kwargsWrap, func, dResult)
+
                 return fResult
         wrapped_function.__name__ = func.__name__
         return wrapped_function
 
 
-class JSONDumper(DumperBase):
+class JSONDumper(FunctionDumper):
     def __init__(self, *args, **kwargs):
         def jsonEx(p_sDict):
             return jsonpickle.dumps(p_sDict, indent=4, make_refs=False)
         super() .__init__(".json", jsonEx, *args, **kwargs)
 
 
-class JSONClassDumper:
+class JSONClassDumper(DumperBase):
+    def __init__(self, *args, **kwargs):
+        def jsonEx(p_sDict):
+            return jsonpickle.dumps(p_sDict, indent=4, make_refs=False)
+        super().__init__(".json", jsonEx, *args, **kwargs)
     # FIXME class variables as properties?
-    isActive = False
 
-    def __init__(self,
-                 target_folder: str="test",             #place everything into this dir
-                 nNameHex: int = 12,
-                 active=False
-                 ):
-        self.sTargetFolder = target_folder
-        self.nNameHex = nNameHex
-        self.sExt = ".json"
-        JSONClassDumper.isActive = active
-
-    def __call__(self, cls):
+    def __call__(self, cls: Type,  *args, **kwargs):
+        super().__call__(cls, *args, **kwargs)
         generateFolder(os.path.join(self.sTargetFolder, cls.__name__))
+        fDump = super().dump
 
         class DecoratedClass(cls):
             sTargetFolder = self.sTargetFolder
@@ -119,20 +134,11 @@ class JSONClassDumper:
 
             def __init__(self, *args, **kwargs):
                 super().__init__(*args, **kwargs)
-                if JSONClassDumper.isActive:
+                if DumperBase.isActive:
                     return
+                dResult = {"result": cls(*args, **kwargs)}
 
-                sDict = {"args": args,
-                         "kwargs": kwargs,
-                         "function": cls.__name__,
-                         "module": os.path.splitext(os.path.basename(inspect.getmodule(cls).__file__))[0],
-                         "result": cls(*args, **kwargs)}
-                sOutput = jsonpickle.dumps(sDict, indent=4)
-                sHash = hashlib.md5(sOutput.encode("ansi")).hexdigest()[:self.nNameHex]
-                fileName = self.sTest + "_" + sHash + self.sExt
-
-                with open(os.path.join(os.getcwd(), self.sTargetFolder, self.sTest, fileName), "w") as f:
-                    f.write(sOutput)
+                fDump(args, kwargs, cls, dResult)
         DecoratedClass.__name__ = cls.__name__
         return DecoratedClass
 

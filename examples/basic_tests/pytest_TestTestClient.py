@@ -13,7 +13,7 @@ class Test_JSONpytestClient():
         'p_testCase', getTests("testJSONTest")
     )
     def test_file(self, p_testCase):
-        from TestTestClient import funcTestee
+        from basicTestClient import funcTestee
 
         defaultComparer(funcTestee, p_testCase)
 

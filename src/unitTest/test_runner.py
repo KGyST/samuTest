@@ -5,7 +5,7 @@ from common.privateFunctions import generateFolder, caseFileCollector
 from common.constants import ERROR_STR
 import jsonpickle
 from typing import Callable
-from decorator.decorators import DumperBase
+from decorator.decorators import FunctionDumper
 
 
 class JSONTestSuite(unittest.TestSuite):
@@ -19,14 +19,14 @@ class JSONTestSuite(unittest.TestSuite):
         # self._tests is an inherited member!
         self._tests = []
         self._folder = os.path.join(target_folder, )
-        DumperBase.active = False
+        FunctionDumper.active = False
         generateFolder(self._folder + ERROR_STR)
 
         for sFilePath in caseFileCollector(self._folder,
                                            case_filter_func,
                                            cases_only,
                                            filename_filter_func,
-                                          ".json"):
+                                           ".json"):
             try:
                 with open(os.path.join(self._folder, sFilePath), "r") as jf:
                     testData = jsonpickle.loads(jf.read())
@@ -69,8 +69,6 @@ class JSONTestCase(unittest.TestCase):
                 with open(sOutFile, "w") as fOutput:
                     json.dump(p_TestData, fOutput, indent=4)
                 raise
-
-
         if "name" in p_TestData:
             func.__name__ = p_TestData["name"]
         else:
