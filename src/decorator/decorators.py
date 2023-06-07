@@ -107,32 +107,7 @@ class FunctionDumper(DumperBase):
         return wrapped_function
 
 
-class JSONDumper(DumperBase):
-    def __init__(self, *args, **kwargs):
-        def jsonEx(p_sDict):
-            return jsonpickle.dumps(p_sDict, indent=4, make_refs=False)
-        super() .__init__(".json", jsonEx, *args, **kwargs)
-
-
-class YAMLDumper(DumperBase):
-    def __init__(self, *args, **kwargs):
-        import yaml
-        super() .__init__(".yaml", yaml.dump, *args, **kwargs)
-
-
-class JSONFunctionDumper(JSONDumper, FunctionDumper, ):
-    pass
-
-
-class YAMLFunctionDumper(YAMLDumper, FunctionDumper, ):
-    pass
-
-
-class JSONClassDumper(DumperBase):
-    def __init__(self, *args, **kwargs):
-        def jsonEx(p_sDict):
-            return jsonpickle.dumps(p_sDict, indent=4, make_refs=False)
-        super().__init__(".json", jsonEx, *args, **kwargs)
+class ClassDumper(DumperBase):
     # FIXME class variables as properties?
 
     def __call__(self, cls: Type,  *args, **kwargs):
@@ -155,4 +130,33 @@ class JSONClassDumper(DumperBase):
                 fDump(args, kwargs, cls, dResult)
         DecoratedClass.__name__ = cls.__name__
         return DecoratedClass
+
+
+class JSONDumper(DumperBase):
+    def __init__(self, *args, **kwargs):
+        def jsonEx(p_sDict):
+            return jsonpickle.dumps(p_sDict, indent=4, make_refs=False)
+        super() .__init__(".json", jsonEx, *args, **kwargs)
+
+
+class YAMLDumper(DumperBase):
+    def __init__(self, *args, **kwargs):
+        import yaml
+        super() .__init__(".yaml", yaml.dump, *args, **kwargs)
+
+
+class JSONFunctionDumper(JSONDumper, FunctionDumper, ):
+    pass
+
+
+class YAMLFunctionDumper(YAMLDumper, FunctionDumper, ):
+    pass
+
+
+class JSONClassDumper(JSONDumper, ClassDumper):
+    pass
+
+
+class YAMLClassDumper(YAMLDumper, ClassDumper):
+    pass
 

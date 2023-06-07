@@ -1,10 +1,10 @@
-from decorator.decorators import JSONClassDumper
+from decorator.decorators import ClassDumper, YAMLClassDumper
 
 # ------- Settings -----------------------------------
-isJSONClassDumperActive = True
+isClassDumperActive = True
 # ----------------------------------------------------
 
-@JSONClassDumper(active=isJSONClassDumperActive)
+@YAMLClassDumper(active=isClassDumperActive)
 class ClassTestee():
     # FIXME class variables: how to deal with them?
     # classVariable = 0
