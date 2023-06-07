@@ -1,8 +1,8 @@
-from decorator.decorators import JSONDumper
+from decorator.decorators import JSONFunctionDumper
 from helpers import ZeroDivisionErrorCatcher
 
 
-@JSONDumper()
+@JSONFunctionDumper()
 @ZeroDivisionErrorCatcher
 def funcTestee(p_iNum):
     return 1 / p_iNum, p_iNum

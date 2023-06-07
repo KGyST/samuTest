@@ -1,4 +1,4 @@
-from decorator.decorators import JSONDumper
+from decorator.decorators import JSONFunctionDumper, YAMLFunctionDumper
 from typing import Callable
 from helpers import ZeroDivisionErrorCatcher
 
@@ -10,12 +10,12 @@ isFuncTesteeWithMultipleReturnValues = True
 # ----------------------------------------------------
 
 
-@JSONDumper(active=isFuncTesteeActive)
+@YAMLFunctionDumper(active=isFuncTesteeActive)
 @ZeroDivisionErrorCatcher
 def funcTestee(p_iNum):
     return 1 / p_iNum
 
-@JSONDumper(active=isFuncTesteeWithMultipleReturnValues)
+@YAMLFunctionDumper(active=isFuncTesteeWithMultipleReturnValues)
 @ZeroDivisionErrorCatcher
 def funcTesteeWithMultipleReturnValues(p_iNum):
     return p_iNum, 1/p_iNum

@@ -107,11 +107,25 @@ class FunctionDumper(DumperBase):
         return wrapped_function
 
 
-class JSONDumper(FunctionDumper):
+class JSONDumper(DumperBase):
     def __init__(self, *args, **kwargs):
         def jsonEx(p_sDict):
             return jsonpickle.dumps(p_sDict, indent=4, make_refs=False)
         super() .__init__(".json", jsonEx, *args, **kwargs)
+
+
+class YAMLDumper(DumperBase):
+    def __init__(self, *args, **kwargs):
+        import yaml
+        super() .__init__(".yaml", yaml.dump, *args, **kwargs)
+
+
+class JSONFunctionDumper(JSONDumper, FunctionDumper, ):
+    pass
+
+
+class YAMLFunctionDumper(YAMLDumper, FunctionDumper, ):
+    pass
 
 
 class JSONClassDumper(DumperBase):
