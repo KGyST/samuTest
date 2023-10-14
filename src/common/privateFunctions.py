@@ -24,11 +24,11 @@ def caseFileCollector(folder:str,
     resultCaseS = list(filter(_nameFilter, resultCaseS))
     return resultCaseS
 
-def generateFolder(p_sFolderPath:str, p_bForceDelete:bool=False):
-    if os.path.exists(p_sFolderPath):
-        if p_bForceDelete:
+def generateFolder(folder_path:str, force_delete:bool=False):
+    if os.path.exists(folder_path):
+        if force_delete:
             try:
-                shutil.rmtree(p_sFolderPath)
+                shutil.rmtree(folder_path)
             except OSError:
                 #FIXME maybe removing all the files from the folder
                 pass
@@ -36,7 +36,7 @@ def generateFolder(p_sFolderPath:str, p_bForceDelete:bool=False):
             #Common case
             return
     try:
-        os.mkdir(p_sFolderPath)
+        os.mkdir(folder_path)
     except PermissionError:
         #FIXME handling
         pass

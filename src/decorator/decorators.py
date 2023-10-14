@@ -37,9 +37,9 @@ class DumperBase:
         self.sTest = func_or_class.__name__
         self.sFolder = os.path.join(self.sTargetFolder, self.sTest)
         if self.bGenerateFiles:
-            self.__initFiles()
+            self._initFiles()
 
-    def __initFiles(self):
+    def _initFiles(self):
         if not os.path.exists(sWinMergePath := os.path.join(self.sTargetFolder, self.sTest + ".WinMerge")) \
                 and not os.path.exists(self.sFolder) \
                 and not os.path.exists(self.sFolder + ERROR_STR):
@@ -86,9 +86,26 @@ class FunctionDumper(DumperBase):
     # Very much misleading, this __call__ is called only once, at the beginning to create wrapped_function:
     def __call__(self, func, *args, **kwargs):
         super().__call__(func, *args, **kwargs)
+        # FIXME why here?:
         fDump = super().dump
         if not self.isActive:
             return func
+
+        dResult = {}
+
+        if isinstance(func, classmethod):
+            # TODO class variables
+            func = func.__get__(None, func.__class__)
+            # dResult.update({"class":  })
+        elif isinstance(func, staticmethod):
+            pass
+        else:
+            print( dir(func))
+            if getattr(func, '__self__', None) is not None:
+                    dResult.update({"class_attributes":  self.__class__.__dict__})
+            else:
+                # Standalone function
+                pass
 
         def wrapped_function(*argsWrap, **kwargsWrap):
             fResult = None
@@ -98,7 +115,7 @@ class FunctionDumper(DumperBase):
                 # FIXME
                 raise
             else:
-                dResult = {"result": fResult}
+                dResult.update({"result": fResult})
 
                 fDump(argsWrap, kwargsWrap, func, dResult)
 
@@ -110,7 +127,7 @@ class FunctionDumper(DumperBase):
 class ClassDumper(DumperBase):
     # FIXME class variables as properties?
 
-    def __call__(self, cls: Type,  *args, **kwargs):
+    def __call__(self, cls: Type, *args, **kwargs):
         super().__call__(cls, *args, **kwargs)
         generateFolder(os.path.join(self.sTargetFolder, cls.__name__))
         fDump = super().dump

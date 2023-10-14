@@ -1,20 +1,37 @@
-from decorator.decorators import ClassDumper, YAMLClassDumper
+from decorator.decorators import JSONClassDumper, JSONFunctionDumper
 
 # ------- Settings -----------------------------------
 isClassDumperActive = True
 # ----------------------------------------------------
 
-@YAMLClassDumper(active=isClassDumperActive)
-class ClassTestee():
+
+# @JSONClassDumper(active=isClassDumperActive)
+class ClassTestee:
     # FIXME class variables: how to deal with them?
-    # classVariable = 0
+    classVariable = 0
     def __init__(self, p_a: int):
         self.a = p_a
-        # self.classVariable += 1
-        # ClassTestee.classVariable += 1
 
+    # @JSONFunctionDumper(active=isClassDumperActive)
     def __str__(self)->str:
         return f'ClassTestee: {str(self.a)}'
+
+    # @JSONFunctionDumper(active=isClassDumperActive)
+    @classmethod
+    def clsm(cls):
+        ClassTestee.classVariable += 1
+        return "classmethod called"
+
+    # @JSONFunctionDumper(active=isClassDumperActive)
+    @staticmethod
+    def stm():
+        ClassTestee.classVariable += 1
+        return "staticmethod called"
+
+    @JSONFunctionDumper(active=isClassDumperActive)
+    def some_func(self):
+        print(self.a)
+        return self.a
 
 
 if __name__ == "__main__":
@@ -30,5 +47,8 @@ if __name__ == "__main__":
         # _obj.__dict__ = json.load(open(os.path.join('test_folder', f'{str(i)}'), 'r'))
         # print(_obj)
 
-        print(a)
+        print(a.some_func())
+        # print(a)
+        # print(ClassTestee.clsm())
+        # print(ClassTestee.stm())
 
