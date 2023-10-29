@@ -34,6 +34,12 @@ class ClassTestee:
         return self.a
 
 
+@JSONFunctionDumper(active=isClassDumperActive)
+def some_func():
+    print(1)
+    return 1
+
+
 if __name__ == "__main__":
     for i in range(-1, 3):
         a = ClassTestee(i)
@@ -52,3 +58,4 @@ if __name__ == "__main__":
         # print(ClassTestee.clsm())
         # print(ClassTestee.stm())
 
+print(some_func(1))

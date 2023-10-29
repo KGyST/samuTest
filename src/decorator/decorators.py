@@ -101,6 +101,7 @@ class FunctionDumper(DumperBase):
             pass
         else:
             print( dir(func))
+            print(func.__globals__)
             if getattr(func, '__self__', None) is not None:
                     dResult.update({"class_attributes":  self.__class__.__dict__})
             else:
@@ -122,6 +123,13 @@ class FunctionDumper(DumperBase):
                 return fResult
         wrapped_function.__name__ = func.__name__
         return wrapped_function
+
+
+class MemberFuncttionDumper(FunctionDumper):
+    def __call__(self, func, *args, **kwargs):
+        super().__call__(func, *args, **kwargs,)
+        dResult = {}
+        dResult.update({"self": self.__class__.__dict__})
 
 
 class ClassDumper(DumperBase):
