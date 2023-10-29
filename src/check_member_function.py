@@ -1,24 +1,53 @@
 import jsonpickle
+import types
 
 
 # Decorator function to serialize function parameters to a JSON file
 def parameterize_and_serialize(func):
     def wrapper(*args, **kwargs):
-        instance = args[0] if args and hasattr(args[0], '__dict__') else None
+        if args and hasattr(args[0], '__dict__'):
+            instance = args[0]
+        else:
+            instance = None
+        try:
+            class_name, function_name = func.__qualname__.rsplit('.', 1)
+        except ValueError:
+            class_name, function_name = None, func.__qualname__
 
         parameterization = {
-            "name": func.__name__,
             "instance_data": instance,
-            "args": args,
-            "kwargs": kwargs
+            "args": args[1:] if instance else args,
+            "kwargs": kwargs,
+            "class_name": class_name,
+            "function_name": function_name,
         }
         parameter_json = jsonpickle.encode(parameterization)
         with open(f'parameterization_{func.__name__}.json', 'w') as file:
             file.write(parameter_json)
-
         return func(*args, **kwargs)
-
     return wrapper
+
+
+# Player side to run from .json files
+def run_from_json(file_name):
+    with open(file_name, 'r') as file:
+        parameter_json = file.read()
+    parameterization = jsonpickle.decode(parameter_json)
+
+    if parameterization["instance_data"]:
+        instance = parameterization["instance_data"]
+        method = getattr(instance, parameterization["function_name"], None)
+        method(*parameterization["args"], **parameterization["kwargs"])
+    else:
+        class_name = parameterization["class_name"]
+        function_name = parameterization["function_name"]
+        _locals = globals()
+        if class_name in _locals:
+            _class = _locals[class_name]
+            function = getattr(_class, function_name)
+        else:
+            function = _locals[function_name]
+        function(*parameterization["args"], **parameterization["kwargs"])
 
 
 # Class with dummy function, class method, and static method
@@ -27,9 +56,9 @@ class MyClass:
         self.value = value
 
     @parameterize_and_serialize
-    def member_func(self, x, y):
+    def dummy_func(self, x, y):
         result = self.value * (x + y)
-        print(f"member_func Result: {result}")
+        print(f"dummy_func Result: {result}")
 
     @classmethod
     @parameterize_and_serialize
@@ -37,8 +66,8 @@ class MyClass:
         result = x * y
         print(f"class_method Result: {result}")
 
-    @staticmethod
     @parameterize_and_serialize
+    @staticmethod
     def static_method(x, y):
         result = x * y
         print(f"static_method Result: {result}")
@@ -57,8 +86,8 @@ def standalone_function(x, y):
 # Instantiate the class
 my_instance = MyClass(value=10)
 
-# Call the member_func with parameters
-my_instance.member_func(5, 2)
+# Call the dummy_func with parameters
+my_instance.dummy_func(5, 2)
 
 # Call the class_method with parameters
 MyClass.class_method(3, 4)
@@ -66,28 +95,14 @@ MyClass.class_method(3, 4)
 # Call the static_method with parameters
 MyClass.static_method(6, 7)
 
-# Call the standalone function
-standalone_function(8, 9)
-
-
-# Player side to run from .json files
-def run_from_json(file_name):
-    with open(file_name, 'r') as file:
-        parameter_json = file.read()
-    parameterization = jsonpickle.decode(parameter_json)
-
-    if parameterization["instance_data"]:
-        instance = parameterization["instance_data"]
-        method = getattr(instance, parameterization["name"])
-        method(*parameterization["args"][1:], **parameterization["kwargs"])
-    else:
-        # method = getattr(instance, parameterization["name"])
-        standalone_function(*parameterization["args"], **parameterization["kwargs"])
-
-print("****")
+# Serialize parameters for standalone function
+standalone_function(10, 11)
 
 # Run examples from .json files
-run_from_json('parameterization_member_func.json')
+run_from_json('parameterization_dummy_func.json')
 run_from_json('parameterization_class_method.json')
 run_from_json('parameterization_static_method.json')
 run_from_json('parameterization_standalone_function.json')
+
+# print(locals())
+# print(globals())
