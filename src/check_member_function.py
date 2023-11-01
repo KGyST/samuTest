@@ -1,5 +1,4 @@
 import jsonpickle
-import types
 
 
 # Decorator function to serialize function parameters to a JSON file
@@ -9,9 +8,10 @@ def parameterize_and_serialize(func):
             instance = args[0]
         else:
             instance = None
-        try:
+
+        if '.' in func.__qualname__:
             class_name, function_name = func.__qualname__.rsplit('.', 1)
-        except ValueError:
+        else:
             class_name, function_name = None, func.__qualname__
 
         parameterization = {
@@ -21,6 +21,7 @@ def parameterize_and_serialize(func):
             "class_name": class_name,
             "function_name": function_name,
         }
+
         parameter_json = jsonpickle.encode(parameterization)
         with open(f'parameterization_{func.__name__}.json', 'w') as file:
             file.write(parameter_json)
@@ -41,12 +42,11 @@ def run_from_json(file_name):
     else:
         class_name = parameterization["class_name"]
         function_name = parameterization["function_name"]
-        _locals = globals()
-        if class_name in _locals:
-            _class = _locals[class_name]
+        if class_name in (_globals := globals()):
+            _class = _globals[class_name]
             function = getattr(_class, function_name)
         else:
-            function = _locals[function_name]
+            function = _globals[function_name]
         function(*parameterization["args"], **parameterization["kwargs"])
 
 
