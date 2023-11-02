@@ -93,9 +93,6 @@ class FunctionDumper(DumperBase):
 
         dResult = {}
 
-        if args and hasattr(args[0], '__dict__'):
-            dResult.update({"instance_data": args[0]})
-
         if '.' in func.__qualname__:
             class_name, function_name = func.__qualname__.rsplit('.', 1)
         else:
@@ -109,7 +106,23 @@ class FunctionDumper(DumperBase):
         def wrapped_function(*argsWrap, **kwargsWrap):
             fResult = None
             try:
-                fResult = func(*argsWrap, **kwargsWrap)
+                if argsWrap and hasattr(argsWrap[0], '__dict__'):
+                    instance = argsWrap[0]
+                else:
+                    instance = None
+
+                if argsWrap and hasattr(instance, '__dict__'):
+                    dResult.update({"instance_data": instance})
+
+                if isinstance(func, classmethod):
+                    if not instance:
+                        _g = func.__module__
+                        _class = _g[class_name]
+                        fResult = func.__func__(_class, *argsWrap, **kwargsWrap)
+                    else:
+                        fResult = func.__func__(*argsWrap, **kwargsWrap)
+                else:
+                    fResult = func(*argsWrap, **kwargsWrap)
             except (Exception, TypeError, ZeroDivisionError) as e:
                 # FIXME
                 raise

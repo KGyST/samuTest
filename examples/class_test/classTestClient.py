@@ -55,7 +55,7 @@ if __name__ == "__main__":
 
         print(a.some_func())
         # print(a)
-        # print(ClassTestee.clsm())
+        print(ClassTestee.clsm())
         # print(ClassTestee.stm())
 
 print(some_func(1))
