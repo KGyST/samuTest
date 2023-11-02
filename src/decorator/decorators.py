@@ -93,20 +93,18 @@ class FunctionDumper(DumperBase):
 
         dResult = {}
 
-        if isinstance(func, classmethod):
-            # TODO class variables
-            func = func.__get__(None, func.__class__)
-            # dResult.update({"class":  })
-        elif isinstance(func, staticmethod):
-            pass
+        if args and hasattr(args[0], '__dict__'):
+            dResult.update({"instance_data": args[0]})
+
+        if '.' in func.__qualname__:
+            class_name, function_name = func.__qualname__.rsplit('.', 1)
         else:
-            print( dir(func))
-            print(func.__globals__)
-            if getattr(func, '__self__', None) is not None:
-                    dResult.update({"class_attributes":  self.__class__.__dict__})
-            else:
-                # Standalone function
-                pass
+            class_name, function_name = None, func.__qualname__
+
+        dResult.update({
+            "class_name": class_name,
+            "function_name": function_name,
+        })
 
         def wrapped_function(*argsWrap, **kwargsWrap):
             fResult = None

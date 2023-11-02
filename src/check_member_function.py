@@ -25,7 +25,14 @@ def parameterize_and_serialize(func):
         parameter_json = jsonpickle.encode(parameterization)
         with open(f'parameterization_{func.__name__}.json', 'w') as file:
             file.write(parameter_json)
-        return func(*args, **kwargs)
+        if isinstance(func, classmethod):
+            if not instance:
+                _class = globals()[class_name]
+                return func.__func__(_class, *args, **kwargs)
+            else:
+                return func.__func__(*args, **kwargs)
+        else:
+            return func(*args, **kwargs)
     return wrapper
 
 
@@ -52,21 +59,24 @@ def run_from_json(file_name):
 
 # Class with dummy function, class method, and static method
 class MyClass:
+    class_value = 0
+
     def __init__(self, value):
         self.value = value
+        MyClass.class_value = value
 
-    @parameterize_and_serialize
+    # @parameterize_and_serialize
     def dummy_func(self, x, y):
         result = self.value * (x + y)
         print(f"dummy_func Result: {result}")
 
-    @classmethod
     @parameterize_and_serialize
+    @classmethod
     def class_method(cls, x, y):
-        result = x * y
+        result = x * y * cls.class_value
         print(f"class_method Result: {result}")
 
-    @parameterize_and_serialize
+    # @parameterize_and_serialize
     @staticmethod
     def static_method(x, y):
         result = x * y
@@ -77,20 +87,21 @@ class MyClass:
 
 
 # Standalone function
-@parameterize_and_serialize
+# @parameterize_and_serialize
 def standalone_function(x, y):
     result = x * y
     print(f"standalone_function Result: {result}")
 
 
 # Instantiate the class
-my_instance = MyClass(value=10)
+my_instance = MyClass(value=100)
 
 # Call the dummy_func with parameters
 my_instance.dummy_func(5, 2)
 
 # Call the class_method with parameters
-MyClass.class_method(3, 4)
+my_instance.class_method(3, 4)
+# MyClass.class_method(1,1)
 
 # Call the static_method with parameters
 MyClass.static_method(6, 7)

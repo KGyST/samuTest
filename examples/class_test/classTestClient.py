@@ -16,13 +16,13 @@ class ClassTestee:
     def __str__(self)->str:
         return f'ClassTestee: {str(self.a)}'
 
-    # @JSONFunctionDumper(active=isClassDumperActive)
+    @JSONFunctionDumper(active=isClassDumperActive)
     @classmethod
     def clsm(cls):
         ClassTestee.classVariable += 1
         return "classmethod called"
 
-    # @JSONFunctionDumper(active=isClassDumperActive)
+    @JSONFunctionDumper(active=isClassDumperActive)
     @staticmethod
     def stm():
         ClassTestee.classVariable += 1
@@ -35,9 +35,9 @@ class ClassTestee:
 
 
 @JSONFunctionDumper(active=isClassDumperActive)
-def some_func():
-    print(1)
-    return 1
+def some_func(a):
+    print(a)
+    return a
 
 
 if __name__ == "__main__":
