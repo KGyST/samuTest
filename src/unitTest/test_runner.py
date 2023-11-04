@@ -55,24 +55,34 @@ class JSONTestCase(unittest.TestCase):
 
 
     @staticmethod
-    def JSONTestCaseFactory(p_TestData, p_Dir: str, p_FileName: str, p_comparer: Callable=default_comparer_func):
+    def JSONTestCaseFactory(test_data, p_Dir: str, p_FileName: str, p_comparer: Callable=default_comparer_func):
         def func(p_Obj):
             sOutFile = os.path.join(p_Dir + ERROR_STR, p_FileName)
             testResult = None
 
             try:
-                p_comparer(p_Obj, p_TestData, file_name=p_FileName, do_dump=False)
+                import importlib
+                module = importlib.import_module(test_data["module"])
+                if test_data["class_name"]:
+                    _class = getattr(module, test_data["class_name"])
+                    func = getattr(_class, test_data["function"])
+                else:
+                    func = getattr(module, test_data["function"])
+
+                expectedResult = test_data["result"]
+
+                p_comparer(p_Obj, func, test_data["args"], test_data["kwargs"], expectedResult)
             except Exception as e:
                 # FIXME exception to json TypeError: Object of type ZeroDivisionError is not JSON serializable
                 # "exception": JSONSeriazable(e)
-                p_TestData.update({"result": testResult,})
+                test_data.update({"result": testResult,})
 
                 # try:
                 with open_and_create_folders(sOutFile, "w") as fOutput:
-                    json.dump(p_TestData, fOutput, indent=4)
+                    json.dump(test_data, fOutput, indent=4)
                 raise
-        if "name" in p_TestData:
-            func.__name__ = p_TestData["name"]
+        if "name" in test_data:
+            func.__name__ = test_data["name"]
         else:
             func.__name__ = "test_" + p_FileName[:-5]
         return func

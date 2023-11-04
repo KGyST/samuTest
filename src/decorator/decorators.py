@@ -83,7 +83,7 @@ class FunctionDumper(DumperBase):
     Decorator functor to modify the tested functions
     Reason for having a Base class is for potentially being able to inherit into an xml or yaml writer
     """
-    doDump = False
+    doDump = True
 
     # Very much misleading, this __call__ is called only once, at the beginning to create wrapped_function:
     def __call__(self, func, *args, **kwargs):
@@ -92,8 +92,6 @@ class FunctionDumper(DumperBase):
         super().__call__(func, *args, **kwargs)
         # FIXME why here?:
         fDump = super().dump
-        if not self.doDump:
-            return func
 
         dResult = {}
 
@@ -108,39 +106,41 @@ class FunctionDumper(DumperBase):
         })
 
         def wrapped_function(*argsWrap, **kwargsWrap):
-            fResult = None
             try:
                 # FIXME "instance" not needed only _pre and _post + deepcopy issue
                 if argsWrap and hasattr(argsWrap[0], '__dict__'):
-                    instance = deepcopy(argsWrap[0])
+                    instance = argsWrap[0]
+                    argsWrap = argsWrap[1:]
+                    instance_pre = deepcopy(instance)
+                    dResult.update({"instance_data_pre": instance_pre})
                 else:
                     instance = None
-
-                if argsWrap and hasattr(instance, '__dict__'):
-                    dResult.update({"instance_data_pre": instance})
+                    instance_pre = None
 
                 from importlib import import_module
                 _mod = import_module(func.__module__)
 
                 if isinstance(func, classmethod):
-                    if not instance:
-                        _class = getattr(_mod, class_name)
-                        fResult = func.__func__(_class, *argsWrap, **kwargsWrap)
-                    else:
-                        fResult = func.__func__(*argsWrap, **kwargsWrap)
+                    _class = getattr(_mod, class_name)
+                    fResult = func.__func__(_class, *argsWrap[1:], **kwargsWrap)
                 elif isinstance(func, staticmethod):
                     fResult = func(*argsWrap[1:], **kwargsWrap)
                 else:
-                    if not instance:
-                        fResult = func(*argsWrap, **kwargsWrap)
+                    if instance_pre:
+                        # member method
+                        fResult = func(instance, *argsWrap, **kwargsWrap)
+                        argsWrap = (instance_pre, *argsWrap)
                     else:
-                        fResult = func(instance, *argsWrap[1:], **kwargsWrap)
+                        # standalone method
+                        fResult = func(*argsWrap, **kwargsWrap)
+
             except (Exception, TypeError, ZeroDivisionError) as e:
                 # FIXME
                 raise
             else:
-                dResult.update({"result": fResult})
-                dResult.update({"instance_data_post": instance})
+                dResult.update({"result": fResult,
+                                "instance_data_post": instance,
+                                })
 
                 fDump(argsWrap, kwargsWrap, func, dResult)
 

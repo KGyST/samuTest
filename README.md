@@ -1,19 +1,22 @@
 # SamuTest
 ## Development Driven Testing Manifesto
 
-## TODOs:
+## TODOs
 - Object-oriented issues
-  - **Instance _pre, _post and deepcopy issues**
   - **` __main__.someclass` issues**
-  - Class variable handling by metaclass 
+  - Removing ClassDumper, maybe
+  - Class variable handling by metaclass
 - AutoExplore
-- Global variable handling
+- Global variable handling pre/post
 - Config object
 - Parametrization
-  - run_only
+  - `run_only` 
 - Facelift/update outdated stuff
   - WinMerge
 - Variable/parameter naming conventions
 - Exception as a result handling + config
 - Options to be added
   - Whether to run current.json
+- Function mocking
+- Test fixtures and `__init__.json` 
+- Packaging
