@@ -17,27 +17,28 @@ class DumperBase:
     class DumperException(Exception):
         pass
     def __init__(self,
-                 testExt: str,                       #test default name, like '.json'
-                 fExport: Callable,                  #data export function, like jsondumper
-                 target_folder: str="test",          #place everything into this dir
-                 current_test_name: str ="current",  #test default name, like current
-                 active: bool=False,                 #global on/off switch of the test dumper
-                 generate_files: bool=True,          #generate files, typically for the first run
-                 nNameHex: int=12):                  #for default testcase filename generating
+                 testExt: str,                       # test default name, like '.json'
+                 fExport: Callable,                  # data export function, like jsondumper
+                 target_folder: str="test",          # place everything into this dir
+                 current_test_name: str ="current",  # test default name, like current
+                 active: bool=False,                 # global on/off switch of the test dumper
+                 generate_init_files: bool=True,     # generate init files, like WinMerge, typically for the first run
+                 do_dump: bool = True,               # do the dump, not done when played
+                 nNameHex: int=12):                  # for default testcase filename generating
         self.sTargetFolder = target_folder
         self.sDefaultTest = current_test_name
         self.isActive = active
         self.nNameHex = nNameHex
         self.sExt = testExt
         self.fExport = fExport
-        self.bGenerateFiles = generate_files
+        self.bGenerateInitFiles = generate_init_files
 
     def __call__(self, func_or_class, *args, **kwargs):
         if not self.isActive:
             return func_or_class
         self.sTest = func_or_class.__name__
         self.sFolder = os.path.join(self.sTargetFolder, self.sTest)
-        if self.bGenerateFiles:
+        if self.bGenerateInitFiles:
             self._initFiles()
 
     def _initFiles(self):
@@ -107,6 +108,7 @@ class FunctionDumper(DumperBase):
         def wrapped_function(*argsWrap, **kwargsWrap):
             fResult = None
             try:
+                # FIXME "instance" not needed only _pre and _post + deepcopy issue
                 if argsWrap and hasattr(argsWrap[0], '__dict__'):
                     instance = deepcopy(argsWrap[0])
                 else:
@@ -117,9 +119,6 @@ class FunctionDumper(DumperBase):
 
                 from importlib import import_module
                 _mod = import_module(func.__module__)
-                # _ = getattr(_mod, class_name)
-                # locals()[class_name] = getattr(_mod, class_name)
-                # globals()[class_name] = getattr(_mod, class_name)
 
                 if isinstance(func, classmethod):
                     if not instance:

@@ -61,7 +61,7 @@ class JSONTestCase(unittest.TestCase):
             testResult = None
 
             try:
-                p_comparer(p_Obj, p_TestData, file_name=p_FileName)
+                p_comparer(p_Obj, p_TestData, file_name=p_FileName, do_dump=False)
             except Exception as e:
                 # FIXME exception to json TypeError: Object of type ZeroDivisionError is not JSON serializable
                 # "exception": JSONSeriazable(e)

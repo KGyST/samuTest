@@ -1,7 +1,6 @@
 from common.constants import ERROR_STR
 import os
 import jsonpickle
-import importlib
 import sys
 
 
@@ -33,7 +32,8 @@ def filename_filter_func(file_name:str, extension:str) -> bool:
     return not file_name.startswith('_') \
            and os.path.splitext(file_name)[1] == extension
 
-def default_comparer_func(obj:object, test_data:dict, *args, **kwargs):
+def default_comparer_func(obj:object, test_data:dict, do_dump:bool, *args, **kwargs):
+    import importlib
     module = importlib.import_module(test_data["module"])
     if test_data["class_name"]:
         _class = getattr(module, test_data["class_name"])
