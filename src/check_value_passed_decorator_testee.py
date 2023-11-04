@@ -2,6 +2,6 @@
 from check_value_passed_decorator import WrapperFunctor
 
 
-@WrapperFunctor()
+@WrapperFunctor() 
 def testFunction(*args, **kwargs):
     print('testFunction ran')

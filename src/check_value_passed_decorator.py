@@ -2,8 +2,7 @@
 
 
 class WrapperFunctor:
-    def __init__(self, p_doRun:bool=True):
-        self.doRun = p_doRun
+    doRun = True
 
     def __call__(self, func, *args, **kwargs):
         if self.doRun:

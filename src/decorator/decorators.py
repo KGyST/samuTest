@@ -12,7 +12,7 @@ from copy import deepcopy
 class DumperBase:
     # FIXME mocked functions
     # FIXME global vars handling
-    isActive = False
+    doDump = False
 
     class DumperException(Exception):
         pass
@@ -27,14 +27,14 @@ class DumperBase:
                  nNameHex: int=12):                  # for default testcase filename generating
         self.sTargetFolder = target_folder
         self.sDefaultTest = current_test_name
-        self.isActive = active
+        self.doDump = active
         self.nNameHex = nNameHex
         self.sExt = testExt
         self.fExport = fExport
         self.bGenerateInitFiles = generate_init_files
 
     def __call__(self, func_or_class, *args, **kwargs):
-        if not self.isActive:
+        if not self.doDump:
             return func_or_class
         self.sTest = func_or_class.__name__
         self.sFolder = os.path.join(self.sTargetFolder, self.sTest)
@@ -83,14 +83,16 @@ class FunctionDumper(DumperBase):
     Decorator functor to modify the tested functions
     Reason for having a Base class is for potentially being able to inherit into an xml or yaml writer
     """
-    isActive = False
+    doDump = False
 
     # Very much misleading, this __call__ is called only once, at the beginning to create wrapped_function:
     def __call__(self, func, *args, **kwargs):
+        if not FunctionDumper.doDump:
+            return func
         super().__call__(func, *args, **kwargs)
         # FIXME why here?:
         fDump = super().dump
-        if not self.isActive:
+        if not self.doDump:
             return func
 
         dResult = {}
@@ -170,7 +172,7 @@ class ClassDumper(DumperBase):
 
             def __init__(self, *args, **kwargs):
                 super().__init__(*args, **kwargs)
-                if DumperBase.isActive:
+                if DumperBase.doDump:
                     return
                 dResult = {"result": cls(*args, **kwargs)}
 

@@ -19,7 +19,7 @@ class JSONTestSuite(unittest.TestSuite):
         # self._tests is an inherited member!
         self._tests = []
         self._folder = os.path.join(target_folder, )
-        FunctionDumper.active = False
+        FunctionDumper.doDump = False
         generateFolder(self._folder + ERROR_STR)
 
         for sFilePath in caseFileCollector(self._folder,

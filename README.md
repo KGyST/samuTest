@@ -1,8 +1,7 @@
-# unitTestFramework
+# SamuTest
 ## Development Driven Testing Manifesto
 
 ## TODOs:
-- **Not writing back when running tests**
 - Object-oriented issues
   - **Instance _pre, _post and deepcopy issues**
   - **` __main__.someclass` issues**
@@ -10,6 +9,8 @@
 - AutoExplore
 - Global variable handling
 - Config object
+- Parametrization
+  - run_only
 - Facelift/update outdated stuff
   - WinMerge
 - Variable/parameter naming conventions
