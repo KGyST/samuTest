@@ -6,6 +6,7 @@ import sys
 
 
 class DefaultResult:
+    #FIXME __repr__ or __str__
     def __init__(self, p_result):
         if hasattr(p_result, "__dict__"):
             self.__dict__ = p_result.__dict__
@@ -34,7 +35,17 @@ def filename_filter_func(file_name:str, extension:str) -> bool:
 
 def default_comparer_func(obj:object, test_data:dict, *args, **kwargs):
     module = importlib.import_module(test_data["module"])
-    func = getattr(module, test_data["function"])
+    if test_data["class_name"]:
+        _class = getattr(module, test_data["class_name"])
+        _class_name = test_data["class_name"]
+        func = getattr(_class, test_data["function"])
+    else:
+        func = getattr(module, test_data["function"])
+    if "instance_data_pre" in test_data:
+        _args = [test_data["instance_data_pre"], *test_data["args"][1:]]
+    else:
+        _args = test_data["args"]
+    # FIXME add a parameter whether to dump result or not
     testResult = func(*test_data["args"], **test_data["kwargs"])
     expectedResult = test_data["result"]
 

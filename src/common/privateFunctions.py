@@ -40,4 +40,14 @@ def generateFolder(folder_path:str, force_delete:bool=False):
     except PermissionError:
         #FIXME handling
         pass
+def open_and_create_folders(file:str, mode:str):
+    try:
+        return open(file, mode)
+    except FileNotFoundError:
+        folder_path = os.path.dirname(file)
+        os.makedirs(folder_path, exist_ok=True)
+
+        return open(file, mode)
+
+
 

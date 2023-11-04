@@ -2,10 +2,11 @@ import jsonpickle
 import os
 import hashlib
 from common.constants import ERROR_STR, WINMERGE_TEMPLATE
-from common.privateFunctions import generateFolder
+from common.privateFunctions import generateFolder, open_and_create_folders
 from io import StringIO
 from typing import Callable, Type
 import inspect
+from copy import deepcopy
 
 
 class DumperBase:
@@ -67,12 +68,12 @@ class DumperBase:
         sOutput = self.fExport(_dict)
 
         # Like current.json:
-        with open(os.path.join(self.sFolder, fileName), "w") as f:
+        with open_and_create_folders(os.path.join(self.sFolder, fileName), "w") as f:
             f.write(sOutput)
         # sOutput['name'] = 'Current test'
-        with open(os.path.join(self.sTargetFolder, self.sDefaultTest + self.sExt), "w") as f:
+        with open_and_create_folders(os.path.join(self.sTargetFolder, self.sDefaultTest + self.sExt), "w") as f:
             f.write(sOutput)
-        with open(os.path.join(os.getcwd(), self.sTargetFolder, self.sTest, fileName), "w") as f:
+        with open_and_create_folders(os.path.join(os.getcwd(), self.sTargetFolder, self.sTest, fileName), "w") as f:
             f.write(sOutput)
 
 
@@ -107,27 +108,38 @@ class FunctionDumper(DumperBase):
             fResult = None
             try:
                 if argsWrap and hasattr(argsWrap[0], '__dict__'):
-                    instance = argsWrap[0]
+                    instance = deepcopy(argsWrap[0])
                 else:
                     instance = None
 
                 if argsWrap and hasattr(instance, '__dict__'):
-                    dResult.update({"instance_data": instance})
+                    dResult.update({"instance_data_pre": instance})
+
+                from importlib import import_module
+                _mod = import_module(func.__module__)
+                # _ = getattr(_mod, class_name)
+                # locals()[class_name] = getattr(_mod, class_name)
+                # globals()[class_name] = getattr(_mod, class_name)
 
                 if isinstance(func, classmethod):
                     if not instance:
-                        _g = func.__module__
-                        _class = _g[class_name]
+                        _class = getattr(_mod, class_name)
                         fResult = func.__func__(_class, *argsWrap, **kwargsWrap)
                     else:
                         fResult = func.__func__(*argsWrap, **kwargsWrap)
+                elif isinstance(func, staticmethod):
+                    fResult = func(*argsWrap[1:], **kwargsWrap)
                 else:
-                    fResult = func(*argsWrap, **kwargsWrap)
+                    if not instance:
+                        fResult = func(*argsWrap, **kwargsWrap)
+                    else:
+                        fResult = func(instance, *argsWrap[1:], **kwargsWrap)
             except (Exception, TypeError, ZeroDivisionError) as e:
                 # FIXME
                 raise
             else:
                 dResult.update({"result": fResult})
+                dResult.update({"instance_data_post": instance})
 
                 fDump(argsWrap, kwargsWrap, func, dResult)
 

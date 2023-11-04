@@ -1,7 +1,7 @@
 import unittest
 import json
 from common.publicFunctions import *
-from common.privateFunctions import generateFolder, caseFileCollector
+from common.privateFunctions import generateFolder, caseFileCollector, open_and_create_folders
 from common.constants import ERROR_STR
 import jsonpickle
 from typing import Callable
@@ -66,7 +66,9 @@ class JSONTestCase(unittest.TestCase):
                 # FIXME exception to json TypeError: Object of type ZeroDivisionError is not JSON serializable
                 # "exception": JSONSeriazable(e)
                 p_TestData.update({"result": testResult,})
-                with open(sOutFile, "w") as fOutput:
+
+                # try:
+                with open_and_create_folders(sOutFile, "w") as fOutput:
                     json.dump(p_TestData, fOutput, indent=4)
                 raise
         if "name" in p_TestData:
