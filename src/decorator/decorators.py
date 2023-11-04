@@ -7,6 +7,8 @@ from io import StringIO
 from typing import Callable, Type
 import inspect
 from copy import deepcopy
+import sys
+from importlib import import_module
 
 
 class DumperBase:
@@ -90,7 +92,6 @@ class FunctionDumper(DumperBase):
         if not FunctionDumper.doDump:
             return func
         super().__call__(func, *args, **kwargs)
-        # FIXME why here?:
         fDump = super().dump
 
         dResult = {}
@@ -106,19 +107,20 @@ class FunctionDumper(DumperBase):
         })
 
         def wrapped_function(*argsWrap, **kwargsWrap):
-            try:
-                # FIXME "instance" not needed only _pre and _post + deepcopy issue
+            # try:
+                sMod = os.path.splitext(os.path.basename(inspect.getmodule(func).__file__))[0]
+                _mod = import_module(sMod)
+
                 if argsWrap and hasattr(argsWrap[0], '__dict__'):
-                    instance = argsWrap[0]
+                    _class = getattr(sys.modules[sMod], class_name)
+                    instance = _class.__new__(_class)
+                    instance.__dict__ = argsWrap[0].__dict__
                     argsWrap = argsWrap[1:]
                     instance_pre = deepcopy(instance)
                     dResult.update({"instance_data_pre": instance_pre})
                 else:
                     instance = None
                     instance_pre = None
-
-                from importlib import import_module
-                _mod = import_module(func.__module__)
 
                 if isinstance(func, classmethod):
                     _class = getattr(_mod, class_name)
@@ -134,10 +136,10 @@ class FunctionDumper(DumperBase):
                         # standalone method
                         fResult = func(*argsWrap, **kwargsWrap)
 
-            except (Exception, TypeError, ZeroDivisionError) as e:
-                # FIXME
-                raise
-            else:
+            # except (Exception, TypeError, ZeroDivisionError) as e:
+            #     # FIXME
+            #     raise
+            # else:
                 dResult.update({"result": fResult,
                                 "instance_data_post": instance,
                                 })

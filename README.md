@@ -3,7 +3,6 @@
 
 ## TODOs
 - Object-oriented issues
-  - **` __main__.someclass` issues**
   - Removing ClassDumper, maybe
   - Class variable handling by metaclass
 - AutoExplore
