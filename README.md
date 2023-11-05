@@ -4,15 +4,14 @@
 ## TODOs
 - Object-oriented issues
   - Class variable handling by metaclass
-  - Dunder methods: not working currently
   - __new__() parameter anomalities 
 - AutoExplore
 - Global variable handling pre/post
 - Config object
-- Parametrization
+- Parametrization, new parameters
   - `run_only` 
 - Facelift/update outdated stuff
-  - WinMerge
+  - ~~WinMerge~~
 - Variable/parameter naming conventions
 - Exception as a result handling + config
 - Options to be added

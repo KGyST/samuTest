@@ -45,13 +45,13 @@ class DumperBase:
 
     def _initFiles(self):
         if not os.path.exists(sWinMergePath := os.path.join(self.sTargetFolder, self.sTest + ".WinMerge")) \
-                and not os.path.exists(self.sFolder) \
-                and not os.path.exists(self.sFolder + ERROR_STR):
+                and not os.path.exists(self.sTest) \
+                and not os.path.exists(os.path.join("..",  self.sFolder + ERROR_STR)):
             import xml.etree.ElementTree as ET
             tree = ET.parse(StringIO(WINMERGE_TEMPLATE))
             root = tree.getroot()
-            root.find('paths/left').text = self.sFolder
-            root.find('paths/right').text = self.sFolder + ERROR_STR
+            root.find('paths/left').text = self.sTest
+            root.find('paths/right').text = os.path.join("..", self.sTargetFolder + ERROR_STR, self.sTest)
             tree.write(sWinMergePath)
 
             generateFolder(self.sFolder)
