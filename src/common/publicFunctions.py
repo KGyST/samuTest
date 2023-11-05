@@ -31,8 +31,7 @@ def case_filter_func(cases_to_be_tested:str, file_name:str) -> bool:
            and file_name not in lCaseS
 
 def filename_filter_func(file_name:str, extension:str) -> bool:
-    return not file_name.startswith('_') \
-           and os.path.splitext(file_name)[1] == extension
+    return os.path.splitext(file_name)[1] == extension
 
 def default_comparer_func(obj:object, func, func_args:list, func_kwargs:dict, expected_result):
     testResult = func(*func_args, **func_kwargs)

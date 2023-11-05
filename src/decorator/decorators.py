@@ -14,7 +14,7 @@ from importlib import import_module
 class DumperBase:
     # FIXME mocked functions
     # FIXME global vars handling
-    doDump = False
+    doesDump = False
 
     class DumperException(Exception):
         pass
@@ -29,14 +29,14 @@ class DumperBase:
                  nNameHex: int=12):                  # for default testcase filename generating
         self.sTargetFolder = target_folder
         self.sDefaultTest = current_test_name
-        self.doDump = active
+        self.doesDump = active
         self.nNameHex = nNameHex
         self.sExt = testExt
         self.fExport = fExport
         self.bGenerateInitFiles = generate_init_files
 
     def __call__(self, func_or_class, *args, **kwargs):
-        if not self.doDump:
+        if not self.doesDump:
             return func_or_class
         self.sTest = func_or_class.__name__
         self.sFolder = os.path.join(self.sTargetFolder, self.sTest)
@@ -85,11 +85,11 @@ class FunctionDumper(DumperBase):
     Decorator functor to modify the tested functions
     Reason for having a Base class is for potentially being able to inherit into an xml or yaml writer
     """
-    doDump = True
+    doesDump = True
 
     # Very much misleading, this __call__ is called only once, at the beginning to create wrapped_function:
     def __call__(self, func, *args, **kwargs):
-        if not FunctionDumper.doDump:
+        if not FunctionDumper.doesDump:
             return func
         super().__call__(func, *args, **kwargs)
         fDump = super().dump
@@ -151,38 +151,6 @@ class FunctionDumper(DumperBase):
         return wrapped_function
 
 
-class MemberFuncttionDumper(FunctionDumper):
-    def __call__(self, func, *args, **kwargs):
-        super().__call__(func, *args, **kwargs,)
-        dResult = {}
-        dResult.update({"self": self.__class__.__dict__})
-
-
-class ClassDumper(DumperBase):
-    # FIXME class variables as properties?
-
-    def __call__(self, cls: Type, *args, **kwargs):
-        super().__call__(cls, *args, **kwargs)
-        generateFolder(os.path.join(self.sTargetFolder, cls.__name__))
-        fDump = super().dump
-
-        class DecoratedClass(cls):
-            sTargetFolder = self.sTargetFolder
-            nNameHex = self.nNameHex
-            sExt = self.sExt
-            sTest = cls.__name__
-
-            def __init__(self, *args, **kwargs):
-                super().__init__(*args, **kwargs)
-                if DumperBase.doDump:
-                    return
-                dResult = {"result": cls(*args, **kwargs)}
-
-                fDump(args, kwargs, cls, dResult)
-        DecoratedClass.__name__ = cls.__name__
-        return DecoratedClass
-
-
 class JSONDumper(DumperBase):
     def __init__(self, *args, **kwargs):
         def jsonEx(p_sDict):
@@ -201,13 +169,5 @@ class JSONFunctionDumper(JSONDumper, FunctionDumper, ):
 
 
 class YAMLFunctionDumper(YAMLDumper, FunctionDumper, ):
-    pass
-
-
-class JSONClassDumper(JSONDumper, ClassDumper):
-    pass
-
-
-class YAMLClassDumper(YAMLDumper, ClassDumper):
     pass
 

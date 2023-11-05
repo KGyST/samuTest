@@ -19,7 +19,7 @@ class JSONTestSuite(unittest.TestSuite):
         # self._tests is an inherited member!
         self._tests = []
         self._folder = os.path.join(target_folder, )
-        FunctionDumper.doDump = False
+        FunctionDumper.doesDump = False
         generateFolder(self._folder + ERROR_STR)
 
         for sFilePath in caseFileCollector(self._folder,
@@ -63,7 +63,7 @@ class JSONTestCase(unittest.TestCase):
             try:
                 import importlib
                 module = importlib.import_module(test_data["module"])
-                if test_data["class_name"]:
+                if "class_name" in test_data and test_data["class_name"]:
                     _class = getattr(module, test_data["class_name"])
                     func = getattr(_class, test_data["function"])
                 else:

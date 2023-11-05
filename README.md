@@ -3,8 +3,9 @@
 
 ## TODOs
 - Object-oriented issues
-  - Removing ClassDumper, maybe
   - Class variable handling by metaclass
+  - Dunder methods: not working currently
+  - __new__() parameter anomalities 
 - AutoExplore
 - Global variable handling pre/post
 - Config object

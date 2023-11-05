@@ -1,17 +1,17 @@
-from decorator.decorators import JSONClassDumper, JSONFunctionDumper
+from decorator.decorators import JSONFunctionDumper
 
 # ------- Settings -----------------------------------
 isFunctionDumperActive = True
 # ----------------------------------------------------
 
 
-# @JSONClassDumper(active=isFunctionDumperActive)
 class ClassTestee:
     classVariable = 0
+    @JSONFunctionDumper(active=isFunctionDumperActive)
     def __init__(self, p_var):
         self.instance_variable = p_var
 
-    # @JSONFunctionDumper(active=isFunctionDumperActive)
+    @JSONFunctionDumper(active=isFunctionDumperActive)
     def __str__(self)->str:
         return f'ClassTestee: {str(self.instance_variable)}'
 
@@ -46,6 +46,8 @@ def some_function(p_var="Nothing"):
 
 if __name__ == "__main__":
     classTestee_object = ClassTestee(1)
+
+    print(classTestee_object)
 
     print(classTestee_object.class_method(1))
     print(classTestee_object.static_method(1))
