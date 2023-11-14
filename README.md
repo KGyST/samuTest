@@ -9,7 +9,7 @@
 - Global variable handling pre/post
 - Config object
 - Parametrization, new parameters
-  - `run_only` 
+  - `run_only`
 - Facelift/update outdated stuff
   - ~~WinMerge~~
 - Variable/parameter naming conventions
@@ -19,3 +19,4 @@
 - Function mocking
 - Test fixtures and `__init__.json` 
 - Packaging
+- Folder structure *items/errors*

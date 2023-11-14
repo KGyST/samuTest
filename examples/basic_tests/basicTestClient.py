@@ -10,24 +10,27 @@ isFuncTesteeWithMultipleReturnValues = True
 # ----------------------------------------------------
 
 
-@YAMLFunctionDumper(active=isFuncTesteeActive)
+@JSONFunctionDumper(active=isFuncTesteeActive)
 @ZeroDivisionErrorCatcher
-def funcTestee(p_iNum):
-    return 1 / p_iNum
+def funcTestee(number):
+    return 1 / number
 
-@YAMLFunctionDumper(active=isFuncTesteeWithMultipleReturnValues)
+@JSONFunctionDumper(active=isFuncTesteeWithMultipleReturnValues)
 @ZeroDivisionErrorCatcher
-def funcTesteeWithMultipleReturnValues(p_iNum):
-    return p_iNum, 1/p_iNum
+def funcTesteeWithMultipleReturnValues(number):
+    return number, 1 / number
 
-def simplestFunction(p_iNum):
-    return 1+p_iNum
+@JSONFunctionDumper
+def simplestFunction(number):
+    return 1+number
 
-def calledFunction(p_iNum):
-    return p_iNum + 1
+@JSONFunctionDumper
+def calledFunction(number):
+    return number + 1
 
-def callerFunction(p_iNum):
-    return calledFunction(p_iNum)
+@JSONFunctionDumper
+def callerFunction(number):
+    return calledFunction(number)
 
 if __name__ == "__main__":
     for i in range(-1, 3):

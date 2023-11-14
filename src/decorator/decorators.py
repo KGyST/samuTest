@@ -35,10 +35,10 @@ class DumperBase:
         self.fExport = fExport
         self.bGenerateInitFiles = generate_init_files
 
-    def __call__(self, func_or_class, *args, **kwargs):
+    def __call__(self, func, *args, **kwargs):
         if not self.doesDump:
-            return func_or_class
-        self.sTest = func_or_class.__name__
+            return func
+        self.sTest = func.__name__
         self.sFolder = os.path.join(self.sTargetFolder, self.sTest)
         if self.bGenerateInitFiles:
             self._initFiles()

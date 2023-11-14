@@ -1,12 +1,10 @@
 #check_member_function.py
 
 import jsonpickle
-from check_wrapper_function import ParameterizeSwitch
+from check_wrapper_function import parameterize_and_serialize
 
 # Player side to run from .json files
 def run_from_json(file_name):
-    apply_wrapper = False
-
     with open(file_name, 'r') as file:
         parameter_json = file.read()
     parameterization = jsonpickle.decode(parameter_json)
@@ -34,18 +32,18 @@ class MyClass:
         self.value = value
         MyClass.class_value = value
 
-    # @ParameterizeSwitch(apply_wrapper)
+    @parameterize_and_serialize
     def dummy_func(self, x, y):
         result = self.value * (x + y)
         print(f"dummy_func Result: {result}")
 
-    @ParameterizeSwitch(apply_wrapper)
+    @parameterize_and_serialize
     @classmethod
     def class_method(cls, x, y):
         result = x * y * cls.class_value
         print(f"class_method Result: {result}")
 
-    # @ParameterizeSwitch(apply_wrapper)
+    @parameterize_and_serialize
     @staticmethod
     def static_method(x, y):
         result = x * y
@@ -56,7 +54,7 @@ class MyClass:
 
 
 # Standalone function
-# @ParameterizeSwitch(apply_wrapper)
+@parameterize_and_serialize
 def standalone_function(x, y):
     result = x * y
     print(f"standalone_function Result: {result}")
@@ -66,23 +64,23 @@ def standalone_function(x, y):
 my_instance = MyClass(value=100)
 
 # Call the dummy_func with parameters
-# my_instance.dummy_func(5, 2)
+my_instance.dummy_func(5, 2)
 
 # Call the class_method with parameters
-# my_instance.class_method(3, 4)
+my_instance.class_method(3, 4)
 MyClass.class_method(1,1)
 
 # Call the static_method with parameters
-# MyClass.static_method(6, 7)
+MyClass.static_method(6, 7)
 
 # Serialize parameters for standalone function
-# standalone_function(10, 11)
+standalone_function(10, 11)
 
 # Run examples from .json files
-# run_from_json('parameterization_dummy_func.json', apply_wrapper=False)
+run_from_json('parameterization_dummy_func.json')
 run_from_json('parameterization_class_method.json')
-# run_from_json('parameterization_static_method.json', apply_wrapper=False)
-# run_from_json('parameterization_standalone_function.json', apply_wrapper=False)
+run_from_json('parameterization_static_method.json')
+run_from_json('parameterization_standalone_function.json')
 
 # print(locals())
 # print(globals())

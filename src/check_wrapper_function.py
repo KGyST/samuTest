@@ -4,16 +4,6 @@ import importlib
 import jsonpickle
 from importlib import import_module
 
-class ParameterizeSwitch:
-    def __init__(self, enabled=True):
-        self.enabled = enabled
-
-    def __call__(self, func):
-        if self.enabled:
-            return parameterize_and_serialize(func)
-        return func
-
-
 # Decorator function to serialize function parameters to a JSON file
 def parameterize_and_serialize(func):
     def wrapper(*args, **kwargs):
