@@ -2,7 +2,7 @@ import jsonpickle
 import os
 import hashlib
 from common.constants import ERROR_STR, WINMERGE_TEMPLATE
-from common.privateFunctions import generateFolder, open_and_create_folders
+from common.privateFunctions import generateFolder, open_and_create_folders, get_original_function_name
 from io import StringIO
 from typing import Callable, Type
 import inspect
@@ -96,15 +96,19 @@ class FunctionDumper(DumperBase):
 
         dResult = {}
 
-        if '.' in func.__qualname__:
-            class_name, function_name = func.__qualname__.rsplit('.', 1)
-        else:
-            class_name, function_name = None, func.__qualname__
+        # if '.' in func.__qualname__:
+        #     class_name, function_name = func.__qualname__.rsplit('.', 1)
+        # else:
+        #     class_name, function_name = None, func.__qualname__
+
+        sModule, sClass, sFunction = get_original_function_name(func)
 
         dResult.update({
-            "class_name": class_name,
-            "function_name": function_name,
+            "module": sModule,
+            "class_name": sClass,
+            "function_name": sFunction,
         })
+
 
         def wrapped_function(*argsWrap, **kwargsWrap):
             # try:
@@ -112,7 +116,7 @@ class FunctionDumper(DumperBase):
                 _mod = import_module(sMod)
 
                 if argsWrap and hasattr(argsWrap[0], '__dict__'):
-                    _class = getattr(sys.modules[sMod], class_name)
+                    _class = getattr(sys.modules[sMod], sClass)
                     instance = _class.__new__(_class)
                     instance.__dict__ = argsWrap[0].__dict__
                     argsWrap = argsWrap[1:]
@@ -123,7 +127,7 @@ class FunctionDumper(DumperBase):
                     instance_pre = None
 
                 if isinstance(func, classmethod):
-                    _class = getattr(_mod, class_name)
+                    _class = getattr(_mod, sClass)
                     fResult = func.__func__(_class, *argsWrap[1:], **kwargsWrap)
                 elif isinstance(func, staticmethod):
                     fResult = func(*argsWrap[1:], **kwargsWrap)
