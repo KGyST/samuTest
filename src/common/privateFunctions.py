@@ -77,7 +77,17 @@ def get_original_function_name(func: 'Callable'):
 
     # When the script is run directly, use __file__ to get the module name
     if module_name == '__main__':
-        module_name = os.path.splitext(os.path.basename(__file__))[0]
-
+        module_name = _get_calling_module_name()
     return module_name, class_name, func_name
+
+
+def _get_calling_module_name():
+    import inspect
+    frame = inspect.currentframe().f_back
+    while frame:
+        if frame.f_globals['__name__'] == '__main__':
+            _f = frame.f_globals['__file__']
+            return os.path.splitext(os.path.basename(_f))[0]
+        frame = frame.f_back
+    return frame.f_globals['__name__']
 

@@ -96,19 +96,13 @@ class FunctionDumper(DumperBase):
 
         dResult = {}
 
-        # if '.' in func.__qualname__:
-        #     class_name, function_name = func.__qualname__.rsplit('.', 1)
-        # else:
-        #     class_name, function_name = None, func.__qualname__
-
         sModule, sClass, sFunction = get_original_function_name(func)
 
         dResult.update({
             "module": sModule,
             "class_name": sClass,
-            "function_name": sFunction,
+            "function": sFunction,
         })
-
 
         def wrapped_function(*argsWrap, **kwargsWrap):
             # try:
