@@ -1,7 +1,9 @@
+import functools
+
 import jsonpickle
 import os
 import hashlib
-from common.constants import ERROR_STR, WINMERGE_TEMPLATE
+from common.constants import *
 from common.privateFunctions import generateFolder, open_and_create_folders, get_original_function_name
 from io import StringIO
 from typing import Callable, Type
@@ -20,8 +22,8 @@ class DumperBase:
         pass
     def __init__(self,
                  testExt: str,                       # test default name, like '.json'
-                 fExport: Callable,                  # data export function, like jsondumper
-                 target_folder: str="test",          # place everything into this dir
+                 export_function: Callable,          # data export function, like jsondumper
+                 target_folder: str=TEST_ITEMS,      # place everything into this dir
                  current_test_name: str ="current",  # test default name, like current
                  active: bool=False,                 # global on/off switch of the test dumper
                  generate_init_files: bool=True,     # generate init files, like WinMerge, typically for the first run
@@ -32,13 +34,14 @@ class DumperBase:
         self.doesDump = active
         self.nNameHex = nNameHex
         self.sExt = testExt
-        self.fExport = fExport
+        self.fExport = export_function
         self.bGenerateInitFiles = generate_init_files
 
     def __call__(self, func, *args, **kwargs):
         if not self.doesDump:
             return func
-        self.sTest = func.__name__
+        # self.sTest = func.__name__
+        _, _, self.sTest = get_original_function_name(func)
         self.sFolder = os.path.join(self.sTargetFolder, self.sTest)
         if self.bGenerateInitFiles:
             self._initFiles()
@@ -47,6 +50,8 @@ class DumperBase:
         if not os.path.exists(sWinMergePath := os.path.join(self.sTargetFolder, self.sTest + ".WinMerge")) \
                 and not os.path.exists(self.sTest) \
                 and not os.path.exists(os.path.join("..",  self.sFolder + ERROR_STR)):
+            generateFolder(self.sFolder)
+
             import xml.etree.ElementTree as ET
             tree = ET.parse(StringIO(WINMERGE_TEMPLATE))
             root = tree.getroot()
@@ -54,29 +59,22 @@ class DumperBase:
             root.find('paths/right').text = os.path.join("..", self.sTargetFolder + ERROR_STR, self.sTest)
             tree.write(sWinMergePath)
 
-            generateFolder(self.sFolder)
 
-    def dump(self, argsWrap, kwargsWrap, func_or_class, dResult: dict):
-        _dict = {"args": argsWrap,
-                "kwargs": kwargsWrap,
-                "function": func_or_class.__name__,
-                "module": os.path.splitext(os.path.basename(inspect.getmodule(func_or_class).__file__))[0],
-                }
-        sHash = hashlib.md5(self.fExport(_dict).encode("ansi")).hexdigest()[:self.nNameHex]
+    def dump(self, pre:dict, post: dict):
+        sHash = hashlib.md5(self.fExport(pre).encode("ansi")).hexdigest()[:self.nNameHex]
 
-        fileName = "".join((self.sTest, "_", sHash, self.sExt))
+        fileName = "".join((sHash, self.sExt))
 
-        _dict.update(dResult)
+        pre.update(post)
+        sOutput = self.fExport(pre)
 
-        sOutput = self.fExport(_dict)
-
+        if not os.path.exists(sFile:=(os.path.join(self.sFolder, fileName))):
+            with open_and_create_folders(sFile, "w") as f:
+                f.write(sOutput)
         # Like current.json:
-        with open_and_create_folders(os.path.join(self.sFolder, fileName), "w") as f:
-            f.write(sOutput)
-        # sOutput['name'] = 'Current test'
+        pre[NAME] = 'Current test'
+        sOutput = self.fExport(pre)
         with open_and_create_folders(os.path.join(self.sTargetFolder, self.sDefaultTest + self.sExt), "w") as f:
-            f.write(sOutput)
-        with open_and_create_folders(os.path.join(os.getcwd(), self.sTargetFolder, self.sTest, fileName), "w") as f:
             f.write(sOutput)
 
 
@@ -94,28 +92,27 @@ class FunctionDumper(DumperBase):
         super().__call__(func, *args, **kwargs)
         fDump = super().dump
 
-        dResult = {}
-
         sModule, sClass, sFunction = get_original_function_name(func)
 
-        dResult.update({
-            "module": sModule,
-            "class_name": sClass,
-            "function": sFunction,
-        })
-
+        functools.wraps(func)
         def wrapped_function(*argsWrap, **kwargsWrap):
             # try:
-                sMod = os.path.splitext(os.path.basename(inspect.getmodule(func).__file__))[0]
-                _mod = import_module(sMod)
+            #     sMod = os.path.splitext(os.path.basename(inspect.getmodule(func).__file__))[0]
+                dPre = ({
+                    MODULE_NAME: sModule,
+                    CLASS_NAME: sClass,
+                    FUNC_NAME: sFunction,
+                })
+
+                _mod = import_module(sModule)
 
                 if argsWrap and hasattr(argsWrap[0], '__dict__'):
-                    _class = getattr(sys.modules[sMod], sClass)
+                    _class = getattr(sys.modules[sModule], sClass)
                     instance = _class.__new__(_class)
                     instance.__dict__ = argsWrap[0].__dict__
                     argsWrap = argsWrap[1:]
                     instance_pre = deepcopy(instance)
-                    dResult.update({"instance_data_pre": instance_pre})
+                    dPre.update({INST_PRE: instance_pre})
                 else:
                     instance = None
                     instance_pre = None
@@ -131,21 +128,22 @@ class FunctionDumper(DumperBase):
                         fResult = func(instance, *argsWrap, **kwargsWrap)
                         argsWrap = (instance_pre, *argsWrap)
                     else:
-                        # standalone method
+                        # standalone function
                         fResult = func(*argsWrap, **kwargsWrap)
 
             # except (Exception, TypeError, ZeroDivisionError) as e:
-            #     # FIXME
+            #     # FIXME Exception handling
             #     raise
             # else:
-                dResult.update({"result": fResult,
-                                "instance_data_post": instance,
+                dPre.update({ARGS: argsWrap,
+                             KWARGS: kwargsWrap,
                                 })
-
-                fDump(argsWrap, kwargsWrap, func, dResult)
+                dPost = {RESULT: fResult,
+                         INST_POST: instance,}
+                fDump(dPre, dPost)
 
                 return fResult
-        wrapped_function.__name__ = func.__name__
+        # wrapped_function.__name__ = func.__name__
         return wrapped_function
 
 

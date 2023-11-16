@@ -37,7 +37,7 @@ def generateFolder(folder_path:str, force_delete:bool=False):
             #Common case
             return
     try:
-        os.mkdir(folder_path)
+        os.makedirs(folder_path)
     except PermissionError:
         #FIXME handling
         pass
@@ -56,8 +56,6 @@ def open_and_create_folders(file:str, mode:str):
 def _get_original_function(func: 'Callable') -> 'Callable':
     if hasattr(func, '__closure__') and func.__closure__:
         return _get_original_function(func.__closure__[0].cell_contents)
-    # elif hasattr(func, '__closure__'):
-    #     return func.__closure__[0].cell_contents
     else:
         return func
 
