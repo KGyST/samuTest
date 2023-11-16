@@ -24,6 +24,7 @@ def caseFileCollector(folder:str,
     resultCaseS = list(filter(_nameFilter, resultCaseS))
     return resultCaseS
 
+
 def generateFolder(folder_path:str, force_delete:bool=False):
     if os.path.exists(folder_path):
         if force_delete:
@@ -40,6 +41,8 @@ def generateFolder(folder_path:str, force_delete:bool=False):
     except PermissionError:
         #FIXME handling
         pass
+
+
 def open_and_create_folders(file:str, mode:str):
     try:
         return open(file, mode)
@@ -50,4 +53,31 @@ def open_and_create_folders(file:str, mode:str):
         return open(file, mode)
 
 
+def _get_original_function(func: 'Callable') -> 'Callable':
+    if hasattr(func, '__closure__') and func.__closure__:
+        return _get_original_function(func.__closure__[0].cell_contents)
+    elif hasattr(func, '__cloaure__'):
+        return func.__closure__[0].cell_contents
+    else:
+        return func
+
+
+def get_original_function_name(func: 'Callable'):
+    """
+    Get the real function name considering module names, class names, decorators, etc.
+    """
+    module_name, class_name, func_name = None, None, func.__name__
+
+    # Extract the original function from the closure attribute of the wrapper
+    original_func = _get_original_function(func)
+    if original_func:
+        module_name = original_func.__module__
+        class_name = original_func.__qualname__.split('.')[0] if '.' in original_func.__qualname__ else None
+        func_name = original_func.__name__
+
+    # When the script is run directly, use __file__ to get the module name
+    if module_name == '__main__':
+        module_name = os.path.splitext(os.path.basename(__file__))[0]
+
+    return module_name, class_name, func_name
 
