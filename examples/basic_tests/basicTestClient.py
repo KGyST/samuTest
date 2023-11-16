@@ -1,4 +1,4 @@
-from decorator.decorators import JSONFunctionDumper, YAMLFunctionDumper
+from decorator.decorators import JSONFunctionDumper
 from typing import Callable
 from helpers import ZeroDivisionErrorCatcher
 
@@ -20,15 +20,15 @@ def funcTestee(number):
 def funcTesteeWithMultipleReturnValues(number):
     return number, 1 / number
 
-@JSONFunctionDumper
+@JSONFunctionDumper(active=True)
 def simplestFunction(number):
     return 1+number
 
-@JSONFunctionDumper
+# @JSONFunctionDumper()
 def calledFunction(number):
     return number + 1
 
-@JSONFunctionDumper
+@JSONFunctionDumper(active=True)
 def callerFunction(number):
     return calledFunction(number)
 
@@ -38,3 +38,8 @@ if __name__ == "__main__":
         print(j)
         j = funcTesteeWithMultipleReturnValues(i)
         print(j)
+        j = simplestFunction(i)
+        print(j)
+        j = callerFunction(i)
+        print(j)
+
