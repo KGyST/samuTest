@@ -5,7 +5,6 @@
 - Object-oriented issues
   - Class variable handling by metaclass
   - `__new__()` parameter anomalies 
-- AutoExplore
 - Global variable handling pre/post
 - Config object
   - .json, .yaml, .xml
@@ -23,3 +22,4 @@
 - Folder structure *items/errors*
   - Case names
 - Simple test runner, PyCharm integration
+- MD5 checking: if another file with the same MD5 is there, but with another filename, don't write it.
