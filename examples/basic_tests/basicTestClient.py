@@ -5,7 +5,7 @@ from helpers import ZeroDivisionErrorCatcher
 # glob_variable = 1
 
 # ------- Settings -----------------------------------
-isFuncTesteeActive = True
+isFuncTesteeActive = False
 isFuncTesteeWithMultipleReturnValues = True
 # ----------------------------------------------------
 
@@ -20,7 +20,7 @@ def funcTestee(number):
 def funcTesteeWithMultipleReturnValues(number):
     return number, 1 / number
 
-@JSONFunctionDumper
+@JSONFunctionDumper(active=True)
 def simplestFunction(number):
     return 1+number
 
@@ -28,7 +28,7 @@ def simplestFunction(number):
 def calledFunction(number):
     return number + 1
 
-@JSONFunctionDumper
+@JSONFunctionDumper(active=False)
 def callerFunction(number):
     return calledFunction(number)
 
@@ -38,3 +38,8 @@ if __name__ == "__main__":
         print(j)
         j = funcTesteeWithMultipleReturnValues(i)
         print(j)
+        j = simplestFunction(i)
+        print(j)
+        j = callerFunction(i)
+        print(j)
+

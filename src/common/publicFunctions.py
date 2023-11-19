@@ -25,15 +25,29 @@ class DefaultResult:
 
 
 def case_filter_func(cases_to_be_tested:str, file_name:str) -> bool:
+    """
+    Allows to run against only a list of cases, including or excluding extension, like .json
+    :param cases_to_be_tested: a string of filenames and ;
+    :param file_name:
+    :return: True if the case is to be tested, False if to be filtered out
+    """
     lCaseS = cases_to_be_tested.split(";")
-    return lCaseS \
-           and file_name[:-5] not in lCaseS \
-           and file_name not in lCaseS
+    return len(lCaseS) == 0  \
+           or os.path.splitext(file_name)[0] in lCaseS \
+           or file_name in lCaseS
 
-def filename_filter_func(file_name:str, extension:str) -> bool:
-    return os.path.splitext(file_name)[1] == extension
+def filename_filter_func(file_name:str, extension:str, fileter_char:str=".") -> bool:
+    """
+    Filter by filename and extension
+    :param file_name: file name
+    :param extension: expected extension
+    :param fileter_char: if filename starts with this character, it is fitered out
+    :return:
+    """
+    return os.path.splitext(file_name)[1] == extension \
+    and file_name[0] != fileter_char
 
-def default_comparer_func(obj:object, func, func_args:list, func_kwargs:dict, expected_result):
+def default_comparer_func(obj:'DefaultResult', func, func_args:list, func_kwargs:dict, expected_result):
     testResult = func(*func_args, **func_kwargs)
 
     #FIXME to modify into something like this:

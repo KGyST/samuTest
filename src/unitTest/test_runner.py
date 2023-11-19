@@ -8,6 +8,7 @@ from typing import Callable
 from decorator.decorators import FunctionDumper
 
 
+#FIXME currently this is .json only, enable for yaml xml
 class JSONTestSuite(unittest.TestSuite):
     def __init__(self,
                  target_folder: str=TEST_ITEMS,
@@ -16,6 +17,13 @@ class JSONTestSuite(unittest.TestSuite):
                  case_filter_func: Callable=case_filter_func,
                  comparer_func: Callable=default_comparer_func,
                  ):
+        """
+        :param target_folder:
+        :param cases_only: filenames with or without extension divided by;
+        :param filename_filter_func:
+        :param case_filter_func:
+        :param comparer_func:
+        """
         # self._tests is an inherited member!
         self._tests = []
         self._folder = os.path.join(target_folder, )
@@ -23,8 +31,8 @@ class JSONTestSuite(unittest.TestSuite):
         generateFolder(TEST_ERRORS)
 
         for sFilePath in caseFileCollector(self._folder,
-                                           case_filter_func,
                                            cases_only,
+                                           case_filter_func,
                                            filename_filter_func,
                                            ".json"):
             try:
@@ -38,26 +46,26 @@ class JSONTestSuite(unittest.TestSuite):
                 continue
         super().__init__(self._tests)
 
-    def __contains__(self, p_Name: str):
+    def __contains__(self, test_name: str) -> bool:
         for test in self._tests:
-            if test._testMethodName == p_Name:
+            if test._testMethodName == test_name:
                 return True
         return False
 
 
 class JSONTestCase(unittest.TestCase):
-    def __init__(self, p_TestData, p_Dir: str, p_FileName: str, p_comparer: Callable):
+    def __init__(self, p_TestData, p_Dir: str, file_name: str, p_comparer: Callable):
         self.sDir = p_Dir
-        self.sFile = p_FileName
-        func = self.JSONTestCaseFactory(p_TestData, p_Dir, p_FileName, p_comparer)
+        self.sFile = file_name
+        func = self.JSONTestCaseFactory(p_TestData, p_Dir, file_name, p_comparer)
         setattr(JSONTestCase, func.__name__, func)
         super().__init__(func.__name__)
 
 
     @staticmethod
-    def JSONTestCaseFactory(test_data, p_Dir: str, p_FileName: str, p_comparer: Callable=default_comparer_func):
+    def JSONTestCaseFactory(test_data, p_Dir: str, file_name: str, p_comparer: Callable=default_comparer_func):
         def func(p_Obj):
-            sOutFile = os.path.join(TEST_ERRORS, p_FileName)
+            sOutFile = os.path.join(TEST_ERRORS, file_name)
             testResult = None
 
             try:
@@ -84,6 +92,6 @@ class JSONTestCase(unittest.TestCase):
         if NAME in test_data:
             func.__name__ = test_data[NAME]
         else:
-            func.__name__ = "test_" + p_FileName[:-5]
+            func.__name__ = "test_" + file_name[:-5]
         return func
 
