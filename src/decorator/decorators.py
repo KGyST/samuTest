@@ -5,6 +5,7 @@ import os
 import hashlib
 from common.constants import *
 from common.privateFunctions import generateFolder, open_and_create_folders, get_original_function_name, md5Collector
+from common.publicFunctions import get_file_path
 from io import StringIO
 from typing import Callable, Type
 import inspect
@@ -16,25 +17,24 @@ from importlib import import_module
 class DumperBase:
     # FIXME mocked functions
     # FIXME global vars handling
-    doesDump = False
+    bDump = False
 
     class DumperException(Exception):
         pass
 
     def __init__(self,
-                 testExt: str,                       # test default name, like '.json'
-                 export_function: Callable,          # data export function, like jsondumper
-                 target_folder: str=TEST_ITEMS,      # place everything into this dir
+                 extension: str,  # test default name, like '.json'
+                 export_function: Callable,  # data export function, like jsondumper
+                 target_folder: str=TEST_ITEMS,  # place everything into this dir
                  current_test_name: str ="current",  # test default name, like current
-                 active: bool=False,                 # global on/off switch of the test dumper
-                 generate_init_files: bool=True,     # generate init files, like WinMerge, typically for the first run
-                 # do_dump: bool = True,               # do the dump, not done when played
+                 active: bool=False,  # global on/off switch of the test dumper
+                 generate_init_files: bool=True,  # generate init files, like WinMerge, typically for the first run
                  nNameHex: int=12):                  # for default testcase filename generating
-        self.__class__.doesDump = active
+        self.__class__.bDump = active
         self.sMainTestFolder = target_folder
         self.sDefaultTest = current_test_name
         self.nNameHex = nNameHex
-        self.sExt = testExt
+        self.sExt = extension
         self.fExport = export_function
         self.bGenerateInitFiles = generate_init_files
         self.sModule = ""
@@ -46,7 +46,7 @@ class DumperBase:
         self.md5S = set()
 
     def __call__(self, func, *args, **kwargs):
-        if not self.__class__.doesDump:
+        if not self.__class__.bDump:
             return func
         self.sModule, self.sClass, self.sFunction = get_original_function_name(func)
         self.sTest = ".".join([self.sClass, self.sFunction]) if self.sClass else self.sFunction
@@ -67,7 +67,7 @@ class DumperBase:
             tree = ET.parse(StringIO(WINMERGE_TEMPLATE))
             root = tree.getroot()
             root.find('paths/left').text = self.sTest
-            root.find('paths/right').text = os.path.join("..", self.sMainTestFolder + ERROR_STR, self.sTest)
+            root.find('paths/right').text = os.path.join("errors", self.sTest)
             tree.write(sWinMergePath)
 
     def dump(self, pre:dict, post: dict):
@@ -99,7 +99,7 @@ class FunctionDumper(DumperBase):
 
     # Very much misleading, this __call__ is called only once, at the beginning to create wrapped_function:
     def __call__(self, func, *args, **kwargs):
-        if not self.__class__.doesDump:
+        if not self.__class__.bDump:
             return func
         super().__call__(func, *args, **kwargs)
 

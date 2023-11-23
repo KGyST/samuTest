@@ -1,11 +1,11 @@
-from decorator.decorators import JSONFunctionDumper, YAMLFunctionDumper
+from decorator.decorators import JSONFunctionDumper
 from typing import Callable
 from helpers import ZeroDivisionErrorCatcher
 
 # glob_variable = 1
 
 # ------- Settings -----------------------------------
-isFuncTesteeActive = False
+isFuncTesteeActive = True
 isFuncTesteeWithMultipleReturnValues = True
 # ----------------------------------------------------
 
@@ -24,11 +24,11 @@ def funcTesteeWithMultipleReturnValues(number):
 def simplestFunction(number):
     return 1+number
 
-@JSONFunctionDumper
+# @JSONFunctionDumper()
 def calledFunction(number):
     return number + 1
 
-@JSONFunctionDumper(active=False)
+@JSONFunctionDumper(active=True)
 def callerFunction(number):
     return calledFunction(number)
 
