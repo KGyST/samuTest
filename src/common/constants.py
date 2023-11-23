@@ -22,5 +22,5 @@ EXCEPTION   = "exception"
 RESULT      = "result"
 
 TEST_ITEMS  = "tests"
-TEST_ERRORS = "test_errors"
+TEST_ERRORS = "_errors"
 CURRENT     = "current"

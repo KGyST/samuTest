@@ -1,5 +1,5 @@
 import os
-
+from typing import Callable
 
 class DefaultResult:
     #FIXME __repr__ or __str__
@@ -24,34 +24,49 @@ class DefaultResult:
         return pformat(_dict)
 
 
-def case_filter_func(cases_to_be_tested:str, file_name:str) -> bool:
+def case_filter_func(file_name:str, extension:str, filter_char:str=".",  cases_to_be_tested:str="" , delimiter:str=";") -> bool:
     """
     Allows to run against only a list of cases, including or excluding extension, like .json
-    :param cases_to_be_tested: a string of filenames and ;
     :param file_name:
+    :param extension: expected extension
+    :param filter_char: if filename starts with this character, it is filtered out
+    :param cases_to_be_tested: a string of filenames and delimiters
+    :param delimiter: of cases_to_be_tested
     :return: True if the case is to be tested, False if to be filtered out
     """
-    lCaseS = cases_to_be_tested.split(";")
-    return len(lCaseS) == 0  \
-           or os.path.splitext(file_name)[0] in lCaseS \
-           or file_name in lCaseS
+    lCaseS = cases_to_be_tested.split(delimiter) if delimiter in cases_to_be_tested else []
+    return  (   len(lCaseS) == 0
+                or os.path.splitext(file_name)[0] in lCaseS
+                or file_name in lCaseS) \
+            and os.path.splitext(file_name)[1] == extension \
+            and file_name[0] != filter_char
 
-def filename_filter_func(file_name:str, extension:str, fileter_char:str=".") -> bool:
+# def filename_filter_func(file_name:str, extension:str, filter_char:str=".") -> bool:
+#     """
+#     Filter by filename and extension
+#     :param file_name: file name
+#     :return:
+#     """
+#     return os.path.splitext(file_name)[1] == extension \
+#     and file_name[0] != filter_char
+
+def default_comparer_func(obj:'DefaultResult', func:'Callable', func_args:list, func_kwargs:dict, expected_result):
     """
-    Filter by filename and extension
-    :param file_name: file name
-    :param extension: expected extension
-    :param fileter_char: if filename starts with this character, it is fitered out
+
+    :param obj:
+    :param func:
+    :param func_args:
+    :param func_kwargs:
+    :param expected_result:
     :return:
     """
-    return os.path.splitext(file_name)[1] == extension \
-    and file_name[0] != fileter_char
-
-def default_comparer_func(obj:'DefaultResult', func, func_args:list, func_kwargs:dict, expected_result):
     testResult = func(*func_args, **func_kwargs)
 
     #FIXME to modify into something like this:
     # test_data.update({"result": ResultClass(testResult)})
     # __eq__ etc being defined in ResultClass
     obj.assertEqual(DefaultResult(expected_result), DefaultResult(testResult))
+
+def get_file_path(result:dict, root_folder_name:str, error:bool=False)->str:
+    return ""
 

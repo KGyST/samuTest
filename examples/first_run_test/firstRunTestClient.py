@@ -3,10 +3,10 @@ from typing import Callable
 from helpers import ZeroDivisionErrorCatcher
 
 
-@JSONFunctionDumper()
+@JSONFunctionDumper(active=True)
 @ZeroDivisionErrorCatcher
-def funcTestee(p_iNum):
-    return 1 / p_iNum
+def funcTestee(number):
+    return 1 / number
 
 
 if __name__ == "__main__":

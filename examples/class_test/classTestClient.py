@@ -4,12 +4,18 @@ from decorator.decorators import JSONFunctionDumper
 isFunctionDumperActive = True
 # ----------------------------------------------------
 
+class ClassToBeNested:
+    nestedClassVariable = 1
+    def __init__(self):
+        self.nestedInstanceVariable = 2
+
 
 class ClassTestee:
     classVariable = 0
     @JSONFunctionDumper(active=isFunctionDumperActive)
-    def __init__(self, p_var):
-        self.instance_variable = p_var
+    def __init__(self, param):
+        self.instance_variable = param
+        self.nestedInstance = ClassToBeNested()
 
     @JSONFunctionDumper(active=isFunctionDumperActive)
     def __str__(self)->str:
@@ -17,31 +23,31 @@ class ClassTestee:
 
     @JSONFunctionDumper(active=isFunctionDumperActive)
     @classmethod
-    def class_method(cls, p_var=1)->str:
+    def class_method(cls, param=1)->str:
         print(f"BEGIN class_method, ClassTestee.classVariable = {ClassTestee.classVariable}")
-        ClassTestee.classVariable += p_var
+        ClassTestee.classVariable += param
         print(f"END class_method, ClassTestee.classVariable = {ClassTestee.classVariable}")
         return "classmethod called"
 
     @JSONFunctionDumper(active=isFunctionDumperActive)
     @staticmethod
-    def static_method(p_var=1)->str:
-        print(f"static_method called {p_var}")
+    def static_method(param=1)->str:
+        print(f"static_method called {param}")
         return "staticmethod called"
 
     @JSONFunctionDumper(active=isFunctionDumperActive)
-    def member_method(self, p_var = 1):
+    def member_method(self, param = 1):
         print(f"BEGIN member_method called, instance_variable = {self.instance_variable}")
         # self.instance_variable += ClassTestee.classVariable + p_var
-        self.instance_variable += p_var
+        self.instance_variable += param
         print(f"END member_method called, instance_variable = {self.instance_variable}")
         return self.instance_variable
 
 
 @JSONFunctionDumper(active=isFunctionDumperActive)
-def some_function(p_var="Nothing"):
-    print(p_var)
-    return p_var
+def some_function(param="Nothing"):
+    print(param)
+    return param
 
 
 if __name__ == "__main__":
