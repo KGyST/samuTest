@@ -17,9 +17,9 @@ When running tests ("Playing"), the test runner function reads all data files, c
   - Class names in folder names, customizable
   - There should be a `tests` folder. If not in the actual folder, one has to handle the paths in order not to have two source files with the same name at different paths. So multiple `tests` folders, each besides the actual source file.   
   - Under it, a (module).class.function (+ `_items`. or not)
-    - It would be more elegant to create suites in a module/class/functon manner
-  - Besides it, an `_errors`
-  - And there a `.WinMerge`
+    - It would be more elegant to create suites in a module/class/function manner. All these would be suites.
+  - Besides it, an `_errors`, like `module_errors`, and in it class/function 
+  - And there a `.WinMerge`, like `module.WinMerge`
 - Facelift/update outdated stuff
   - ~~WinMerge~~
   - ... as an option
