@@ -52,7 +52,6 @@ def case_filter_func(file_name:str, extension:str, filter_char:str=".",  cases_t
 
 def default_comparer_func(obj:'DefaultResult', func:'Callable', func_args:list, func_kwargs:dict, expected_result):
     """
-
     :param obj:
     :param func:
     :param func_args:

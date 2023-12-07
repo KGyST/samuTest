@@ -58,11 +58,10 @@ class JSONTestCase(unittest.TestCase):
         setattr(JSONTestCase, func.__name__, func)
         super().__init__(func.__name__)
 
-
     @staticmethod
     def JSONTestCaseFactory(test_data:dict, parent_folder: str, file_name: str, comparer_function: Callable=default_comparer_func)->'Callable':
         def func(object):
-            sOutFile = os.path.join(parent_folder, "errors", file_name)
+            sOutFile = os.path.join(parent_folder, test_data[MODULE_NAME] + TEST_ERRORS, file_name)
             testResult = None
 
             try:
