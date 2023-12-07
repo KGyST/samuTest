@@ -8,11 +8,12 @@ def md5Collector( folder:str=TEST_ITEMS,
                   cases_only: str = "",
                   case_filter_func: Callable=case_filter_func,
                   ext:str = ".json") -> dict[str, str]:
+    #FIXME .json-specific, to generalize for .yaml etc
     dResult = {}
     for sFilePath in caseFileCollector(folder, cases_only, case_filter_func, ext):
-        import jsonpickle
+        import json
         with open(os.path.join(folder, sFilePath), "r") as jf:
-            dCase = jsonpickle.loads(jf.read())
+            dCase = json.load(jf)
             if MD5 in dCase:
                 sMD5 = dCase[MD5]
                 dResult[sMD5] = sFilePath
@@ -59,7 +60,10 @@ def open_and_create_folders(file:str, mode:str):
 
 def _get_original_function(func: 'Callable') -> 'Callable':
     if hasattr(func, '__closure__') and func.__closure__:
-        return _get_original_function(func.__closure__[0].cell_contents)
+        try:
+            return _get_original_function(func.__closure__[0].cell_contents)
+        except ValueError:
+            return func
     else:
         return func
 

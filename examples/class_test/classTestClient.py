@@ -10,18 +10,29 @@ class ClassToBeNested:
         self.nestedInstanceVariable = 2
 
 
+class ExampleException(Exception):
+    exceptionClassVariable = "ExampleException Class Variable"
+
+
 class ClassTestee:
     classVariable = 0
-    @JSONFunctionDumper(active=isFunctionDumperActive)
+
+    # @JSONFunctionDumper(active=isFunctionDumperActive)
+    def __new__(cls, *args, **kwargs):
+        _instance =  super().__new__(cls)
+        _instance.__class__.classVariable += 1
+        return _instance
+
+    # @JSONFunctionDumper(active=isFunctionDumperActive)
     def __init__(self, param):
         self.instance_variable = param
         self.nestedInstance = ClassToBeNested()
 
-    @JSONFunctionDumper(active=isFunctionDumperActive)
+    # @JSONFunctionDumper(active=isFunctionDumperActive)
     def __str__(self)->str:
         return f'ClassTestee: {str(self.instance_variable)}'
 
-    @JSONFunctionDumper(active=isFunctionDumperActive)
+    # @JSONFunctionDumper(active=isFunctionDumperActive)
     @classmethod
     def class_method(cls, param=1)->str:
         print(f"BEGIN class_method, ClassTestee.classVariable = {ClassTestee.classVariable}")
@@ -29,7 +40,7 @@ class ClassTestee:
         print(f"END class_method, ClassTestee.classVariable = {ClassTestee.classVariable}")
         return "classmethod called"
 
-    @JSONFunctionDumper(active=isFunctionDumperActive)
+    # @JSONFunctionDumper(active=isFunctionDumperActive)
     @staticmethod
     def static_method(param=1)->str:
         print(f"static_method called {param}")
@@ -43,8 +54,12 @@ class ClassTestee:
         print(f"END member_method called, instance_variable = {self.instance_variable}")
         return self.instance_variable
 
+    @JSONFunctionDumper(active=True, exceptions=[ExampleException])
+    def member_method_that_throws_exception(self):
+        raise ExampleException()
 
-@JSONFunctionDumper(active=isFunctionDumperActive)
+
+# @JSONFunctionDumper(active=isFunctionDumperActive)
 def some_function(param="Nothing"):
     print(param)
     return param
@@ -58,6 +73,10 @@ if __name__ == "__main__":
     print(classTestee_object.class_method(1))
     print(classTestee_object.static_method(1))
     print(classTestee_object.member_method(1))
+    try:
+        print(classTestee_object.member_method_that_throws_exception())
+    except ExampleException:
+        pass
 
     print(ClassTestee.class_method(1))
     print(ClassTestee.static_method(1))
