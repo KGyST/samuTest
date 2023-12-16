@@ -17,9 +17,11 @@ When running tests ("Playing"), the test runner function reads all data files, c
   - Class names in folder names, customizable
   - There should be a `tests` folder. If not in the actual folder, one has to handle the paths in order not to have two source files with the same name at different paths. 
     So multiple `tests` folders, each besides the actual source file.
-  - Under it, a (module).class.function (+ `_items`. or not)
+  - Under it, a module(+ `_items` or not).(class.)function
     - It would be more elegant to create suites in a module/class/function manner. All these would be suites.
-  - Besides it, an `_errors`, like `module_errors`, and in it class/function 
+      This is only a by-default structure, so one can create a different folder structure.
+      Folders should represent test suites, so test suite structure should be according to the folder structure.
+  - Besides it, an `_errors`, like `module_errors`, and in it class/function. This structure follows the folder structure. 
   - And there a `.WinMerge`, like `module.WinMerge`
 - Facelift/update outdated stuff
   - WinMerge
@@ -46,6 +48,7 @@ When running tests ("Playing"), the test runner function reads all data files, c
     - these encoders plus pickler as DI
   - Dumping into a database instead of files
 - `current.json` issues rotating (.001, .002 etc)
+  - Driving it through a local bool wariable
 - `@JSONFunctionDumper` to be able to be run as `@JSONFunctionDumper` (not only as `@JSONFunctionDumper()`)
 - If `tests` is not a subfolder of the tested function, it's not possible to import the module (no `folder.module`)
 ---

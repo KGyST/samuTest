@@ -41,15 +41,6 @@ def case_filter_func(file_name:str, extension:str, filter_char:str=".",  cases_t
             and os.path.splitext(file_name)[1] == extension \
             and file_name[0] != filter_char
 
-# def filename_filter_func(file_name:str, extension:str, filter_char:str=".") -> bool:
-#     """
-#     Filter by filename and extension
-#     :param file_name: file name
-#     :return:
-#     """
-#     return os.path.splitext(file_name)[1] == extension \
-#     and file_name[0] != filter_char
-
 def default_comparer_func(obj:'DefaultResult', func:'Callable', func_args:list, func_kwargs:dict, expected_result):
     """
     :param obj:

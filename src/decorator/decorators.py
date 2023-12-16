@@ -126,7 +126,6 @@ class FunctionDumper(DumperBase):
             return func
         super().__call__(func, *args, **kwargs)
 
-
         functools.wraps(func)
 
         dPre = ({

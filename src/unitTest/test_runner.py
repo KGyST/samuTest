@@ -8,7 +8,7 @@ from typing import Callable
 from decorator.decorators import FunctionDumper
 
 
-#FIXME currently this is .json only, enable for yaml xml through DI
+#FIXME currently this is .json only, enable for yaml xml DB through DI or inheritance
 class JSONTestSuite(unittest.TestSuite):
     def __init__(self,
                  target_folder: str=TEST_ITEMS,
