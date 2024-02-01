@@ -13,6 +13,10 @@ When running tests ("Playing"), the test runner function reads all data files, c
 ## TODOs
 - PublicFunctions parameters fixes, docstrings
 - Variable/parameter naming conventions
+- `test_runner` considerations:
+  - file or DB
+  - if file, json/xml/yaml encoder/decoder as DI
+  - unittest or pytest or something else
 - Folder structure *items/errors*
   - Class names in folder names, customizable
   - There should be a `tests` folder. If not in the actual folder, one has to handle the paths in order not to have two source files with the same name at different paths. 
@@ -21,7 +25,11 @@ When running tests ("Playing"), the test runner function reads all data files, c
     - It would be more elegant to create suites in a module/class/function manner. All these would be suites.
       This is only a by-default structure, so one can create a different folder structure.
       Folders should represent test suites, so test suite structure should be according to the folder structure.
-  - Besides it, an `_errors`, like `module_errors`, and in it class/function. This structure follows the folder structure. 
+  - ~~~Besides it, an `_errors`, like `module_errors`, and in it class/function.~~~
+    - There will be a `test_errors` folder somewhere else. Reasons for this:
+      - excluded from git, not part of the source (unlike the `tests` folder)
+      - this way folder structure will be a perfect mirror, functions can be simpler
+    - This structure follows the folder structure. 
   - And there a `.WinMerge`, like `module.WinMerge`
 - Facelift/update outdated stuff
   - WinMerge
@@ -30,7 +38,9 @@ When running tests ("Playing"), the test runner function reads all data files, c
   - Whether to run `current.json`
   - Include or exclude
 - Global variable handling pre/post
+
 ---
+
 - Options to be added
 - Parametrization, new parameters
   - `run_only`
@@ -41,7 +51,6 @@ When running tests ("Playing"), the test runner function reads all data files, c
 - Test runner:
   - Simple test runner, PyCharm integration
   - Test stuites based on mod/class/func
-  - json/xml/yaml encoder/decoder as DI
 - ~~MD5 checking: if another file with the same MD5 is there, but with another filename, don't write it.~~
 - Config object
   - .json, .yaml, .xml
