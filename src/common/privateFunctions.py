@@ -77,7 +77,7 @@ def get_original_function_name(func: 'Callable')->tuple[str, str, str]:
     original_func = _get_original_function(func)
     if original_func:
         module_name = original_func.__module__
-        class_name = original_func.__qualname__.split('.')[0] if '.' in original_func.__qualname__ else None
+        class_name = original_func.__qualname__.split('.')[0] if '.' in original_func.__qualname__ else ""
         func_name = original_func.__name__
 
     # When the script is run directly, use __file__ to get the module name

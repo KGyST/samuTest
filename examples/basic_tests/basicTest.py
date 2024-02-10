@@ -11,8 +11,8 @@ class Test_current(JSONTestSuite):
         super().__init__(cases_only='current')
 
 
-from common.Storage import StorageTestSuite, JSONStorage
-class StorageTestClient(StorageTestSuite):
+from common.Storage import SamuTestSuite, JSONStorage
+class StorageTestClient(SamuTestSuite):
     def __init__(self):
-        super().__init__(base_folder="tests", data_class=JSONStorage)
+        super().__init__(path="tests", encoder=JSONStorage)
 
