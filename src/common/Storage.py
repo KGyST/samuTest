@@ -160,7 +160,7 @@ class FileCollector():
             for _sCase in _sCaseS:
                 _t = encoder.read(os.path.join(self.sFolderPath, _sCase) )
                 if NAME not in _t:
-                    _t[NAME], _ =  os.path.splitext(os.path.basename(_sCase))
+                    _t[NAME] = os.path.splitext(".".join(_sCase.split(os.path.sep)))[0]
                     self._caseS.append(_t)
 
     def __iter__(self):
