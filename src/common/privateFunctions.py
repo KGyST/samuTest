@@ -34,6 +34,11 @@ def caseFileCollector(folder:str,
     return resultCaseS
 
 def generateFolder(folder_path:str, force_delete:bool=False):
+    """
+    :param folder_path:
+    :param force_delete:
+    :return:
+    """
     if os.path.exists(folder_path):
         if force_delete:
             try:
@@ -58,7 +63,28 @@ def open_and_create_folders(file:str, mode:str):
         os.makedirs(folder_path, exist_ok=True)
         return open(file, mode)
 
+# ----------------------------------------------------------
+
+def _get_calling_module_name()->str:
+    """
+    Gets the module name from its filename if the module itself is the __main__
+    :return:
+    """
+    import inspect
+    frame = inspect.currentframe().f_back
+    while frame:
+        if frame.f_globals['__name__'] == '__main__':
+            _f = frame.f_globals['__file__']
+            return os.path.splitext(os.path.basename(_f))[0]
+        frame = frame.f_back
+    return frame.f_globals['__name__']
+
 def _get_original_function(func: 'Callable') -> 'Callable':
+    """
+    Recursively going down to get the original function if there are decorators on it
+    :param func: The decorated function
+    :return: The function without the decorator
+    """
     if hasattr(func, '__closure__') and func.__closure__:
         try:
             return _get_original_function(func.__closure__[0].cell_contents)
@@ -84,14 +110,4 @@ def get_original_function_name(func: 'Callable')->tuple[str, str, str]:
     if module_name == '__main__':
         module_name = _get_calling_module_name()
     return module_name, class_name, func_name
-
-def _get_calling_module_name()->str:
-    import inspect
-    frame = inspect.currentframe().f_back
-    while frame:
-        if frame.f_globals['__name__'] == '__main__':
-            _f = frame.f_globals['__file__']
-            return os.path.splitext(os.path.basename(_f))[0]
-        frame = frame.f_back
-    return frame.f_globals['__name__']
 

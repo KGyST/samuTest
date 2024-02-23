@@ -17,7 +17,7 @@ When running tests ("Playing"), the test runner function reads all data files, c
   - file or DB
   - if file, json/xml/yaml/native pickle encoder/decoder as DI
   - unittest or pytest or something else
-  - client program, like PyCharm or VS Code
+  - client program, like PyCharm or VS Code, or at least test it under VS Code
 - Folder structure *items/errors*
   - Class names in folder names, customizable
   - There should be a `tests` folder. If not in the actual folder, one has to handle the paths in order not to have two source files with the same name at different paths. 
@@ -39,11 +39,11 @@ When running tests ("Playing"), the test runner function reads all data files, c
     - Actually if there is a test/test_errors folder pair, maybe one central WinMerge file is enough.
 - Exception as a result: handling + config
 - Whether to run `current.json`
-- Include or exclude
-- Global variable handling pre/post
+- Include or exclude issues
 
 ---
 
+- Global variable handling pre/post
 - Options to be added
 - Parametrization, new parameters
   - `run_only`
@@ -63,9 +63,11 @@ When running tests ("Playing"), the test runner function reads all data files, c
   - Driving it through a local bool wariable
 - `@JSONFunctionDumper` to be able to be run as `@JSONFunctionDumper` (not only as `@JSONFunctionDumper()`)
 - If `tests` is not a subfolder of the tested function, it's not possible to import the module (no `folder.module`)
+- A `FunctionData` class, with `PreFunctiodData(FunctionData)` and `PostFunctionData(FunctionData)` subclasses, also for mocked functions
+- A `tryToInterpret()`  function for all Codecs
 ---
 - Object-oriented issues
-  - `__new__()` cannot be currently tested. 
+  - `__new__()` cannot be currently tested.
 
 ## Version history
 - 0.02: 231123 Object-oriented functions except for class attributes and `__new__()` 

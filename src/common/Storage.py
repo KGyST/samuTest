@@ -10,7 +10,7 @@ class StorageTestSuite(unittest.TestSuite):
                  path: str=TEST_ITEMS,
                  error_path:str=TEST_ERRORS,
                  collector= FileCollector,
-                 encoder = JSONCodec,
+                 codec = JSONCodec,
                  comparer_function: Callable = default_comparer_func,
                  ):
         """
@@ -18,11 +18,11 @@ class StorageTestSuite(unittest.TestSuite):
         """
         # self._tests is an inherited member!
         self._tests = []
-        self.cData = encoder
+        self.cData = codec
         self.fComparer = comparer_function
         self.sErrorPath = error_path
 
-        for case in collector(path, encoder):
+        for case in collector(path, codec):
             _item = StorageTestCase(case, self)
             self.addTest(_item)
 

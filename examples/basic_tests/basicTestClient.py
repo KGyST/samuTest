@@ -1,5 +1,4 @@
-from decorator.decorators import JSONFunctionDumper
-from typing import Callable
+from decorator.decorators import Dumper
 from helpers import ZeroDivisionErrorCatcher
 
 # glob_variable = 1
@@ -10,17 +9,17 @@ isFuncTesteeWithMultipleReturnValues = True
 # ----------------------------------------------------
 
 
-@JSONFunctionDumper(active=isFuncTesteeActive)
+@Dumper(active=isFuncTesteeActive)
 @ZeroDivisionErrorCatcher
 def funcTestee(number):
     return 1 / number
 
-@JSONFunctionDumper(active=isFuncTesteeWithMultipleReturnValues)
+@Dumper(active=isFuncTesteeWithMultipleReturnValues)
 @ZeroDivisionErrorCatcher
 def funcTesteeWithMultipleReturnValues(number):
     return number, 1 / number
 
-@JSONFunctionDumper(active=True)
+@Dumper(active=True)
 def simplestFunction(number):
     return 1+number
 
@@ -28,7 +27,7 @@ def simplestFunction(number):
 def calledFunction(number):
     return number + 1
 
-@JSONFunctionDumper(active=True)
+@Dumper(active=True)
 def callerFunction(number):
     return calledFunction(number)
 
