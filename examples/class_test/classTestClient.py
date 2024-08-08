@@ -1,6 +1,6 @@
-from decorator.decorators import JSONFunctionDumper
+from decorator import Dumper
 
-# ------- Settings -----------------------------------
+# ------- Global settings example --------------------
 isFunctionDumperActive = True
 # ----------------------------------------------------
 
@@ -8,6 +8,20 @@ class ClassToBeNested:
     nestedClassVariable = 1
     def __init__(self):
         self.nestedInstanceVariable = 2
+
+    def puclicMemberMethod(self):
+        pass
+
+    def _privateMemberMethod(self):
+        pass
+
+    @classmethod
+    def classMethod(cls):
+        pass
+
+    @staticmethod
+    def statiMethod():
+        pass
 
 
 class ExampleException(Exception):
@@ -17,49 +31,49 @@ class ExampleException(Exception):
 class ClassTestee:
     classVariable = 0
 
-    # @JSONFunctionDumper(active=isFunctionDumperActive)
+    # @Dumper(active=isFunctionDumperActive)
     def __new__(cls, *args, **kwargs):
-        _instance =  super().__new__(cls)
+        _instance = super().__new__(cls)
         _instance.__class__.classVariable += 1
         return _instance
 
-    # @JSONFunctionDumper(active=isFunctionDumperActive)
+    # @Dumper(active=isFunctionDumperActive)
     def __init__(self, param):
         self.instance_variable = param
         self.nestedInstance = ClassToBeNested()
 
-    # @JSONFunctionDumper(active=isFunctionDumperActive)
-    def __str__(self)->str:
+    # @Dumper(active=isFunctionDumperActive)
+    def __str__(self) -> str:
         return f'ClassTestee: {str(self.instance_variable)}'
 
-    # @JSONFunctionDumper(active=isFunctionDumperActive)
+    @Dumper(active=isFunctionDumperActive)
     @classmethod
-    def class_method(cls, param=1)->str:
+    def class_method(cls, param=1) -> str:
         print(f"BEGIN class_method, ClassTestee.classVariable = {ClassTestee.classVariable}")
         ClassTestee.classVariable += param
         print(f"END class_method, ClassTestee.classVariable = {ClassTestee.classVariable}")
         return "classmethod called"
 
-    # @JSONFunctionDumper(active=isFunctionDumperActive)
+    # @Dumper(active=isFunctionDumperActive)
     @staticmethod
-    def static_method(param=1)->str:
+    def static_method(param=1) -> str:
         print(f"static_method called {param}")
         return "staticmethod called"
 
-    @JSONFunctionDumper(active=isFunctionDumperActive)
-    def member_method(self, param = 1):
+    @Dumper(active=isFunctionDumperActive)
+    def member_method(self, param=1):
         print(f"BEGIN member_method called, instance_variable = {self.instance_variable}")
         # self.instance_variable += ClassTestee.classVariable + p_var
         self.instance_variable += param
         print(f"END member_method called, instance_variable = {self.instance_variable}")
         return self.instance_variable
 
-    @JSONFunctionDumper(active=True, exceptions=[ExampleException])
+    # @Dumper(active=True, exceptions=[ExampleException])
     def member_method_that_throws_exception(self):
         raise ExampleException()
 
 
-# @JSONFunctionDumper(active=isFunctionDumperActive)
+# @Dumper(active=isFunctionDumperActive)
 def some_function(param="Nothing"):
     print(param)
     return param

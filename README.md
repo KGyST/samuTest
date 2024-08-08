@@ -1,4 +1,4 @@
-# SamuTest
+# SamuTeszt
 
 ## What is this?
 This is a unit-testing metaframework (built on top of unittest and pytest) that makes it possible to automatize both the test writing ("Recording") and testing itself ("Playing").
@@ -22,15 +22,15 @@ When running tests ("Playing"), the test runner function reads all data files, c
   - Class names in folder names, customizable
   - There should be a `tests` folder. If not in the actual folder, one has to handle the paths in order not to have two source files with the same name at different paths. 
     So multiple `tests` folders, each besides the actual source file.
-  - Under it, a module(+ `_items` or not).(class.)function
+  - Under it, a module ~~(+ `_items` or not)~~.(class.)function
     - Note that in Pycharm test tree structurization works by a simple string processing folders/subfolders are marked by simple dots, like `1.2.3`
     - It would be more elegant to create suites in a module/class/function manner. All these would be suites.
       This is only a by-default structure, so one can create a different folder structure.
       Folders should represent test suites, so test suite structure should be according to the folder structure.
-  - ~~~Besides it, an `_errors`, like `module_errors`, and in it class/function.~~~
-    - There will be a `test_errors` folder somewhere else (define, wheere) . Reasons for this:
+  - ~~Besides it, an `_errors`, like `module_errors`, and in it class/function.~~
+    - There will be a `test_errors` folder somewhere else (define, where) . Reasons for this:
       - excluded from git, not part of the source (unlike the `tests` folder). This is a temporary folder.
-      - this way folder structure will be a perfect mirror, functions can be simpler. One WinMerge file is enought for comparison.
+      - this way folder structure will be a perfect mirror, functions can be simpler. One WinMerge file is enough for comparison.
     - This structure follows the folder structure. 
   - And there a `.WinMerge`, like `module.WinMerge`
 - Facelift/update outdated stuff
@@ -38,19 +38,21 @@ When running tests ("Playing"), the test runner function reads all data files, c
     - ... as an option, DI
     - Actually if there is a test/test_errors folder pair, maybe one central WinMerge file is enough.
 - Exception as a result: handling + config
-- Whether to run `current.json`
+- Whether to run `current.json` (mostly not) 
 - Include or exclude issues
 
 ---
 
-- Global variable handling pre/post
-- Options to be added
+- A `FunctionData` class, with `PreFunctiodData(FunctionData)` and `PostFunctionData(FunctionData)` subclasses, also for mocked functions. Maybe checking state inbetween.
+  - Global variable handling pre/post, handled by the same `FunctionData` class
+  - Function mocking
+- Options to be added:
 - Parametrization, new parameters
   - `run_only`
-- Function mocking
 - Test fixtures and `__init__.json` 
 - Packaging and distribution
   - Case names
+  - Importing issues
 - Test runner:
   - Simple test runner, PyCharm integration
   - Test stuites based on mod/class/func
@@ -60,11 +62,17 @@ When running tests ("Playing"), the test runner function reads all data files, c
     - these encoders plus pickler as DI
   - Dumping into a database instead of files
 - `current.json` issues rotating (.001, .002 etc)
-  - Driving it through a local bool wariable
+  - Driving it through a local bool variable
 - `@JSONFunctionDumper` to be able to be run as `@JSONFunctionDumper` (not only as `@JSONFunctionDumper()`)
 - If `tests` is not a subfolder of the tested function, it's not possible to import the module (no `folder.module`)
-- A `FunctionData` class, with `PreFunctiodData(FunctionData)` and `PostFunctionData(FunctionData)` subclasses, also for mocked functions
 - A `tryToInterpret()`  function for all Codecs
+
+---
+
+- Case tagging, plus via params
+  - Automatically tag when a test fails
+- 1000s of cases: sorting
+
 ---
 - Object-oriented issues
   - `__new__()` cannot be currently tested.

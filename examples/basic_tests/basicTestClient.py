@@ -4,8 +4,8 @@ from helpers import ZeroDivisionErrorCatcher
 # glob_variable = 1
 
 # ------- Settings -----------------------------------
-isFuncTesteeActive = True
-isFuncTesteeWithMultipleReturnValues = True
+isFuncTesteeActive = False
+isFuncTesteeWithMultipleReturnValues = False
 # ----------------------------------------------------
 
 

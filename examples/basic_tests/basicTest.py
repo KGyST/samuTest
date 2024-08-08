@@ -14,5 +14,5 @@ class Test_current(JSONTestSuite):
 from common.Storage import StorageTestSuite
 class StorageTestClient(StorageTestSuite):
     def __init__(self):
-        super().__init__(path="tests")
+        super().__init__(path="tests", error_path="..\\errors" )
 

@@ -1,3 +1,4 @@
+import copy
 import functools
 
 import hashlib
@@ -7,47 +8,62 @@ from io import StringIO
 from copy import deepcopy
 import sys
 from importlib import import_module
-from common.Codec import *
+from common.ICodec import *
 
 
 class Dumper:
     """
     Decorator functor to modify the tested functions
     """
+    bDump = True
 
     # FIXME mocked functions
     # FIXME global vars handling
-    bDump = False
 
     class DumperException(Exception):
         pass
 
     def __init__(self,
-                 codec:'Codec' = JSONCodec,
-                 target_folder: str=TEST_ITEMS,  # place everything into this dir
-                 current_test_name: str ="current",  # test default name, like current
-                 active: bool=False,  # global on/off switch of the test dumper
-                 generate_init_files: bool=True,  # generate init files, like WinMerge, typically for the first run
-                 exceptions: list[Exception] = None,
-                 are_exceptions_included:bool=True,
-                 nNameHex: int=12):                  # for default testcase filename generating
-        self.__class__.bDump = active
+                 codec: 'ICodec' = JSONCodec,
+                 overwrite: bool = True,
+                 target_folder: str = TEST_ITEMS,  # place everything into this dir
+                 current_test_name: str = "current",  # test default name, like current
+                 active=False,  # global on/off switch of the test dumper
+                 # FIXME should be a (lambda) function based on criteria
+                 # FIXME when ran by test_runner, active should be False all the time
+                 generate_init_files: bool = False,  # generate init files, like WinMerge, typically for the first run
+                 exceptions: list = [],
+                 are_exceptions_included: bool = True,
+                 hex_name_length: int = 12):                  # for default testcase filename generating
+        self.bDump = active
         self.sMainTestFolder = target_folder
         self.sDefaultTest = current_test_name
-        self.nNameHex = nNameHex
+        self.nNameHex = hex_name_length
         self.codec = codec
         self.bGenerateInitFiles = generate_init_files
-        self.sModule:str
-        self.sClass:str
-        self.sFunction:str
-        self.sTest:str
-        self.sCaseFolder:str
-        self.sErrorFolder:str
-        self.md5S = set()
+        self.sModule: str
+        self.sClass: str
+        self.sFunction: str
+        self.sTest: str
+        self.sCaseFolder: str
+        self.sErrorFolder: str
+        self.collectedMD5S = set()
         self.bIncludeExceptions = are_exceptions_included
         self.lExceptions = exceptions if exceptions is not None else []
+        self.bOverwrite = overwrite
+        self._args = None
+        self._kwargs = None
+        self._preClass = None
+        self._postClass = None
+        self._preSelf = None
+        self._postSelf = None
+        self._result = None
+        self._exception = None
 
-    # Very much misleading, this __call__ is called only once, at the beginning to create wrapped_function:
+        self._preGlobal = None
+        self._postGlobal = None
+
+    # Misleading, this __call__ is called only once, at the beginning to create wrapped_function:
     def __call__(self, func, *args, **kwargs):
         if not self.__class__.bDump:
             return func
@@ -59,61 +75,60 @@ class Dumper:
             self.sTest = ".".join([self.sModule, self.sFunction])
             self.sCaseFolder = os.path.join(self.sMainTestFolder, self.sModule, self.sFunction)
         self.sErrorFolder = self.sCaseFolder + ERROR_STR
-        self.md5S.update(md5Collector(self.sCaseFolder))
+        self.collectedMD5S.update(md5Collector(self.sCaseFolder))
         if self.bGenerateInitFiles:
             self._initFiles()
 
         functools.wraps(func)
 
-        dPre = ({
-            MODULE_NAME: self.sModule,
-            CLASS_NAME: self.sClass,
-            FUNC_NAME: self.sFunction,
-        })
-        dPost = {}
-
         _mod = import_module(self.sModule)
-        def wrapped_function(*argsWrap, **kwargsWrap):
-            if argsWrap and hasattr(argsWrap[0], '__dict__') and self.sFunction != '__new__':
-                instance = argsWrap[0]
-                argsWrap = argsWrap[1:]
-                instance_pre = deepcopy(instance)
-                dPre.update({INST_PRE: instance_pre})
-            else:
-                instance = None
-                instance_pre = None
 
-            dPre.update({ARGS: argsWrap,
-                         KWARGS: kwargsWrap,
-                         })
+        def wrapped_function(*argsWrap, **kwargsWrap):
+            # MD5 is calculated from dPre
+            self._kwargs = kwargsWrap
+            self._args = argsWrap
+
             try:
                 if isinstance(func, classmethod):
                     _class = getattr(_mod, self.sClass)
-                    fResult = func.__func__(_class, *argsWrap[1:], **kwargsWrap)
+                    self._args = argsWrap[1:]
+                    self._preClass = copy.deepcopy(_class)
+                    self._result = func.__func__(_class, *argsWrap[1:], **kwargsWrap)
+                    self._postClass = _class
                 elif isinstance(func, staticmethod):
-                    fResult = func(*argsWrap[1:], **kwargsWrap)
+                    self._args = argsWrap
+                    self._result = func(*argsWrap[1:], **kwargsWrap)
                 else:
-                    if instance_pre:
+                    if argsWrap and hasattr(_instance := argsWrap[0], '__dict__'):
                         # member method
-                        fResult = func(instance, *argsWrap, **kwargsWrap)
-                        argsWrap = (instance_pre, *argsWrap)
+                        self._args = argsWrap[1:]
+                        self._preSelf = copy.deepcopy(_instance)
+                        self._result = func(_instance, *argsWrap[1:], **kwargsWrap)
+                        self._postSelf = _instance
                     else:
                         # standalone function
-                        fResult = func(*argsWrap, **kwargsWrap)
-                dPost.update({RESULT: fResult,
-                              INST_POST: instance, })
+                        self._args = argsWrap
+                        self._result = func(*argsWrap, **kwargsWrap)
             except Exception as e:
                 # FIXME Exception handling
+                self._exception = e
                 if (e.__class__ in self.lExceptions) == self.bIncludeExceptions:
-                    dPost.update({EXCEPTION: e,})
+                    self.bDump = True
+                elif (e.__class__ == KeyboardInterrupt):
+                    self.bDump = True
                 raise
             finally:
-                self.dump(dPre, dPost)
-            return fResult
+                if self.bDump == True:
+                    self.dump()
+                elif isinstance(self.__class__.bDump, 'Callable'):
+                    if self.bDump() == True:
+                        # FIXME
+                        self.dump()
+            return self._result
         return wrapped_function
 
     def _initFiles(self):
-        # FIXME WinMerge as an option
+        # FIXME WinMerge as only an option
         if not os.path.exists(sWinMergePath := os.path.join(self.sMainTestFolder, self.sTest + ".WinMerge")) \
                 and not os.path.exists(self.sCaseFolder) \
                 and not os.path.exists(self.sErrorFolder):
@@ -126,25 +141,64 @@ class Dumper:
             root.find('paths/right').text = os.path.relpath(self.sErrorFolder, self.sMainTestFolder)
             tree.write(sWinMergePath)
 
-    def dump(self, pre:dict, post: dict):
-        sHash = hashlib.md5(self.codec.dumps(pre).encode("ansi")).hexdigest()[:self.nNameHex]
-        if sHash in self.md5S:
+    def dump(self):
+        _dPre = {
+            MODULE_NAME: self.sModule,
+            CLASS_NAME: self.sClass,
+            FUNC_NAME: self.sFunction,
+            ARGS: self._args,
+            KWARGS: self._kwargs,
+        }
+
+        if self._postClass is not None:
+            _class = self._postClass
+        elif self._postSelf is not None:
+            _class = self._postSelf.__class__
+        else:
+            _class = None
+
+        # for k, v in _dPre.items():
+        #     _dPre[k] = self._get_module(v)
+
+        sHash = hashlib.md5(self.codec.dumps(_dPre, _class).encode("ansi")).hexdigest()[:self.nNameHex]
+
+        if sHash in self.collectedMD5S and not self.bOverwrite:
             return
 
-        sFileName = "".join((sHash, self.codec.sExt))
-        post[MD5] = sHash
-        pre.update(post)
-        for k, v in pre.items():
-            pre[k] = self._get_module(v)
-        sOutput = self.codec.dumps(pre)
+        dResult = {**_dPre,
+                   MD5: sHash,
+                   PRE: {},
+                   POST: {}}
 
-        if not os.path.exists(sFile:=(os.path.join(self.sCaseFolder, sFileName))):
+        if self._result is not None:
+            dResult[POST][RESULT] = self._result
+        if self._exception is not None:
+            dResult[POST][EXCEPTION] = self._exception
+        if self._preSelf is not None:
+            dResult[PRE][SELF] = self._get_module(self._preSelf)
+        if self._preClass is not None:
+            dResult[PRE][CLASS] = self._get_module(self._preClass)
+        # if self._preGlobal is not None:
+        #     dResult[PRE][GLOBAL] = self._preGlobal
+        if self._postSelf is not None:
+            dResult[POST][SELF] = self._get_module(self._postSelf)
+        if self._postClass is not None:
+            dResult[POST][CLASS] = self._get_module(self._postClass)
+        # if self._postGlobal is not None:
+        #     dResult[POST][GLOBAL] = self._postGlobal
+
+        sFileName = "".join((sHash, self.codec.sExt))
+
+        sOutput = self.codec.dumps(dResult, _class)
+
+        if not os.path.exists(sFile := (os.path.join(self.sCaseFolder, sFileName))) or self.bOverwrite:
             with open_and_create_folders(sFile, "w") as f:
                 f.write(sOutput)
 
         # Like current.json:
-        pre[NAME] = 'Current test'
-        sOutput = self.codec.dumps(pre)
+        dResult[NAME] = 'Current test'
+        sOutput = self.codec.dumps(dResult, _class)
+        # TODO to do this using ICodec:
         with open_and_create_folders(os.path.join(self.sMainTestFolder, self.sDefaultTest + self.codec.sExt), "w") as f:
             f.write(sOutput)
 

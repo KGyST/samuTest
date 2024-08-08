@@ -2,13 +2,13 @@ import unittest
 from common.publicFunctions import *
 from typing import Callable
 from common.Collector import *
-from common.Codec import *
+from common.ICodec import *
 
 
 class StorageTestSuite(unittest.TestSuite):
     def __init__(self,
                  path: str=TEST_ITEMS,
-                 error_path:str=TEST_ERRORS,
+                 error_path:str=TEST_ITEMS+TEST_ERRORS,
                  collector= FileCollector,
                  codec = JSONCodec,
                  comparer_function: Callable = default_comparer_func,
@@ -40,7 +40,7 @@ class StorageTestCase(unittest.TestCase):
 
     def _dump_data(self, result:dict):
         self.testData.update(result)
-        self.suite.cData.dump(self.suite.sErrorPath, self.testData)
+        self.suite.cData.dump(os.path.join(self.suite.sErrorPath, self.testData[PATH]), self.testData)
         raise
 
     def StorageTestFunctionFactory(self)-> 'Callable':
@@ -56,6 +56,12 @@ class StorageTestCase(unittest.TestCase):
                     func = getattr(_class, self.testData[FUNC_NAME])
                 else:
                     func = getattr(module, self.testData[FUNC_NAME])
+
+                # When the func is run by the runner, force not to dump:
+                if hasattr(func, '__closure__') and func.__closure__:
+                    decorator_instance = func.__closure__[0].cell_contents
+                    if  hasattr(decorator_instance, "Dumper"):
+                        decorator_instance.Dumper.bDump = False
 
                 self.suite.fComparer(object, func, self.testData[ARGS], self.testData[KWARGS], self.testData[RESULT])
             except AssertionError:

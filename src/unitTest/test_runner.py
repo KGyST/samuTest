@@ -1,11 +1,11 @@
 import unittest
 import json
 from common.publicFunctions import *
-from common.privateFunctions import generateFolder, caseFileCollector, open_and_create_folders
+from common.privateFunctions import caseFileCollector, open_and_create_folders
 from common.constants import *
 import jsonpickle
 from typing import Callable
-from decorator.decorators import FunctionDumper
+from decorator.decorators import Dumper
 
 
 #FIXME currently this is .json only, enable for yaml xml DB through DI or inheritance
@@ -25,7 +25,7 @@ class JSONTestSuite(unittest.TestSuite):
         # self._tests is an inherited member!
         self._tests = []
         self._folder = os.path.join(target_folder, )
-        FunctionDumper.bDump = False
+        Dumper.bDump = False
         # generateFolder()
 
         for sFilePath in caseFileCollector(self._folder,
@@ -41,6 +41,8 @@ class JSONTestSuite(unittest.TestSuite):
             except json.decoder.JSONDecodeError:
                 print(f"JSONDecodeError - Filename: {sFilePath}")
                 continue
+            except Exception as e:
+                print(e)
         super().__init__(self._tests)
 
     def __contains__(self, test_name: str) -> bool:
@@ -73,7 +75,7 @@ class JSONTestCase(unittest.TestCase):
                 else:
                     func = getattr(module, test_data[FUNC_NAME])
 
-                comparer_function(object, func, test_data[ARGS], test_data[KWARGS], test_data[RESULT])
+                comparer_function(object, func, test_data[ARGS], test_data[KWARGS], test_data[POST][RESULT])
             except Exception as e:
                 # FIXME exception to json TypeError: Object of type ZeroDivisionError is not JSON serializable
                 # "exception": JSONSeriazable(e)
