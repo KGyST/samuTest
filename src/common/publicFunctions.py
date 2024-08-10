@@ -41,7 +41,7 @@ def case_filter_func(file_name:str, extension:str, filter_char:str=".",  cases_t
             and os.path.splitext(file_name)[1] == extension \
             and file_name[0] != filter_char
 
-def default_comparer_func(obj:'DefaultResult', func:'Callable', func_args:list, func_kwargs:dict, expected_result):
+def default_comparer_func(obj:'DefaultResult', func:'Callable', func_args:list, func_kwargs:dict, expected_result=None):
     """
     :param obj:
     :param func:

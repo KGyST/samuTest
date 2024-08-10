@@ -32,7 +32,10 @@ class JSONTestSuite(unittest.TestSuite):
                                            ".json"):
             try:
                 with open(os.path.join(self._folder, sFilePath), "r") as jf:
-                    testData = jsonpickle.loads(jf.read())
+                    read = jf.read()
+                    importData = json.loads(read)
+                    JSONTestSuite.find_and_import_classes(importData)
+                    testData = jsonpickle.loads(read)
                 testCase = JSONTestCase(testData, self._folder, sFilePath, comparer_func)
                 testCase.maxDiff = None
                 self.addTest(testCase)
@@ -48,6 +51,24 @@ class JSONTestSuite(unittest.TestSuite):
             if test._testMethodName == test_name:
                 return True
         return False
+
+    @staticmethod
+    def find_and_import_classes(data):
+        import importlib
+        if isinstance(data, dict):
+            if "py/object" in data:
+                class_path = data["py/object"]
+                module_name, class_name = class_path.rsplit('.', 1)
+                try:
+                    module = importlib.import_module(module_name)
+                    getattr(module, class_name)  # Ensure the class is loaded
+                except (ImportError, AttributeError) as e:
+                    print(f"Error importing {class_path}: {e}")
+            for key, value in data.items():
+                JSONTestSuite.find_and_import_classes(value)
+        elif isinstance(data, list):
+            for item in data:
+                JSONTestSuite.find_and_import_classes(item)
 
 
 class JSONTestCase(unittest.TestCase):
