@@ -65,13 +65,14 @@ When running tests ("Playing"), the test runner function reads all data files, c
   - Driving it through a local bool variable
 - `@JSONFunctionDumper` to be able to be run as `@JSONFunctionDumper` (not only as `@JSONFunctionDumper()`)
 - If `tests` is not a subfolder of the tested function, it's not possible to import the module (no `folder.module`)
-- A `tryToInterpret()`  function for all Codecs
+- A `tryToInterpret()` function for all Codecs
 
 ---
 
 - Case tagging, plus via params
   - Automatically tag when a test fails
 - 1000s of cases: sorting
+- Assertions
 
 ---
 - Object-oriented issues

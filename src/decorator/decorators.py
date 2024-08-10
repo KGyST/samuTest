@@ -91,23 +91,23 @@ class Dumper:
             try:
                 if isinstance(func, classmethod):
                     _class = getattr(_mod, self.sClass)
-                    self._args = argsWrap[1:]
+                    # self._args = argsWrap[1:]
                     self._preClass = copy.deepcopy(_class)
                     self._result = func.__func__(_class, *argsWrap[1:], **kwargsWrap)
                     self._postClass = _class
                 elif isinstance(func, staticmethod):
-                    self._args = argsWrap
+                    # self._args = argsWrap
                     self._result = func(*argsWrap[1:], **kwargsWrap)
                 else:
-                    if argsWrap and hasattr(_instance := argsWrap[0], '__dict__'):
+                    if argsWrap and hasattr(argsWrap[0], '__dict__'):
                         # member method
-                        self._args = argsWrap[1:]
-                        self._preSelf = copy.deepcopy(_instance)
-                        self._result = func(_instance, *argsWrap[1:], **kwargsWrap)
-                        self._postSelf = _instance
+                        # self._args = argsWrap[1:]
+                        self._preSelf = copy.deepcopy(argsWrap[0])
+                        self._result = func(*[self._preSelf, *argsWrap[1:]], **kwargsWrap)
+                        self._postSelf = argsWrap[0]
                     else:
                         # standalone function
-                        self._args = argsWrap
+                        # self._args = argsWrap
                         self._result = func(*argsWrap, **kwargsWrap)
             except Exception as e:
                 # FIXME Exception handling
@@ -146,8 +146,8 @@ class Dumper:
             MODULE_NAME: self.sModule,
             CLASS_NAME: self.sClass,
             FUNC_NAME: self.sFunction,
-            ARGS: self._args,
-            KWARGS: self._kwargs,
+            ARGS: self._get_module(self._args),
+            KWARGS: self._get_module(self._kwargs),
         }
 
         if self._postClass is not None:
@@ -216,5 +216,14 @@ class Dumper:
                 for k, v in instance.__dict__.items():
                     instance.__dict__[k] = self._get_module(v)
                 return instance
+        # if isinstance(obj, dict):
+        #     for k, v in obj.items():
+        #         obj[k] = self._get_module(v)
+        # if isinstance(obj, list):
+        #     for v in obj:
+        #         v = self._get_module(v)
+        # if isinstance(obj, tuple):
+        #     for v in obj:
+        #         v = self._get_module(v)
         return obj
 

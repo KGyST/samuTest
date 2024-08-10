@@ -7,7 +7,6 @@ import jsonpickle
 from typing import Callable
 from decorator.decorators import Dumper
 
-
 #FIXME currently this is .json only, enable for yaml xml DB through DI or inheritance
 class JSONTestSuite(unittest.TestSuite):
     def __init__(self,
@@ -26,7 +25,6 @@ class JSONTestSuite(unittest.TestSuite):
         self._tests = []
         self._folder = os.path.join(target_folder, )
         Dumper.bDump = False
-        # generateFolder()
 
         for sFilePath in caseFileCollector(self._folder,
                                            cases_only,
@@ -53,10 +51,10 @@ class JSONTestSuite(unittest.TestSuite):
 
 
 class JSONTestCase(unittest.TestCase):
-    def __init__(self, test_data:dict, dir: str, file_name: str, comparer_func: Callable):
-        self.sDir = dir
+    def __init__(self, test_data: dict, directory: str, file_name: str, comparer_func: Callable):
+        self.sDir = directory
         self.sFile = file_name
-        func = self.JSONTestCaseFactory(test_data, dir, file_name, comparer_func)
+        func = self.JSONTestCaseFactory(test_data, directory, file_name, comparer_func)
         setattr(JSONTestCase, func.__name__, func)
         super().__init__(func.__name__)
 
@@ -88,6 +86,6 @@ class JSONTestCase(unittest.TestCase):
         if NAME in test_data:
             func.__name__ = test_data[NAME]
         else:
-            func.__name__ = "test_" + file_name[:-5]
+            func.__name__ = "test_" + ".".join(file_name[:-5].split("\\"))
         return func
 

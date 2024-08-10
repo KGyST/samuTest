@@ -46,7 +46,7 @@ class ClassTestee:
     def __str__(self) -> str:
         return f'ClassTestee: {str(self.instance_variable)}'
 
-    @Dumper(active=isFunctionDumperActive)
+    # @Dumper(active=isFunctionDumperActive)
     @classmethod
     def class_method(cls, param=1) -> str:
         print(f"BEGIN class_method, ClassTestee.classVariable = {ClassTestee.classVariable}")
