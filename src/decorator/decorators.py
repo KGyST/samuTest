@@ -85,13 +85,12 @@ class Dumper:
 
         def wrapped_function(*argsWrap, **kwargsWrap):
             # MD5 is calculated from dPre
-            self._kwargs = kwargsWrap
-            self._args = argsWrap
+            self._args = copy.deepcopy(argsWrap)
+            self._kwargs = copy.deepcopy(kwargsWrap)
 
             try:
                 if isinstance(func, classmethod):
                     _class = getattr(_mod, self.sClass)
-                    # self._args = argsWrap[1:]
                     self._preClass = copy.deepcopy(_class)
                     self._result = func.__func__(_class, *argsWrap[1:], **kwargsWrap)
                     self._postClass = _class
@@ -101,9 +100,8 @@ class Dumper:
                 else:
                     if argsWrap and hasattr(argsWrap[0], '__dict__'):
                         # member method
-                        # self._args = argsWrap[1:]
                         self._preSelf = copy.deepcopy(argsWrap[0])
-                        self._result = func(*[self._preSelf, *argsWrap[1:]], **kwargsWrap)
+                        self._result = func(*[argsWrap[0], *argsWrap[1:]], **kwargsWrap)
                         self._postSelf = argsWrap[0]
                     else:
                         # standalone function
@@ -170,22 +168,14 @@ class Dumper:
                    PRE: {},
                    POST: {}}
 
-        if self._result is not None:
-            dResult[POST][RESULT] = self._result
-        if self._exception is not None:
-            dResult[POST][EXCEPTION] = self._exception
-        if self._preSelf is not None:
-            dResult[PRE][SELF] = self._get_module(self._preSelf)
-        if self._preClass is not None:
-            dResult[PRE][CLASS] = self._get_module(self._preClass)
-        # if self._preGlobal is not None:
-        #     dResult[PRE][GLOBAL] = self._preGlobal
-        if self._postSelf is not None:
-            dResult[POST][SELF] = self._get_module(self._postSelf)
-        if self._postClass is not None:
-            dResult[POST][CLASS] = self._get_module(self._postClass)
-        # if self._postGlobal is not None:
-        #     dResult[POST][GLOBAL] = self._postGlobal
+        dResult[POST][RESULT] = self._result
+        dResult[POST][EXCEPTION] = self._exception
+        dResult[PRE][SELF] = self._get_module(self._preSelf)
+        dResult[PRE][CLASS] = self._get_module(self._preClass)
+        # dResult[PRE][GLOBAL] = self._preGlobal
+        dResult[POST][SELF] = self._get_module(self._postSelf)
+        dResult[POST][CLASS] = self._get_module(self._postClass)
+        # dResult[POST][GLOBAL] = self._postGlobal
 
         sFileName = "".join((sHash, self.codec.sExt))
 
@@ -208,22 +198,13 @@ class Dumper:
         :param obj: any object, preferably not a primitive type (having __dict__) and from the __main__ module
         :return: the object with the replaced module
         """
-        if hasattr(obj, "__dict__"):
+        if hasattr(obj, "__dict__") and hasattr(obj, "__module__"):
             if obj.__module__ == "__main__":
                 _class = getattr(sys.modules[self.sModule], self.sClass)
                 instance = _class.__new__(_class)
-                instance.__dict__ = obj.__dict__
+                instance.__dict__.update(obj.__dict__)
                 for k, v in instance.__dict__.items():
                     instance.__dict__[k] = self._get_module(v)
                 return instance
-        # if isinstance(obj, dict):
-        #     for k, v in obj.items():
-        #         obj[k] = self._get_module(v)
-        # if isinstance(obj, list):
-        #     for v in obj:
-        #         v = self._get_module(v)
-        # if isinstance(obj, tuple):
-        #     for v in obj:
-        #         v = self._get_module(v)
         return obj
 

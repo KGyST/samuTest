@@ -31,11 +31,11 @@ class JSONTestSuite(unittest.TestSuite):
                                            case_filter_func,
                                            ".json"):
             try:
-                with open(os.path.join(self._folder, sFilePath), "r") as jf:
-                    read = jf.read()
-                    importData = json.loads(read)
-                    JSONTestSuite.find_and_import_classes(importData)
-                    testData = jsonpickle.loads(read)
+                _sFilePath = os.path.join(self._folder, sFilePath)
+                JSONTestSuite.find_and_import_classes(_sFilePath)
+
+                with open(_sFilePath, "r") as jf:
+                    testData = jsonpickle.loads(jf.read())
                 testCase = JSONTestCase(testData, self._folder, sFilePath, comparer_func)
                 testCase.maxDiff = None
                 self.addTest(testCase)
@@ -53,22 +53,41 @@ class JSONTestSuite(unittest.TestSuite):
         return False
 
     @staticmethod
-    def find_and_import_classes(data):
+    def find_and_import_classes(path: str):
+        """
+        Import modules that define classes dumped in test cases
+        Recursively calls _find_and_import_classes
+        FIXME to abstract not to be json-dependent
+        :param path: test case data file path
+        :return: None
+        """
+        with open(path, "r") as jf:
+            importData = json.loads(jf.read())
+            JSONTestSuite._find_and_import_classes(importData)
+
+    @staticmethod
+    def _find_and_import_classes(importData):
+        """
+        Recursor called by find_and_import_classes
+        :param importData:
+        :return: None
+        """
         import importlib
-        if isinstance(data, dict):
-            if "py/object" in data:
-                class_path = data["py/object"]
+
+        if isinstance(importData, dict):
+            if "py/object" in importData:
+                class_path = importData["py/object"]
                 module_name, class_name = class_path.rsplit('.', 1)
                 try:
                     module = importlib.import_module(module_name)
                     getattr(module, class_name)  # Ensure the class is loaded
                 except (ImportError, AttributeError) as e:
                     print(f"Error importing {class_path}: {e}")
-            for key, value in data.items():
-                JSONTestSuite.find_and_import_classes(value)
-        elif isinstance(data, list):
-            for item in data:
-                JSONTestSuite.find_and_import_classes(item)
+            for key, value in importData.items():
+                JSONTestSuite._find_and_import_classes(value)
+        elif isinstance(importData, list):
+            for item in importData:
+                JSONTestSuite._find_and_import_classes(item)
 
 
 class JSONTestCase(unittest.TestCase):

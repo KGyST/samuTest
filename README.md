@@ -40,6 +40,11 @@ When running tests ("Playing"), the test runner function reads all data files, c
 - Exception as a result: handling + config
 - Whether to run `current.json` (mostly not) 
 - Include or exclude issues
+- When to dump
+  - KeyboardInterrupt: only current.json
+  - Predefined/not predefined exceptions. Include assertions
+  - Function as DI
+    - Mass dumping: everything
 
 ---
 
