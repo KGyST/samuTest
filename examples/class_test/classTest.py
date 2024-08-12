@@ -1,6 +1,7 @@
-from unitTest.test_runner import JSONTestSuite
+from common.Storage import StorageTestSuite
 
-class ClassTestSuite(JSONTestSuite):
+
+class ClassTestSuite(StorageTestSuite):
     def __init__(self):
         super().__init__()
 

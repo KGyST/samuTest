@@ -57,6 +57,8 @@ def default_comparer_func(obj:'DefaultResult', func:'Callable', func_args:list, 
     # __eq__ etc being defined in ResultClass
     obj.assertEqual(DefaultResult(expected_result), DefaultResult(testResult))
 
+    return testResult
+
 def get_file_path(result:dict, root_folder_name:str, error:bool=False)->str:
     return ""
 

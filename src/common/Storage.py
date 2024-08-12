@@ -7,10 +7,10 @@ from common.ICodec import *
 
 class StorageTestSuite(unittest.TestSuite):
     def __init__(self,
-                 path: str=TEST_ITEMS,
-                 error_path:str=TEST_ITEMS+TEST_ERRORS,
-                 collector= FileCollector,
-                 codec = JSONCodec,
+                 path: str = TEST_ITEMS,
+                 error_path: str = TEST_ITEMS+TEST_ERRORS,
+                 collector=FileCollector,
+                 codec=JSONCodec,
                  comparer_function: Callable = default_comparer_func,
                  ):
         """
@@ -31,20 +31,20 @@ class StorageTestSuite(unittest.TestSuite):
 
 class StorageTestCase(unittest.TestCase):
     def __init__(self, data, suite):
-        self.testData  = data
+        self.testData = data
         self.suite = suite
 
         func = self.StorageTestFunctionFactory()
         setattr(StorageTestCase, func.__name__, func)
         super().__init__(func.__name__)
 
-    def _dump_data(self, result:dict):
+    def _dump_data(self, result: dict):
         self.testData.update(result)
         self.suite.cData.dump(os.path.join(self.suite.sErrorPath, self.testData[PATH]), self.testData)
         raise
 
-    def StorageTestFunctionFactory(self)-> 'Callable':
-        def func(object):
+    def StorageTestFunctionFactory(self) -> 'Callable':
+        def func(obj):
             testResult = None
 
             try:
@@ -53,22 +53,27 @@ class StorageTestCase(unittest.TestCase):
 
                 if CLASS_NAME in self.testData and self.testData[CLASS_NAME]:
                     _class = getattr(module, self.testData[CLASS_NAME])
-                    func = getattr(_class, self.testData[FUNC_NAME])
+                    _func = getattr(_class, self.testData[FUNC_NAME])
                 else:
-                    func = getattr(module, self.testData[FUNC_NAME])
+                    _func = getattr(module, self.testData[FUNC_NAME])
 
-                # When the func is run by the runner, force not to dump:
-                if hasattr(func, '__closure__') and func.__closure__:
-                    decorator_instance = func.__closure__[0].cell_contents
-                    if  hasattr(decorator_instance, "Dumper"):
+                # When the _func is run by the runner, force not to dump:
+                if hasattr(_func, '__closure__') and _func.__closure__:
+                    decorator_instance = _func.__closure__[0].cell_contents
+                    if hasattr(decorator_instance, "Dumper"):
                         decorator_instance.Dumper.bDump = False
 
-                self.suite.fComparer(object, func, self.testData[ARGS], self.testData[KWARGS], self.testData[RESULT])
-            except AssertionError:
-                self._dump_data({RESULT: testResult,})
+                testResult = self.suite.fComparer(obj, _func, self.testData[ARGS], self.testData[KWARGS], self.testData[POST][RESULT])
             except Exception as e:
-                self._dump_data({EXCEPTION: e, })
-
+                if e.__class__ == self.testData[POST][EXCEPTION].__class__:
+                    return
+                elif e.__class__ == AssertionError:
+                    self._dump_data({RESULT: testResult,
+                                     EXCEPTION: None})
+                else:
+                    self._dump_data({RESULT: None,
+                                     EXCEPTION: e, })
+                return testResult
         func.__name__ = self.testData[NAME]
 
         return func

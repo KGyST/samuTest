@@ -4,8 +4,8 @@ from helpers import ZeroDivisionErrorCatcher
 # glob_variable = 1
 
 # ------- Settings -----------------------------------
-isFuncTesteeActive = False
-isFuncTesteeWithMultipleReturnValues = False
+isFuncTesteeActive = True
+isFuncTesteeWithMultipleReturnValues = True
 # ----------------------------------------------------
 
 
@@ -23,13 +23,14 @@ def funcTesteeWithMultipleReturnValues(number):
 def simplestFunction(number):
     return 1+number
 
-# @JSONFunctionDumper()
+@Dumper()
 def calledFunction(number):
     return number + 1
 
 @Dumper(active=True)
 def callerFunction(number):
     return calledFunction(number)
+
 
 if __name__ == "__main__":
     for i in range(-1, 3):

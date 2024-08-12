@@ -44,7 +44,7 @@ When running tests ("Playing"), the test runner function reads all data files, c
   - KeyboardInterrupt: only current.json
   - Predefined/not predefined exceptions. Include assertions
   - Function as DI
-    - Mass dumping: everything
+    - Enable mass dumping: everything
 
 ---
 

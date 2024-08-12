@@ -3,7 +3,7 @@ from common.constants import *
 
 
 class FileCollector:
-    def __init__(self, path:str, codec):
+    def __init__(self, path: str, codec):
         self.sFolderPath = path
         self._index = -1
         self._caseS = []
@@ -20,10 +20,10 @@ class FileCollector:
                     _dCase[NAME] = ".".join([*_sCase.split(os.path.sep)[:-1], _dCase[NAME]])
                 self._caseS.append(_dCase)
 
-    def __iter__(self)->'FileCollector':
+    def __iter__(self) -> 'FileCollector':
         return self
 
-    def __next__(self)->dict:
+    def __next__(self) -> dict:
         self._index += 1
 
         if self._index < len(self._caseS):

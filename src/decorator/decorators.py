@@ -87,6 +87,7 @@ class Dumper:
             # MD5 is calculated from dPre
             self._args = copy.deepcopy(argsWrap)
             self._kwargs = copy.deepcopy(kwargsWrap)
+            from types import FunctionType, MethodType
 
             try:
                 if isinstance(func, classmethod):
@@ -97,14 +98,16 @@ class Dumper:
                 elif isinstance(func, staticmethod):
                     # self._args = argsWrap
                     self._result = func(*argsWrap[1:], **kwargsWrap)
-                else:
-                    if argsWrap and hasattr(argsWrap[0], '__dict__'):
-                        # member method
-                        self._preSelf = copy.deepcopy(argsWrap[0])
-                        self._result = func(*[argsWrap[0], *argsWrap[1:]], **kwargsWrap)
-                        self._postSelf = argsWrap[0]
-                    else:
+                # else:
+                #     if argsWrap and hasattr(argsWrap[0], '__dict__'):
+                # member method
+                elif isinstance(func, MethodType):
+                    self._preSelf = copy.deepcopy(argsWrap[0])
+                    self._result = func(*[argsWrap[0], *argsWrap[1:]], **kwargsWrap)
+                    self._postSelf = argsWrap[0]
+                    # else:
                         # standalone function
+                elif isinstance(func, FunctionType):
                         # self._args = argsWrap
                         self._result = func(*argsWrap, **kwargsWrap)
             except Exception as e:
@@ -112,13 +115,13 @@ class Dumper:
                 self._exception = e
                 if (e.__class__ in self.lExceptions) == self.bIncludeExceptions:
                     self.bDump = True
-                elif (e.__class__ == KeyboardInterrupt):
+                elif e.__class__ == KeyboardInterrupt:
                     self.bDump = True
                 raise
             finally:
                 if self.bDump == True:
                     self.dump()
-                elif isinstance(self.__class__.bDump, 'Callable'):
+                elif isinstance(self.__class__.bDump, FunctionType):
                     if self.bDump() == True:
                         # FIXME
                         self.dump()
@@ -158,7 +161,7 @@ class Dumper:
         # for k, v in _dPre.items():
         #     _dPre[k] = self._get_module(v)
 
-        sHash = hashlib.md5(self.codec.dumps(_dPre, _class).encode("ansi")).hexdigest()[:self.nNameHex]
+        sHash = hashlib.md5(self.codec.dumps(_dPre).encode("ansi")).hexdigest()[:self.nNameHex]
 
         if sHash in self.collectedMD5S and not self.bOverwrite:
             return
@@ -169,7 +172,7 @@ class Dumper:
                    POST: {}}
 
         dResult[POST][RESULT] = self._result
-        dResult[POST][EXCEPTION] = self._exception
+        dResult[POST][EXCEPTION] = self._get_module(self._exception)
         dResult[PRE][SELF] = self._get_module(self._preSelf)
         dResult[PRE][CLASS] = self._get_module(self._preClass)
         # dResult[PRE][GLOBAL] = self._preGlobal
@@ -179,7 +182,7 @@ class Dumper:
 
         sFileName = "".join((sHash, self.codec.sExt))
 
-        sOutput = self.codec.dumps(dResult, _class)
+        sOutput = self.codec.dumps(dResult)
 
         if not os.path.exists(sFile := (os.path.join(self.sCaseFolder, sFileName))) or self.bOverwrite:
             with open_and_create_folders(sFile, "w") as f:
@@ -187,12 +190,12 @@ class Dumper:
 
         # Like current.json:
         dResult[NAME] = 'Current test'
-        sOutput = self.codec.dumps(dResult, _class)
+        sOutput = self.codec.dumps(dResult)
         # TODO to do this using ICodec:
         with open_and_create_folders(os.path.join(self.sMainTestFolder, self.sDefaultTest + self.codec.sExt), "w") as f:
             f.write(sOutput)
 
-    def _get_module(self, obj:object):
+    def _get_module(self, obj: object):
         """
         Replaces '__main__' module to the actual module name of any object.
         :param obj: any object, preferably not a primitive type (having __dict__) and from the __main__ module
@@ -200,11 +203,19 @@ class Dumper:
         """
         if hasattr(obj, "__dict__") and hasattr(obj, "__module__"):
             if obj.__module__ == "__main__":
-                _class = getattr(sys.modules[self.sModule], self.sClass)
+                if isinstance(obj, type):
+                    sClass = obj.__name__
+                else:
+                    sClass = obj.__class__.__name__
+                _class = getattr(sys.modules[self.sModule], sClass)
                 instance = _class.__new__(_class)
                 instance.__dict__.update(obj.__dict__)
                 for k, v in instance.__dict__.items():
                     instance.__dict__[k] = self._get_module(v)
                 return instance
+        elif isinstance(obj, list) or isinstance(obj, tuple):
+            def __get_module(_obj):
+                return self._get_module(_obj)
+            obj = type(obj)(map(__get_module, obj))
         return obj
 
