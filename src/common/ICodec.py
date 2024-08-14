@@ -41,6 +41,8 @@ class JSONCodec(ICodec):
         JSONCodec.find_and_import_classes(path)
         with open(path, "r") as jf:
             try:
+                from decorator import Dumper
+                Dumper.bDump = False
                 return jsonpickle.loads(jf.read())
             except Exception:
                 raise JSONCodec.StorageException()

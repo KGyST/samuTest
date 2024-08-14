@@ -3,7 +3,7 @@ import functools
 
 import hashlib
 from common.constants import *
-from common.privateFunctions import generateFolder, get_original_function_name, md5Collector
+from common.privateFunctions import generateFolder, get_original_function_name, md5Collector, _get_original_function
 from io import StringIO
 from copy import deepcopy
 import sys
@@ -75,7 +75,7 @@ class Dumper:
             self.sTest = ".".join([self.sModule, self.sFunction])
             self.sCaseFolder = os.path.join(self.sMainTestFolder, self.sModule, self.sFunction)
         self.sErrorFolder = self.sCaseFolder + ERROR_STR
-        self.collectedMD5S.update(md5Collector(self.sCaseFolder))
+        self.collectedMD5S.update(md5Collector(self.codec, self.sCaseFolder))
         if self.bGenerateInitFiles:
             self._initFiles()
 
@@ -148,6 +148,7 @@ class Dumper:
             CLASS_NAME: self.sClass,
             FUNC_NAME: self.sFunction,
             ARGS: self._get_module(self._args),
+            # ARGS: self._args,
             KWARGS: self._get_module(self._kwargs),
         }
 
@@ -157,9 +158,6 @@ class Dumper:
             _class = self._postSelf.__class__
         else:
             _class = None
-
-        # for k, v in _dPre.items():
-        #     _dPre[k] = self._get_module(v)
 
         sHash = hashlib.md5(self.codec.dumps(_dPre).encode("ansi")).hexdigest()[:self.nNameHex]
 
@@ -182,18 +180,20 @@ class Dumper:
 
         sFileName = "".join((sHash, self.codec.sExt))
 
-        sOutput = self.codec.dumps(dResult)
+        # sOutput = self.codec.dumps(dResult)
 
         if not os.path.exists(sFile := (os.path.join(self.sCaseFolder, sFileName))) or self.bOverwrite:
-            with open_and_create_folders(sFile, "w") as f:
-                f.write(sOutput)
+            # with open_and_create_folders(sFile, "w") as f:
+            #     f.write(sOutput)
+            self.codec.dump(sFile, dResult)
 
         # Like current.json:
         dResult[NAME] = 'Current test'
-        sOutput = self.codec.dumps(dResult)
+        # sOutput = self.codec.dumps(dResult)
         # TODO to do this using ICodec:
-        with open_and_create_folders(os.path.join(self.sMainTestFolder, self.sDefaultTest + self.codec.sExt), "w") as f:
-            f.write(sOutput)
+        # with open_and_create_folders(os.path.join(self.sMainTestFolder, self.sDefaultTest + self.codec.sExt), "w") as f:
+        #     f.write(sOutput)
+        self.codec.dump(os.path.join(self.sMainTestFolder, self.sDefaultTest + self.codec.sExt), dResult)
 
     def _get_module(self, obj: object):
         """
@@ -208,14 +208,16 @@ class Dumper:
                 else:
                     sClass = obj.__class__.__name__
                 _class = getattr(sys.modules[self.sModule], sClass)
-                instance = _class.__new__(_class)
+                # Dumper.bDump = False
+                _newFunc = _get_original_function(_class.__new__)
+                instance = _newFunc(_class)
                 instance.__dict__.update(obj.__dict__)
                 for k, v in instance.__dict__.items():
                     instance.__dict__[k] = self._get_module(v)
                 return instance
-        elif isinstance(obj, list) or isinstance(obj, tuple):
-            def __get_module(_obj):
-                return self._get_module(_obj)
-            obj = type(obj)(map(__get_module, obj))
+        # elif isinstance(obj, list) or isinstance(obj, tuple):
+        #     def __get_module(_obj):
+        #         return self._get_module(_obj)
+        #     obj = type(obj)(map(__get_module, obj))
         return obj
 
