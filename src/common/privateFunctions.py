@@ -3,7 +3,6 @@ import os.path
 import shutil
 from common.constants import MD5, TEST_ITEMS
 from common.publicFunctions import *
-# from common.ICodec import ICodec
 
 
 def md5Collector(codec,
@@ -18,6 +17,7 @@ def md5Collector(codec,
             dResult[sMD5] = sFilePath
     return dResult
 
+
 def caseFileCollector(folder: str,
                       cases_only: str,
                       case_filter_func: Callable,
@@ -31,6 +31,7 @@ def caseFileCollector(folder: str,
             return case_filter_func(file_name, ext, cases_to_be_tested=cases_only)
         resultCaseS = list(filter(_caseFilter, resultCaseS))
     return resultCaseS
+
 
 def generateFolder(folder_path: str, force_delete: bool = False):
     """

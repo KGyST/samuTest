@@ -68,11 +68,17 @@ class StorageTestCase(unittest.TestCase):
                 if e.__class__ == self.testData[POST][EXCEPTION].__class__:
                     return
                 elif e.__class__ == AssertionError:
-                    self._dump_data({RESULT: testResult,
-                                     EXCEPTION: None})
+                    self._dump_data({POST: {
+                        RESULT: testResult,
+                        EXCEPTION: None}
+                        }
+                    )
                 else:
-                    self._dump_data({RESULT: None,
-                                     EXCEPTION: e, })
+                    self._dump_data({POST: {
+                        RESULT: None,
+                        EXCEPTION: e, }
+                        }
+                    )
                 return testResult
         func.__name__ = self.testData[NAME]
 

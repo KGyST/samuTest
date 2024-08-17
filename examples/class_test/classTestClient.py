@@ -72,6 +72,16 @@ class ClassTestee:
     def member_method_that_throws_exception(self):
         raise ExampleException()
 
+    # @Dumper()
+    # @property
+    # def someProperty(self):
+    #     return self._someProperty
+
+    # @Dumper()
+    # @someProperty.setter
+    # def someProperty(self, value):
+    #     self._someProperty = value
+
 
 @Dumper(active=isFunctionDumperActive)
 def some_function(param="Nothing"):
