@@ -22,15 +22,13 @@ class ICodec(ABC):
 
     @staticmethod
     @abstractmethod
-    def dumps(data: dict):
+    def dumps(data: dict) -> str:
         raise NotImplementedError()
 
     @staticmethod
     @abstractmethod
     def dump(path: str, data: dict):
         raise NotImplementedError()
-
-
 
 
 class JSONCodec(ICodec):

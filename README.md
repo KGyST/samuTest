@@ -42,7 +42,7 @@ When running tests ("Playing"), the test runner function reads all data files, c
 - Include or exclude issues
 - When to dump
   - KeyboardInterrupt: only current.json
-  - Predefined/not predefined exceptions. Include assertions
+  - Predefined/not predefined exceptions. Include assertions. AssertionException should be dumped by deault
   - Function as DI
     - Enable mass dumping: everything
 
@@ -71,6 +71,7 @@ When running tests ("Playing"), the test runner function reads all data files, c
 - `@JSONFunctionDumper` to be able to be run as `@JSONFunctionDumper` (not only as `@JSONFunctionDumper()`)
 - If `tests` is not a subfolder of the tested function, it's not possible to import the module (no `folder.module`)
 - A `tryToInterpret()` function for all Codecs
+- Property handling (.setter etc.)
 
 ---
 

@@ -90,20 +90,20 @@ def some_function(param="Nothing"):
 
 
 if __name__ == "__main__":
-    classTestee_object = ClassTestee(1)
+    classTestee_member_object = ClassTestee(1)
 
-    print(classTestee_object)
+    # print(classTestee_member_object)
 
-    print(classTestee_object.class_method(1))
-    print(classTestee_object.static_method(1))
-    print(classTestee_object.member_method(1))
-    try:
-        print(classTestee_object.member_method_that_throws_exception())
-    except ExampleException:
-        pass
+    print(classTestee_member_object.class_method(1))
+    # print(classTestee_member_object.static_method(1))
+    # print(classTestee_member_object.member_method(1))
+    # try:
+    #     print(classTestee_member_object.member_method_that_throws_exception())
+    # except ExampleException:
+    #     pass
 
     print(ClassTestee.class_method(1))
-    print(ClassTestee.static_method(1))
+    # print(ClassTestee.static_method(1))
 
-    print(some_function("Something"))
+    # print(some_function("Something"))
 

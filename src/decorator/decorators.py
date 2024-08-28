@@ -2,13 +2,15 @@ import copy
 import functools
 
 import hashlib
+import os.path
+
 from common.constants import *
-from common.privateFunctions import generateFolder, get_original_function_name, md5Collector, _get_original_function
-from io import StringIO
-from copy import deepcopy
+from common.privateFunctions import get_original_function_name, md5Collector, _get_original_function
 import sys
 from importlib import import_module
 from common.ICodec import *
+from types import FunctionType, MethodType
+import inspect
 
 
 class Dumper:
@@ -26,30 +28,23 @@ class Dumper:
     def __init__(self,
                  codec: 'ICodec' = JSONCodec,
                  overwrite: bool = True,
-                 target_folder: str = TEST_ITEMS,  # place everything into this dir
-                 current_test_name: str = "current",  # test default name, like current
+                 target_dir: str = TEST_ITEMS,  # place everything into this dir
                  active=False,  # global on/off switch of the test dumper
                  # FIXME should be a (lambda) function based on criteria
                  # FIXME when ran by test_runner, active should be False all the time
-                 generate_init_files: bool = False,  # generate init files, like WinMerge, typically for the first run
-                 exceptions: list = [],
+                 exceptions: tuple[type] = (AssertionError, ),
                  are_exceptions_included: bool = True,
                  hex_name_length: int = 12):                  # for default testcase filename generating
         self.bDump = active
-        self.sMainTestFolder = target_folder
-        self.sDefaultTest = current_test_name
+        self.sTestRootDir = target_dir
         self.nNameHex = hex_name_length
         self.codec = codec
-        self.bGenerateInitFiles = generate_init_files
         self.sModule: str
         self.sClass: str
         self.sFunction: str
-        self.sTest: str
-        self.sCaseFolder: str
-        self.sErrorFolder: str
         self.collectedMD5S = set()
         self.bIncludeExceptions = are_exceptions_included
-        self.lExceptions = exceptions if exceptions is not None else []
+        self.tExceptions = exceptions if exceptions is not None else ()
         self.bOverwrite = overwrite
         self._args = None
         self._kwargs = None
@@ -63,31 +58,34 @@ class Dumper:
         self._preGlobal = None
         self._postGlobal = None
 
+    @classmethod
+    def _undumpable(cls, func):
+        _bDump = cls.bDump
+        cls.bDump = False
+        try:
+            _res = func()
+        finally:
+            cls.bDump = _bDump
+        return _res
+
     # Misleading, this __call__ is called only once, at the beginning to create wrapped_function:
     def __call__(self, func, *args, **kwargs):
         if not self.__class__.bDump:
             return func
+
         self.sModule, self.sClass, self.sFunction = get_original_function_name(func)
-        if self.sClass:
-            self.sTest = ".".join([self.sModule, self.sClass, self.sFunction])
-            self.sCaseFolder = os.path.join(self.sMainTestFolder, self.sModule, self.sClass, self.sFunction)
-        else:
-            self.sTest = ".".join([self.sModule, self.sFunction])
-            self.sCaseFolder = os.path.join(self.sMainTestFolder, self.sModule, self.sFunction)
-        self.sErrorFolder = self.sCaseFolder + ERROR_STR
-        self.collectedMD5S.update(md5Collector(self.codec, self.sCaseFolder))
-        if self.bGenerateInitFiles:
-            self._initFiles()
 
-        functools.wraps(func)
+        _mod = self._undumpable(lambda: import_module(self.sModule))
 
-        _mod = import_module(self.sModule)
+        self.collectedMD5S.update(md5Collector(self.codec, self.getRelativeDirName()))
+        self.sTest = self.getTestMD5()
 
+        @functools.wraps(func)
         def wrapped_function(*argsWrap, **kwargsWrap):
-            # MD5 is calculated from dPre
-            self._args = copy.deepcopy(argsWrap)
-            self._kwargs = copy.deepcopy(kwargsWrap)
-            from types import FunctionType, MethodType
+            def _func():
+                self._args = copy.deepcopy(argsWrap)
+                self._kwargs = copy.deepcopy(kwargsWrap)
+            self._undumpable(_func)
 
             try:
                 if isinstance(func, classmethod):
@@ -98,60 +96,63 @@ class Dumper:
                 elif isinstance(func, staticmethod):
                     # self._args = argsWrap
                     self._result = func(*argsWrap[1:], **kwargsWrap)
-                # else:
-                #     if argsWrap and hasattr(argsWrap[0], '__dict__'):
-                # member method
                 elif isinstance(func, MethodType):
                     self._preSelf = copy.deepcopy(argsWrap[0])
                     self._result = func(*[argsWrap[0], *argsWrap[1:]], **kwargsWrap)
                     self._postSelf = argsWrap[0]
-                    # else:
-                        # standalone function
                 elif isinstance(func, FunctionType):
-                        # self._args = argsWrap
-                        self._result = func(*argsWrap, **kwargsWrap)
+                    # self._args = argsWrap
+                    self._result = func(*argsWrap, **kwargsWrap)
             except Exception as e:
-                # FIXME Exception handling
                 self._exception = e
-                if (e.__class__ in self.lExceptions) == self.bIncludeExceptions:
+                if (e.__class__ in self.tExceptions) == self.bIncludeExceptions:
                     self.bDump = True
                 elif e.__class__ == KeyboardInterrupt:
+                    self.sTest = CURRENT
                     self.bDump = True
                 raise
             finally:
-                if self.bDump == True:
-                    self.dump()
+                if self.bDump and self.__class__.bDump:
+                    if not self.getTestMD5() in self.collectedMD5S or self.bOverwrite:
+                        self.dump()
                 elif isinstance(self.__class__.bDump, FunctionType):
+                    # FIXME
                     if self.bDump() == True:
-                        # FIXME
                         self.dump()
             return self._result
         return wrapped_function
 
-    def _initFiles(self):
-        # FIXME WinMerge as only an option
-        if not os.path.exists(sWinMergePath := os.path.join(self.sMainTestFolder, self.sTest + ".WinMerge")) \
-                and not os.path.exists(self.sCaseFolder) \
-                and not os.path.exists(self.sErrorFolder):
-            generateFolder(self.sCaseFolder)
-
-            import xml.etree.ElementTree as ET
-            tree = ET.parse(StringIO(WINMERGE_TEMPLATE))
-            root = tree.getroot()
-            root.find('paths/left').text = os.path.relpath(self.sCaseFolder, self.sMainTestFolder)
-            root.find('paths/right').text = os.path.relpath(self.sErrorFolder, self.sMainTestFolder)
-            tree.write(sWinMergePath)
-
-    def dump(self):
-        _dPre = {
+    def getDict(self) -> dict:
+        return {
             MODULE_NAME: self.sModule,
             CLASS_NAME: self.sClass,
             FUNC_NAME: self.sFunction,
             ARGS: self._get_module(self._args),
-            # ARGS: self._args,
             KWARGS: self._get_module(self._kwargs),
         }
 
+    def getTestMD5(self) -> str:
+        return hashlib.md5(self.codec.dumps(self.getDict()).encode("ansi")).hexdigest()[:self.nNameHex]
+
+    def getFullyQualifiedTestName(self) -> str:
+        if self.sClass:
+            return ".".join([self.sModule, self.sClass, self.sFunction])
+        else:
+            return ".".join([self.sModule, self.sFunction])
+
+    def getRelativeDirName(self) -> str:
+        if self.sClass:
+            return os.path.join(self.sModule, self.sClass, self.sFunction)
+        else:
+            return os.path.join(self.sModule, self.sFunction)
+
+    def getFullDirName(self) -> str:
+        return os.path.join(self.sTestRootDir, self.getRelativeDirName())
+
+    def getFullPath(self) -> str:
+        return os.path.join(self.getFullDirName(), self.getTestMD5() + self.codec.sExt)
+
+    def dump(self):
         if self._postClass is not None:
             _class = self._postClass
         elif self._postSelf is not None:
@@ -159,65 +160,50 @@ class Dumper:
         else:
             _class = None
 
-        sHash = hashlib.md5(self.codec.dumps(_dPre).encode("ansi")).hexdigest()[:self.nNameHex]
-
-        if sHash in self.collectedMD5S and not self.bOverwrite:
-            return
-
-        dResult = {**_dPre,
-                   MD5: sHash,
+        dResult = {**self.getDict(),
+                   MD5: self.getTestMD5(),
                    PRE: {},
                    POST: {}}
 
-        dResult[POST][RESULT] = self._result
-        dResult[POST][EXCEPTION] = self._get_module(self._exception)
         dResult[PRE][SELF] = self._get_module(self._preSelf)
         dResult[PRE][CLASS] = self._get_module(self._preClass)
         # dResult[PRE][GLOBAL] = self._preGlobal
         dResult[POST][SELF] = self._get_module(self._postSelf)
         dResult[POST][CLASS] = self._get_module(self._postClass)
         # dResult[POST][GLOBAL] = self._postGlobal
+        dResult[POST][RESULT] = self._get_module(self._result)
+        dResult[POST][EXCEPTION] = self._get_module(self._exception)
 
-        sFileName = "".join((sHash, self.codec.sExt))
-
-        # sOutput = self.codec.dumps(dResult)
-
-        if not os.path.exists(sFile := (os.path.join(self.sCaseFolder, sFileName))) or self.bOverwrite:
-            # with open_and_create_folders(sFile, "w") as f:
-            #     f.write(sOutput)
-            self.codec.dump(sFile, dResult)
-
-        # Like current.json:
-        dResult[NAME] = 'Current test'
-        # sOutput = self.codec.dumps(dResult)
-        # TODO to do this using ICodec:
-        # with open_and_create_folders(os.path.join(self.sMainTestFolder, self.sDefaultTest + self.codec.sExt), "w") as f:
-        #     f.write(sOutput)
-        self.codec.dump(os.path.join(self.sMainTestFolder, self.sDefaultTest + self.codec.sExt), dResult)
+        if (not os.path.exists(self.getFullPath())
+                or self.bOverwrite
+                or self.sTest == CURRENT):
+            self.codec.dump(self.getFullPath(), dResult)
 
     def _get_module(self, obj: object):
         """
         Replaces '__main__' module to the actual module name of any object.
+
         :param obj: any object, preferably not a primitive type (having __dict__) and from the __main__ module
         :return: the object with the replaced module
         """
-        if hasattr(obj, "__dict__") and hasattr(obj, "__module__"):
-            if obj.__module__ == "__main__":
-                if isinstance(obj, type):
-                    sClass = obj.__name__
-                else:
-                    sClass = obj.__class__.__name__
-                _class = getattr(sys.modules[self.sModule], sClass)
-                # Dumper.bDump = False
-                _newFunc = _get_original_function(_class.__new__)
-                instance = _newFunc(_class)
-                instance.__dict__.update(obj.__dict__)
-                for k, v in instance.__dict__.items():
-                    instance.__dict__[k] = self._get_module(v)
-                return instance
-        # elif isinstance(obj, list) or isinstance(obj, tuple):
-        #     def __get_module(_obj):
-        #         return self._get_module(_obj)
-        #     obj = type(obj)(map(__get_module, obj))
+        if hasattr(obj, "__module__") and obj.__module__ == "__main__":
+            if isinstance(obj, type):
+                sClass = obj.__name__
+            else:
+                sClass = obj.__class__.__name__
+            _class = getattr(sys.modules.get(self.sModule, None), sClass, None)
+            if _class and inspect.isclass(_class) and _class.__module__ != 'builtins':
+                obj.__module__ = _class.__module__
+            if not isinstance(obj, type):
+                for attr_name in dir(obj):
+                    try:
+                        attr_value = getattr(obj, attr_name)
+                        setattr(obj, attr_name, self._get_module(attr_value))
+                    except AttributeError:
+                        pass
+        elif isinstance(obj, (list, tuple)):
+            obj = type(obj)(self._get_module(item) for item in obj)
+        elif isinstance(obj, dict):
+            obj = {k: self._get_module(v) for k, v in obj.items()}
         return obj
 
