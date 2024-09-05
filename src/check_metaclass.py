@@ -18,4 +18,4 @@ class1 = MyMeta("Class1", (MyTemplateClass,), {'class_variable': 1})
 # Usage
 instance1 = class1()
 print(instance1.class_variable)  # This will print 1
-instance1.some_method()  # This will call the custom method
+instance1.some_class_method()  # This will call the custom method

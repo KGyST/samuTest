@@ -3,12 +3,12 @@ from typing import Callable
 
 class DefaultResult:
     #FIXME __repr__ or __str__
-    def __init__(self, p_result):
-        if hasattr(p_result, "__dict__"):
-            self.__dict__ = p_result.__dict__
+    def __init__(self, result):
+        if hasattr(result, "__dict__"):
+            self.__dict__ = result.__dict__
         else:
-            self.__value = p_result
-        self.__class = p_result.__class__
+            self.__value = result
+        self.__class = result.__class__
 
     def __eq__(self, other):
         if isinstance(other, self.__class) or isinstance(other, DefaultResult) and self.__class == other.__class:

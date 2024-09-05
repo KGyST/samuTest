@@ -5,7 +5,7 @@ from common.privateFunctions import caseFileCollector, open_and_create_folders
 from common.constants import *
 import jsonpickle
 from typing import Callable
-from decorator.decorators import Dumper
+from decorator.decorators import _Dumper
 
 #FIXME currently this is .json only, enable for yaml xml DB through DI or inheritance
 class JSONTestSuite(unittest.TestSuite):
@@ -24,7 +24,7 @@ class JSONTestSuite(unittest.TestSuite):
         # self._tests is an inherited member!
         self._tests = []
         self._folder = os.path.join(target_folder, )
-        Dumper.bDump = False
+        _Dumper.bDump = False
 
         for sFilePath in caseFileCollector(self._folder,
                                            cases_only,

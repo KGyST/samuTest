@@ -42,7 +42,7 @@ class JSONCodec(ICodec):
                 from decorator import Dumper
                 Dumper.bDump = False
                 return jsonpickle.loads(jf.read())
-            except Exception:
+            except Exception as e:
                 raise JSONCodec.StorageException()
 
     @staticmethod
@@ -51,7 +51,9 @@ class JSONCodec(ICodec):
 
     @staticmethod
     def dumps(data: dict) -> str:
-        return jsonpickle.dumps(data, indent=4, make_refs=False, include_properties=False)
+        from decorator import Dumper
+        Dumper.bDump = False
+        return jsonpickle.dumps(data, indent=4, make_refs=False, include_properties=True)
 
     @staticmethod
     def dump(path: str, data: dict):
@@ -86,7 +88,8 @@ class JSONCodec(ICodec):
                 module_name, class_name = class_path.rsplit('.', 1)
                 try:
                     module = importlib.import_module(module_name)
-                    getattr(module, class_name)  # Ensure the class is loaded
+                    if module_name != 'builtins':
+                        getattr(module, class_name)  # Ensure the class is loaded
                 except (ImportError, AttributeError) as e:
                     print(f"Error importing {class_path}: {e}")
             for key, value in importData.items():

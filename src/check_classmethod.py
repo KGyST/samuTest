@@ -1,31 +1,46 @@
-class LoggerMeta:
-    def __init__(self, *args, **kwargs):
-        # Needed just to absorb args
-        pass
-        print(1)
+class LoggerMeta(type):
+    @property
+    def class_attrib(cls):
+        return cls._class_attrib
 
-    def __call__(self, logger_arg, *args, **kwargs):
-        class _Logger:
-            def __init__(self, func):
-                self.func = func
-
-            def __call__(self, *args, **kwargs):
-                print(f"Function {self.func.__name__} | args: {args} | kwargs: {kwargs}")
-                print(logger_arg)
-                return self.func(*args, **kwargs)
-
-            def __get__(self, instance, owner):
-                # Ensure the method is correctly bound when accessed as a classmethod
-                if isinstance(self.func, classmethod):
-                    self.func = self.func.__get__(owner, owner)
-                else:
-                    self.func = self.func.__get__(instance, owner)
-                return self.__call__
-        return _Logger
+    @class_attrib.setter
+    def class_attrib(cls, value):
+        cls._class_attrib = value
 
 
 class Logger(metaclass=LoggerMeta):
-    pass
+    _class_attrib = 11
+
+    def __init__(self, logger_arg):
+        self.logger_instance = None
+        self.logger_arg = logger_arg
+
+    def __call__(self, func):
+        self.logger_instance = _Logger(func, self)
+        return self.logger_instance
+
+
+class _Logger:
+    def __init__(self, func, logger_instance):
+        self.func = func
+        self.logger_instance = logger_instance
+        self.extra_attr = None  # Attribute to be set later
+
+    def __call__(self, *args, **kwargs):
+        print(f"Function {self.func.__name__} | args: {args} | kwargs: {kwargs}")
+        print(f"Class Attrib: {self.logger_instance.__class__.class_attrib}")
+        print(f"Logger Arg: {self.logger_instance.logger_arg}")
+        print(f"Extra Attr: {self.extra_attr}")
+        return self.func(*args, **kwargs)
+
+    def __get__(self, instance, owner):
+        if isinstance(self.func, classmethod):
+            self.func = self.func.__get__(owner, owner)
+        elif isinstance(self.func, staticmethod):
+            self.func = self.func.__get__(None, owner)
+        else:
+            self.func = self.func.__get__(instance, owner)
+        return self.__call__
 
 
 class SomeClass:
@@ -50,7 +65,7 @@ class SomeClass:
         print(f"Static method kwargs: {kwargs}")
 
 
-@Logger(4)
+@Logger(9)
 def standalone_function(some_var: str, *args, **kwargs):
     print(f"Standalone function: {some_var}")
     print(f"Standalone function args: {args}")
@@ -59,23 +74,30 @@ def standalone_function(some_var: str, *args, **kwargs):
 
 if __name__ == '__main__':
     some_instance = SomeClass()
+
+    # Class method called by instance
     some_instance.class_method('Test2', "class_method_called_by_instance", a2="class_method_called_by_instance",
                                b2="class_method_called_by_instance")
-    # some_instance.class_method('Test2')
     print('---')
 
+    print(Logger.class_attrib)
+    Logger.class_attrib = 22
+    print(Logger.class_attrib)
+
+    # Instance method
     some_instance.instance_method("Test3", "instance", a3="instance_a", b3="instance_b")
-    # some_instance.instance_method("Test3")
     print('---')
 
+    # Static method
     SomeClass.static_method('Test4', "static", a4="static_a", b4="static_b")
-    # SomeClass.static_method('Test4')
     print('---')
 
+    # Standalone function
     standalone_function('Test5', "standalone", a5="standalone_a", b5="standalone_b")
-    # standalone_function('Test5')
     print('---')
 
+    Logger.class_attrib = 33
+
+    # Class method called by class
     SomeClass.class_method("Test1", "class", a1="class_a", b1="class_b")
-    # SomeClass.class_method("Test1")
     print('---')

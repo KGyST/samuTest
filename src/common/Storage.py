@@ -16,6 +16,7 @@ class StorageTestSuite(unittest.TestSuite):
         """
         :param target_folder:
         """
+
         # self._tests is an inherited member!
         self._tests = []
         self.cData = codec
@@ -56,12 +57,6 @@ class StorageTestCase(unittest.TestCase):
                     _func = getattr(_class, self.testData[FUNC_NAME])
                 else:
                     _func = getattr(module, self.testData[FUNC_NAME])
-
-                # When the _func is run by the runner, force not to dump:
-                if hasattr(_func, '__closure__') and _func.__closure__:
-                    decorator_instance = _func.__closure__[0].cell_contents
-                    if hasattr(decorator_instance, "Dumper"):
-                        decorator_instance.Dumper.bDump = False
 
                 testResult = self.suite.fComparer(obj, _func, self.testData[ARGS], self.testData[KWARGS], self.testData[POST][RESULT])
             except Exception as e:

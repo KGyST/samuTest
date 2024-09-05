@@ -1,2 +1,2 @@
-from .decorator import Dumper
+from .decorator import _Dumper
 
