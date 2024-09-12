@@ -1,0 +1,128 @@
+{
+    "module": "classTestClient",
+    "class_name": "ClassTestee",
+    "function": "member_method_that_throws_exception",
+    "args": {
+        "py/tuple": []
+    },
+    "kwargs": {},
+    "MD5": "3165fe53f7b0",
+    "data_pre": {
+        "self": {
+            "py/property": {
+                "classVariable": 7,
+                "class_method": {
+                    "py/property": {},
+                    "py/object": "builtins.method"
+                },
+                "member_method": {
+                    "py/property": {},
+                    "py/object": "builtins.method"
+                },
+                "member_method_that_throws_exception": {
+                    "py/property": {},
+                    "py/object": "builtins.method"
+                },
+                "static_method": {
+                    "py/function": "classTestClient.ClassTestee.static_method"
+                }
+            },
+            "py/object": "classTestClient.ClassTestee",
+            "instance_variable": 4,
+            "nestedInstance": {
+                "py/property": {
+                    "_privateMemberMethod": {
+                        "py/property": {},
+                        "py/object": "builtins.method"
+                    },
+                    "classMethod": {
+                        "py/property": {},
+                        "py/object": "builtins.method"
+                    },
+                    "nestedClassVariable": 1,
+                    "puclicMemberMethod": {
+                        "py/property": {},
+                        "py/object": "builtins.method"
+                    },
+                    "staticMethod": {
+                        "py/function": "classTestClient.ClassToBeNested.staticMethod"
+                    }
+                },
+                "py/object": "classTestClient.ClassToBeNested",
+                "nestedInstanceVariable": 2
+            }
+        },
+        "class": null
+    },
+    "data_post": {
+        "self": {
+            "py/property": {
+                "classVariable": 7,
+                "class_method": {
+                    "py/property": {},
+                    "py/object": "builtins.method"
+                },
+                "member_method": {
+                    "py/property": {},
+                    "py/object": "builtins.method"
+                },
+                "member_method_that_throws_exception": {
+                    "py/property": {},
+                    "py/object": "builtins.method"
+                },
+                "static_method": {
+                    "py/function": "classTestClient.ClassTestee.static_method"
+                }
+            },
+            "py/object": "classTestClient.ClassTestee",
+            "instance_variable": 4,
+            "nestedInstance": {
+                "py/property": {
+                    "_privateMemberMethod": {
+                        "py/property": {},
+                        "py/object": "builtins.method"
+                    },
+                    "classMethod": {
+                        "py/property": {},
+                        "py/object": "builtins.method"
+                    },
+                    "nestedClassVariable": 1,
+                    "puclicMemberMethod": {
+                        "py/property": {},
+                        "py/object": "builtins.method"
+                    },
+                    "staticMethod": {
+                        "py/function": "classTestClient.ClassToBeNested.staticMethod"
+                    }
+                },
+                "py/object": "classTestClient.ClassToBeNested",
+                "nestedInstanceVariable": 2
+            }
+        },
+        "class": null,
+        "result": null,
+        "exception": {
+            "py/property": {
+                "add_note": {
+                    "py/function": "classTestClient.ExampleException.add_note"
+                },
+                "args": [],
+                "exceptionClassVariable": "ExampleException Class Variable",
+                "with_traceback": {
+                    "py/function": "classTestClient.ExampleException.with_traceback"
+                }
+            },
+            "py/reduce": [
+                {
+                    "py/type": "classTestClient.ExampleException"
+                },
+                {
+                    "py/tuple": []
+                },
+                {
+                    "__module__": "classTestClient"
+                }
+            ]
+        }
+    }
+}

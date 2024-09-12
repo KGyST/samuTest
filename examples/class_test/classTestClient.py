@@ -20,7 +20,7 @@ class ClassToBeNested:
         pass
 
     @staticmethod
-    def statiMethod():
+    def staticMethod():
         pass
 
 
@@ -31,7 +31,7 @@ class ExampleException(Exception):
 class ClassTestee:
     classVariable = 0
 
-    # @Dumper(active=isFunctionDumperActive)
+    @Dumper(active=isFunctionDumperActive)
     def __new__(cls, *args, **kwargs):
         _instance = super().__new__(cls)
         _instance.__class__.classVariable += 1
@@ -93,18 +93,16 @@ def some_function(param="Nothing"):
 if __name__ == "__main__":
     classTestee_member_object = ClassTestee(2)
 
-    # print(classTestee_member_object)
-    #
-    # print(classTestee_member_object.class_method(2))
-    # print(classTestee_member_object.static_method(2))
-    # print(classTestee_member_object.member_method(2))
-    # try:
-    #     print(classTestee_member_object.member_method_that_throws_exception())
-    # except ExampleException:
-    #     pass
-    #
-    # print(ClassTestee.class_method(2))
-    # print(ClassTestee.static_method(2))
-    #
-    # print(some_function("Something"))
+    print(classTestee_member_object)
+    print(classTestee_member_object.class_method(2))
+    print(classTestee_member_object.static_method(2))
+    print(classTestee_member_object.member_method(2))
+    try:
+        print(classTestee_member_object.member_method_that_throws_exception())
+    except ExampleException:
+        pass
+    print(ClassTestee.class_method(2))
+    print(ClassTestee.static_method(2))
+
+    print(some_function("Something"))
 

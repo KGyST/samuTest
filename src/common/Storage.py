@@ -3,7 +3,7 @@ from common.publicFunctions import *
 from typing import Callable
 from common.Collector import *
 from common.ICodec import *
-
+from common.privateFunctions import _get_original_function
 
 class StorageTestSuite(unittest.TestSuite):
     def __init__(self,
@@ -57,6 +57,10 @@ class StorageTestCase(unittest.TestCase):
                     _func = getattr(_class, self.testData[FUNC_NAME])
                 else:
                     _func = getattr(module, self.testData[FUNC_NAME])
+                _func =_get_original_function(_func)
+
+                if self.testData[PRE][SELF]:
+                    self.testData[ARGS] = [self.testData[PRE][SELF], *self.testData[ARGS]]
 
                 testResult = self.suite.fComparer(obj, _func, self.testData[ARGS], self.testData[KWARGS], self.testData[POST][RESULT])
             except Exception as e:

@@ -26,3 +26,4 @@ GLOBAL      = "globals"
 TEST_ITEMS  = "tests"
 TEST_ERRORS = "_errors"
 CURRENT     = "current"
+

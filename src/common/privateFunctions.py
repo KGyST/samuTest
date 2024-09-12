@@ -84,20 +84,33 @@ def _get_calling_module_name() -> str:
 
 def _get_original_function(func: 'Callable') -> 'Callable':
     """
-    Recursively going down to get the original function if there are decorators on it
-    :param func: The decorated function
-    :return: The function without the decorator
+    Recursively get the original function if there are decorators on it.
+    :param func: The decorated function or bound method
+    :return: The original undecorated function
     """
+    from decorator.decorators import _Dumper
+
+    if hasattr(func, '__self__') and isinstance(func.__self__, _Dumper):
+        return func.__self__.func
+
+    # If it's a method wrapped by a decorator like `Dumper`, it might have a __wrapped__ attribute
+    if hasattr(func, '__wrapped__'):
+        return _get_original_function(func.__wrapped__)
+
+    # Handle bound methods that are transformed (like __call__)
+    if hasattr(func, '__func__'):
+        func = func.__func__
+
+    # Check for closure attributes that might hide the original function
     if hasattr(func, '__closure__') and func.__closure__:
         try:
             for cell in func.__closure__:
                 if isinstance(_callable := cell.cell_contents, Callable) and not isinstance(_callable, type):
                     return _get_original_function(_callable)
-            return func
         except (ValueError, IndexError, AttributeError):
             return func
-    else:
-        return func
+
+    return func
 
 
 def get_original_function_name(func: 'Callable') -> tuple[str, str, str]:

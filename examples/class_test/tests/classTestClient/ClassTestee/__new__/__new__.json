@@ -1,0 +1,62 @@
+{
+    "module": "classTestClient",
+    "class_name": "ClassTestee",
+    "function": "__new__",
+    "args": {
+        "py/tuple": [
+            {
+                "py/type": "classTestClient.ClassTestee"
+            },
+            2
+        ]
+    },
+    "kwargs": {},
+    "MD5": "7eeae1b262f4",
+    "data_pre": {
+        "self": null,
+        "class": null
+    },
+    "data_post": {
+        "self": null,
+        "class": null,
+        "result": {
+            "py/property": {
+                "classVariable": 1,
+                "class_method": {
+                    "py/property": {},
+                    "py/object": "builtins.classmethod",
+                    "__module__": "__main__",
+                    "__name__": "class_method",
+                    "__qualname__": "ClassTestee.class_method",
+                    "__doc__": null,
+                    "__annotations__": {
+                        "return": {
+                            "py/type": "builtins.str"
+                        }
+                    }
+                },
+                "member_method": {
+                    "py/function": "__main__.ClassTestee.member_method"
+                },
+                "member_method_that_throws_exception": {
+                    "py/function": "__main__.ClassTestee.member_method_that_throws_exception"
+                },
+                "static_method": {
+                    "py/property": {},
+                    "py/object": "builtins.staticmethod",
+                    "__module__": "__main__",
+                    "__name__": "static_method",
+                    "__qualname__": "ClassTestee.static_method",
+                    "__doc__": null,
+                    "__annotations__": {
+                        "return": {
+                            "py/type": "builtins.str"
+                        }
+                    }
+                }
+            },
+            "py/object": "classTestClient.ClassTestee"
+        },
+        "exception": null
+    }
+}

@@ -1,4 +1,4 @@
-from common.privateFunctions import open_and_create_folders
+from common.privateFunctions import open_and_create_folders, _get_calling_module_name
 from abc import ABC, abstractmethod
 import jsonpickle
 import json
@@ -37,13 +37,13 @@ class JSONCodec(ICodec):
     @staticmethod
     def read(path: str) -> dict:
         JSONCodec.find_and_import_classes(path)
-        with open(path, "r") as jf:
-            try:
-                from decorator import Dumper
-                Dumper.bDump = False
-                return jsonpickle.loads(jf.read())
-            except Exception as e:
-                raise JSONCodec.StorageException()
+        jf = open(path, "r").read()
+        try:
+            from decorator import Dumper
+            Dumper.bDump = False
+            return jsonpickle.loads(jf)
+        except Exception as e:
+            raise JSONCodec.StorageException(e)
 
     @staticmethod
     def reads(data: str) -> dict:

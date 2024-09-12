@@ -1,11 +1,10 @@
 import copy
-import functools
 
 import hashlib
 import os.path
 
 from common.constants import *
-from common.privateFunctions import get_original_function_name, md5Collector, _get_original_function
+from common.privateFunctions import md5Collector
 import sys
 from importlib import import_module
 from common.ICodec import *
@@ -50,6 +49,9 @@ class _Dumper:
         self._sTestMD5 = None
 
     def __get__(self, instance, owner):
+        if not Dumper.bDump:
+            return self.func
+        Dumper.bDump = False
         # https://stackoverflow.com/questions/78928486/how-to-deduce-whether-a-classmethod-is-called-on-an-instance-or-on-a-class
         if isinstance(self.func, classmethod):
             self.preClass_ = copy.deepcopy(owner)
@@ -63,6 +65,7 @@ class _Dumper:
             self.preSelf_ = copy.deepcopy(instance)
             self.func = self.func.__get__(instance, owner)
             self.postSelf_ = instance
+        Dumper.bDump = True
         return self.__call__
 
     # Misleading, this __call__ is called only once, at the beginning to create wrapped_function:
@@ -72,6 +75,8 @@ class _Dumper:
         _bDump = Dumper.bDump
         Dumper.bDump = False
 
+        from common.privateFunctions import get_original_function_name
+
         self.sModule, self.sClass, self.sFunction = get_original_function_name(self.func)
 
         _mod = import_module(self.sModule)
@@ -80,8 +85,6 @@ class _Dumper:
 
         self.args_ = copy.deepcopy(argsWrap)
         self.kwargs_ = copy.deepcopy(kwargsWrap)
-
-        self.sTest = self.sTestMD5
 
         try:
             self.result_ = self.func(*argsWrap, **kwargsWrap)

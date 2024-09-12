@@ -1,0 +1,119 @@
+{
+    "module": "classTestClient",
+    "class_name": "ClassTestee",
+    "function": "__init__",
+    "args": {
+        "py/tuple": [
+            2
+        ]
+    },
+    "kwargs": {},
+    "MD5": "0f6e6aaf5537",
+    "data_pre": {
+        "self": {
+            "py/property": {
+                "classVariable": 2,
+                "class_method": {
+                    "py/property": {},
+                    "py/object": "builtins.classmethod",
+                    "__module__": "__main__",
+                    "__name__": "class_method",
+                    "__qualname__": "ClassTestee.class_method",
+                    "__doc__": null,
+                    "__annotations__": {
+                        "return": {
+                            "py/type": "builtins.str"
+                        }
+                    }
+                },
+                "member_method": {
+                    "py/function": "classTestClient.ClassTestee.member_method"
+                },
+                "member_method_that_throws_exception": {
+                    "py/function": "classTestClient.ClassTestee.member_method_that_throws_exception"
+                },
+                "static_method": {
+                    "py/property": {},
+                    "py/object": "builtins.staticmethod",
+                    "__module__": "__main__",
+                    "__name__": "static_method",
+                    "__qualname__": "ClassTestee.static_method",
+                    "__doc__": null,
+                    "__annotations__": {
+                        "return": {
+                            "py/type": "builtins.str"
+                        }
+                    }
+                }
+            },
+            "py/object": "classTestClient.ClassTestee"
+        },
+        "class": null
+    },
+    "data_post": {
+        "self": {
+            "py/property": {
+                "classVariable": 2,
+                "class_method": {
+                    "py/property": {},
+                    "py/object": "builtins.classmethod",
+                    "__module__": "__main__",
+                    "__name__": "class_method",
+                    "__qualname__": "ClassTestee.class_method",
+                    "__doc__": null,
+                    "__annotations__": {
+                        "return": {
+                            "py/type": "builtins.str"
+                        }
+                    }
+                },
+                "member_method": {
+                    "py/function": "classTestClient.ClassTestee.member_method"
+                },
+                "member_method_that_throws_exception": {
+                    "py/function": "classTestClient.ClassTestee.member_method_that_throws_exception"
+                },
+                "static_method": {
+                    "py/property": {},
+                    "py/object": "builtins.staticmethod",
+                    "__module__": "__main__",
+                    "__name__": "static_method",
+                    "__qualname__": "ClassTestee.static_method",
+                    "__doc__": null,
+                    "__annotations__": {
+                        "return": {
+                            "py/type": "builtins.str"
+                        }
+                    }
+                }
+            },
+            "py/object": "classTestClient.ClassTestee",
+            "instance_variable": 2,
+            "nestedInstance": {
+                "py/property": {
+                    "_privateMemberMethod": {
+                        "py/property": {},
+                        "py/object": "builtins.method"
+                    },
+                    "classMethod": {
+                        "py/property": {},
+                        "py/object": "builtins.method"
+                    },
+                    "nestedClassVariable": 1,
+                    "puclicMemberMethod": {
+                        "py/property": {},
+                        "py/object": "builtins.method"
+                    },
+                    "staticMethod": {
+                        "py/function": "classTestClient.ClassToBeNested.staticMethod"
+                    }
+                },
+                "py/object": "classTestClient.ClassToBeNested",
+                "nestedInstanceVariable": 2
+            }
+        },
+        "class": null,
+        "result": null,
+        "exception": null
+    }
+}
