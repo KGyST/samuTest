@@ -1,8 +1,8 @@
-from decorator.decorators import _Dumper
+from decorator.decorators import Dumper
 from helpers import ZeroDivisionErrorCatcher
 
 
-@_Dumper(active=True)
+@Dumper()
 @ZeroDivisionErrorCatcher
 def funcTestee(number):
     return 1 / number

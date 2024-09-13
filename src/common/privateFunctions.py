@@ -66,7 +66,6 @@ def open_and_create_folders(file: str, mode: str):
 
 # ----------------------------------------------------------
 
-
 def _get_calling_module_name() -> str:
     """
     Gets the module name from its filename if the module itself is the __main__

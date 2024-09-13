@@ -1,6 +1,7 @@
 import os
 from typing import Callable
 
+
 class DefaultResult:
     #FIXME __repr__ or __str__
     def __init__(self, result):
@@ -41,6 +42,7 @@ def case_filter_func(file_name:str, extension:str, filter_char:str=".",  cases_t
             and os.path.splitext(file_name)[1] == extension \
             and file_name[0] != filter_char
 
+
 def default_comparer_func(obj:'DefaultResult', func:'Callable', func_args:list, func_kwargs:dict, expected_result=None):
     """
     :param obj:
@@ -56,8 +58,8 @@ def default_comparer_func(obj:'DefaultResult', func:'Callable', func_args:list, 
     # test_data.update({"result": ResultClass(testResult)})
     # __eq__ etc being defined in ResultClass
     obj.assertEqual(DefaultResult(expected_result), DefaultResult(testResult))
-
     return testResult
+
 
 def get_file_path(result:dict, root_folder_name:str, error:bool=False)->str:
     return ""

@@ -11,14 +11,16 @@
                 },
                 "member_method_that_throws_exception": {
                     "py/function": "classTestClient.ClassTestee.member_method_that_throws_exception"
-                }
+                },
+                "someProperty": null
             },
-            "py/object": "classTestClient.ClassTestee"
+            "py/object": "classTestClient.ClassTestee",
+            "_someProperty": null
         },
         2
     ],
     "kwargs": {},
-    "MD5": "c8160d925e88",
+    "MD5": "edc582790f7e",
     "data_pre": {
         "self": {
             "py/id": 2
@@ -38,11 +40,13 @@
                 "member_method_that_throws_exception": {
                     "py/function": "classTestClient.ClassTestee.member_method_that_throws_exception"
                 },
+                "someProperty": 2,
                 "static_method": {
                     "py/id": 5
                 }
             },
             "py/object": "classTestClient.ClassTestee",
+            "_someProperty": 2,
             "instance_variable": 2,
             "nestedInstance": {
                 "py/property": {
@@ -53,8 +57,7 @@
                 },
                 "py/object": "classTestClient.ClassToBeNested",
                 "nestedInstanceVariable": 2
-            },
-            "_someProperty": 2
+            }
         },
         "class": null,
         "result": null,

@@ -6,11 +6,9 @@ import types
 
 from common.constants import *
 from common.privateFunctions import md5Collector, get_original_function_name
-import sys
 from importlib import import_module
 from common.ICodec import *
-from types import FunctionType, MethodType
-import inspect
+from types import FunctionType
 from collections.abc import Callable
 
 
@@ -118,9 +116,9 @@ class _Dumper:
 
     @property
     def sTestMD5(self) -> str:
-        if self._sTestMD5 == None:
-            _pre = self.dPre
-            self._sTestMD5 = hashlib.md5(self.dumperInstance.codec.dumps(_pre).encode("ansi")).hexdigest()[:self.dumperInstance.nNameHex]
+        # if self._sTestMD5 == None:
+        _pre = self.dPre
+        self._sTestMD5 = hashlib.md5(self.dumperInstance.codec.dumps(_pre).encode("ansi")).hexdigest()[:self.dumperInstance.nNameHex]
         return self._sTestMD5
 
     @property

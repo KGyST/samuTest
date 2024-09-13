@@ -1,0 +1,27 @@
+{
+    "module": "basicTestClient",
+    "class_name": "",
+    "function": "funcTesteeWithMultipleReturnValues",
+    "args": {
+        "py/tuple": [
+            1
+        ]
+    },
+    "kwargs": {},
+    "MD5": "1176b9fba236",
+    "data_pre": {
+        "self": null,
+        "class": null
+    },
+    "data_post": {
+        "result": {
+            "py/tuple": [
+                1,
+                1.0
+            ]
+        },
+        "exception": null,
+        "self": null,
+        "class": null
+    }
+}

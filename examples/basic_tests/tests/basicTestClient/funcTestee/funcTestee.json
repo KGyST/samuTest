@@ -1,0 +1,22 @@
+{
+    "module": "basicTestClient",
+    "class_name": "",
+    "function": "funcTestee",
+    "args": {
+        "py/tuple": [
+            1
+        ]
+    },
+    "kwargs": {},
+    "MD5": "1ce6869e022c",
+    "data_pre": {
+        "self": null,
+        "class": null
+    },
+    "data_post": {
+        "result": 1.0,
+        "exception": null,
+        "self": null,
+        "class": null
+    }
+}

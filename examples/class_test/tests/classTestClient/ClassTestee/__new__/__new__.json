@@ -27,9 +27,11 @@
                 },
                 "member_method_that_throws_exception": {
                     "py/function": "classTestClient.ClassTestee.member_method_that_throws_exception"
-                }
+                },
+                "someProperty": null
             },
-            "py/object": "classTestClient.ClassTestee"
+            "py/object": "classTestClient.ClassTestee",
+            "_someProperty": null
         },
         "exception": null
     }

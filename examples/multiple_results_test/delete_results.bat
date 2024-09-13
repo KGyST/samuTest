@@ -1,3 +1,5 @@
-del /q /S test_folder\*
-rmdir /q /S test_folder\funcTestee
-rmdir /q /S test_folder\funcTestee_errors
+if exist tests (
+    rmdir /q /s tests
+	start "" "%~dp0"
+)
+

@@ -7,6 +7,7 @@ import jsonpickle
 from typing import Callable
 from decorator.decorators import _Dumper
 
+
 #FIXME currently this is .json only, enable for yaml xml DB through DI or inheritance
 class JSONTestSuite(unittest.TestSuite):
     def __init__(self,

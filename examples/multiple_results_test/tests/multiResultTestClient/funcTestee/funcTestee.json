@@ -1,0 +1,27 @@
+{
+    "module": "multiResultTestClient",
+    "class_name": "",
+    "function": "funcTestee",
+    "args": {
+        "py/tuple": [
+            100
+        ]
+    },
+    "kwargs": {},
+    "MD5": "13caa53b1109",
+    "data_pre": {
+        "self": null,
+        "class": null
+    },
+    "data_post": {
+        "self": null,
+        "class": null,
+        "result": {
+            "py/tuple": [
+                0.01,
+                100
+            ]
+        },
+        "exception": null
+    }
+}

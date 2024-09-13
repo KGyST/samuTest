@@ -76,15 +76,16 @@ class ClassTestee:
 
     # FIXME property handling
     # @Dumper()
-    # @property
-    # def someProperty(self):
-    #     print(f"someProperty called, instance_variable = {self._someProperty}")
-    #     return self._someProperty
+    @property
+    def someProperty(self):
+        print(f"someProperty called, instance_variable = {self._someProperty}")
+        return self._someProperty
 
+    # FIXME property handling
     # @Dumper()
-    # @someProperty.setter
-    # def someProperty(self, value):
-    #     self._someProperty = value
+    @someProperty.setter
+    def someProperty(self, value):
+        self._someProperty = value
 
     # FIXME assertions
 
@@ -98,12 +99,13 @@ def some_function(param="Nothing"):
 
 if __name__ == "__main__":
     classTestee_member_object = ClassTestee(2)
+    classTestee_member_object.someProperty = 3
 
     print(classTestee_member_object)
     print(classTestee_member_object.class_method(2))
     print(classTestee_member_object.static_method(2))
     print(classTestee_member_object.member_method(2))
-    # print(classTestee_member_object.someProperty)
+    print(classTestee_member_object.someProperty)
     try:
         print(classTestee_member_object.member_method_that_throws_exception())
     except ExampleException:

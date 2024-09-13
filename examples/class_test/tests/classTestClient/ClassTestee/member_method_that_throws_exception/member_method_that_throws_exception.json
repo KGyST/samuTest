@@ -6,11 +6,13 @@
         {
             "py/property": {
                 "classVariable": 7,
+                "someProperty": 3,
                 "static_method": {
                     "py/function": "classTestClient.ClassTestee.static_method"
                 }
             },
             "py/object": "classTestClient.ClassTestee",
+            "_someProperty": 3,
             "instance_variable": 4,
             "nestedInstance": {
                 "py/property": {
@@ -21,12 +23,11 @@
                 },
                 "py/object": "classTestClient.ClassToBeNested",
                 "nestedInstanceVariable": 2
-            },
-            "_someProperty": 2
+            }
         }
     ],
     "kwargs": {},
-    "MD5": "38a7a7813c94",
+    "MD5": "d2742e03dd99",
     "data_pre": {
         "self": {
             "py/id": 2
@@ -46,11 +47,13 @@
                 "member_method_that_throws_exception": {
                     "py/id": 5
                 },
+                "someProperty": 3,
                 "static_method": {
                     "py/function": "classTestClient.ClassTestee.static_method"
                 }
             },
             "py/object": "classTestClient.ClassTestee",
+            "_someProperty": 3,
             "instance_variable": 4,
             "nestedInstance": {
                 "py/property": {
@@ -61,8 +64,7 @@
                 },
                 "py/object": "classTestClient.ClassToBeNested",
                 "nestedInstanceVariable": 2
-            },
-            "_someProperty": 2
+            }
         },
         "class": null,
         "result": null,

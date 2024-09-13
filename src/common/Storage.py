@@ -5,6 +5,7 @@ from common.Collector import *
 from common.ICodec import *
 from common.privateFunctions import _get_original_function
 
+
 class StorageTestSuite(unittest.TestSuite):
     def __init__(self,
                  path: str = TEST_ITEMS,
