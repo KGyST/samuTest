@@ -1,0 +1,22 @@
+{
+    "module": "basicTestClient",
+    "class_name": "",
+    "function": "callerFunction",
+    "args": {
+        "py/tuple": [
+            2
+        ]
+    },
+    "kwargs": {},
+    "MD5": "0b819a34ad75",
+    "data_pre": {
+        "self": null,
+        "class": null
+    },
+    "data_post": {
+        "self": null,
+        "class": null,
+        "result": 3,
+        "exception": null
+    }
+}

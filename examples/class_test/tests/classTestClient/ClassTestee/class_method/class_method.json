@@ -1,0 +1,26 @@
+{
+    "module": "classTestClient",
+    "class_name": "ClassTestee",
+    "function": "class_method",
+    "args": {
+        "py/tuple": [
+            2
+        ]
+    },
+    "kwargs": {},
+    "MD5": "1d068bb8214e",
+    "data_pre": {
+        "self": null,
+        "class": {
+            "py/type": "classTestClient.ClassTestee"
+        }
+    },
+    "data_post": {
+        "self": null,
+        "class": {
+            "py/type": "classTestClient.ClassTestee"
+        },
+        "result": "classmethod called",
+        "exception": null
+    }
+}

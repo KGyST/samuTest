@@ -1,12 +1,8 @@
-from unitTest.test_runner import JSONTestSuite
+import os.path
+from common.Storage import StorageTestSuite
 
 
-class Test_JSONTestTestClient(JSONTestSuite):
+class BasicStorageTestClient(StorageTestSuite):
     def __init__(self):
-        super().__init__(target_folder="tests")
-
-
-class Test_current(JSONTestSuite):
-    def __init__(self):
-        super().__init__(cases_only='current')
+        super().__init__(path="tests", error_path=os.path.join("..", "errors"))
 

@@ -1,11 +1,11 @@
-from decorator.decorators import JSONFunctionDumper
+from decorator.decorators import Dumper
 from helpers import ZeroDivisionErrorCatcher
 
 
-@JSONFunctionDumper(active=True)
+@Dumper()
 @ZeroDivisionErrorCatcher
-def funcTestee(p_iNum):
-    return 1 / p_iNum, p_iNum
+def funcTestee(num: int):
+    return 1 / num, num
 
 
 if __name__ == "__main__":
