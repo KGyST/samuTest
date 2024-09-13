@@ -41,12 +41,13 @@ class ClassTestee:
     def __init__(self, param):
         self.instance_variable = param
         self.nestedInstance = ClassToBeNested()
+        self._someProperty = param
 
-    @Dumper(active=isFunctionDumperActive)
+    @Dumper()
     def __str__(self) -> str:
         return f'ClassTestee: {str(self.instance_variable)}'
 
-    @Dumper(active=isFunctionDumperActive)
+    @Dumper()
     @classmethod
     def class_method(cls, param=1) -> str:
         print(f"BEGIN class_method, ClassTestee.classVariable = {ClassTestee.classVariable}")
@@ -54,13 +55,13 @@ class ClassTestee:
         print(f"END class_method, ClassTestee.classVariable = {ClassTestee.classVariable}")
         return "classmethod called"
 
-    @Dumper(active=isFunctionDumperActive)
+    @Dumper()
     @staticmethod
     def static_method(param=1) -> str:
         print(f"static_method called {param}")
         return "staticmethod called"
 
-    @Dumper(active=isFunctionDumperActive)
+    @Dumper()
     def member_method(self, param=1):
         print(f"BEGIN member_method called, instance_variable = {self.instance_variable}")
         # self.instance_variable += ClassTestee.classVariable + p_var
@@ -68,14 +69,16 @@ class ClassTestee:
         print(f"END member_method called, instance_variable = {self.instance_variable}")
         return self.instance_variable
 
-    @Dumper(active=True, exceptions=[ExampleException])
+    @Dumper(active=True, exceptions=(ExampleException, ))
     def member_method_that_throws_exception(self):
+        print(f"member_method_that_throws_exception called, instance_variable = {self.instance_variable}")
         raise ExampleException()
 
     # FIXME property handling
     # @Dumper()
     # @property
     # def someProperty(self):
+    #     print(f"someProperty called, instance_variable = {self._someProperty}")
     #     return self._someProperty
 
     # @Dumper()
@@ -83,9 +86,12 @@ class ClassTestee:
     # def someProperty(self, value):
     #     self._someProperty = value
 
+    # FIXME assertions
 
-@Dumper(active=isFunctionDumperActive)
+
+@Dumper()
 def some_function(param="Nothing"):
+    print(f"some_function called, param = {param}")
     print(param)
     return param
 
@@ -97,6 +103,7 @@ if __name__ == "__main__":
     print(classTestee_member_object.class_method(2))
     print(classTestee_member_object.static_method(2))
     print(classTestee_member_object.member_method(2))
+    # print(classTestee_member_object.someProperty)
     try:
         print(classTestee_member_object.member_method_that_throws_exception())
     except ExampleException:

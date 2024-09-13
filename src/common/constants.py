@@ -27,3 +27,5 @@ TEST_ITEMS  = "tests"
 TEST_ERRORS = "_errors"
 CURRENT     = "current"
 
+BUILTINS = 'builtins.'
+MAIN = '__main__'

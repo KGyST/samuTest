@@ -1,0 +1,22 @@
+{
+    "module": "classTestClient",
+    "class_name": "",
+    "function": "some_function",
+    "args": {
+        "py/tuple": [
+            "Something"
+        ]
+    },
+    "kwargs": {},
+    "MD5": "1cb7a79cd773",
+    "data_pre": {
+        "self": null,
+        "class": null
+    },
+    "data_post": {
+        "self": null,
+        "class": null,
+        "result": "Something",
+        "exception": null
+    }
+}

@@ -2,72 +2,37 @@
     "module": "classTestClient",
     "class_name": "ClassTestee",
     "function": "__str__",
-    "args": {
-        "py/tuple": []
-    },
-    "kwargs": {},
-    "MD5": "84a789b5796a",
-    "data_pre": {
-        "self": {
+    "args": [
+        {
             "py/property": {
                 "classVariable": 3,
-                "class_method": {
-                    "py/property": {},
-                    "py/object": "builtins.classmethod",
-                    "__module__": "__main__",
-                    "__name__": "class_method",
-                    "__qualname__": "ClassTestee.class_method",
-                    "__doc__": null,
-                    "__annotations__": {
-                        "return": {
-                            "py/type": "builtins.str"
-                        }
-                    }
-                },
                 "member_method": {
-                    "py/function": "__main__.ClassTestee.member_method"
+                    "py/function": "classTestClient.ClassTestee.member_method"
                 },
                 "member_method_that_throws_exception": {
-                    "py/function": "__main__.ClassTestee.member_method_that_throws_exception"
-                },
-                "static_method": {
-                    "py/property": {},
-                    "py/object": "builtins.staticmethod",
-                    "__module__": "__main__",
-                    "__name__": "static_method",
-                    "__qualname__": "ClassTestee.static_method",
-                    "__doc__": null,
-                    "__annotations__": {
-                        "return": {
-                            "py/type": "builtins.str"
-                        }
-                    }
+                    "py/function": "classTestClient.ClassTestee.member_method_that_throws_exception"
                 }
             },
             "py/object": "classTestClient.ClassTestee",
             "instance_variable": 2,
             "nestedInstance": {
                 "py/property": {
-                    "_privateMemberMethod": {
-                        "py/property": {},
-                        "py/object": "builtins.method"
-                    },
-                    "classMethod": {
-                        "py/property": {},
-                        "py/object": "builtins.method"
-                    },
                     "nestedClassVariable": 1,
-                    "puclicMemberMethod": {
-                        "py/property": {},
-                        "py/object": "builtins.method"
-                    },
                     "staticMethod": {
-                        "py/function": "__main__.ClassToBeNested.staticMethod"
+                        "py/function": "classTestClient.ClassToBeNested.staticMethod"
                     }
                 },
-                "py/object": "__main__.ClassToBeNested",
+                "py/object": "classTestClient.ClassToBeNested",
                 "nestedInstanceVariable": 2
-            }
+            },
+            "_someProperty": 2
+        }
+    ],
+    "kwargs": {},
+    "MD5": "7efa16e42061",
+    "data_pre": {
+        "self": {
+            "py/id": 2
         },
         "class": null
     },
@@ -76,62 +41,31 @@
             "py/property": {
                 "classVariable": 3,
                 "class_method": {
-                    "py/property": {},
-                    "py/object": "builtins.classmethod",
-                    "__module__": "__main__",
-                    "__name__": "class_method",
-                    "__qualname__": "ClassTestee.class_method",
-                    "__doc__": null,
-                    "__annotations__": {
-                        "return": {
-                            "py/type": "builtins.str"
-                        }
-                    }
+                    "py/id": 3
                 },
                 "member_method": {
-                    "py/function": "__main__.ClassTestee.member_method"
+                    "py/function": "classTestClient.ClassTestee.member_method"
                 },
                 "member_method_that_throws_exception": {
-                    "py/function": "__main__.ClassTestee.member_method_that_throws_exception"
+                    "py/function": "classTestClient.ClassTestee.member_method_that_throws_exception"
                 },
                 "static_method": {
-                    "py/property": {},
-                    "py/object": "builtins.staticmethod",
-                    "__module__": "__main__",
-                    "__name__": "static_method",
-                    "__qualname__": "ClassTestee.static_method",
-                    "__doc__": null,
-                    "__annotations__": {
-                        "return": {
-                            "py/type": "builtins.str"
-                        }
-                    }
+                    "py/id": 5
                 }
             },
             "py/object": "classTestClient.ClassTestee",
             "instance_variable": 2,
             "nestedInstance": {
                 "py/property": {
-                    "_privateMemberMethod": {
-                        "py/property": {},
-                        "py/object": "builtins.method"
-                    },
-                    "classMethod": {
-                        "py/property": {},
-                        "py/object": "builtins.method"
-                    },
                     "nestedClassVariable": 1,
-                    "puclicMemberMethod": {
-                        "py/property": {},
-                        "py/object": "builtins.method"
-                    },
                     "staticMethod": {
-                        "py/function": "__main__.ClassToBeNested.staticMethod"
+                        "py/function": "classTestClient.ClassToBeNested.staticMethod"
                     }
                 },
-                "py/object": "__main__.ClassToBeNested",
+                "py/object": "classTestClient.ClassToBeNested",
                 "nestedInstanceVariable": 2
-            }
+            },
+            "_someProperty": 2
         },
         "class": null,
         "result": "ClassTestee: 2",

@@ -22,37 +22,11 @@
         "result": {
             "py/property": {
                 "classVariable": 1,
-                "class_method": {
-                    "py/property": {},
-                    "py/object": "builtins.classmethod",
-                    "__module__": "__main__",
-                    "__name__": "class_method",
-                    "__qualname__": "ClassTestee.class_method",
-                    "__doc__": null,
-                    "__annotations__": {
-                        "return": {
-                            "py/type": "builtins.str"
-                        }
-                    }
-                },
                 "member_method": {
-                    "py/function": "__main__.ClassTestee.member_method"
+                    "py/function": "classTestClient.ClassTestee.member_method"
                 },
                 "member_method_that_throws_exception": {
-                    "py/function": "__main__.ClassTestee.member_method_that_throws_exception"
-                },
-                "static_method": {
-                    "py/property": {},
-                    "py/object": "builtins.staticmethod",
-                    "__module__": "__main__",
-                    "__name__": "static_method",
-                    "__qualname__": "ClassTestee.static_method",
-                    "__doc__": null,
-                    "__annotations__": {
-                        "return": {
-                            "py/type": "builtins.str"
-                        }
-                    }
+                    "py/function": "classTestClient.ClassTestee.member_method_that_throws_exception"
                 }
             },
             "py/object": "classTestClient.ClassTestee"

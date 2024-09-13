@@ -59,9 +59,6 @@ class StorageTestCase(unittest.TestCase):
                     _func = getattr(module, self.testData[FUNC_NAME])
                 _func =_get_original_function(_func)
 
-                if self.testData[PRE][SELF]:
-                    self.testData[ARGS] = [self.testData[PRE][SELF], *self.testData[ARGS]]
-
                 testResult = self.suite.fComparer(obj, _func, self.testData[ARGS], self.testData[KWARGS], self.testData[POST][RESULT])
             except Exception as e:
                 if e.__class__ == self.testData[POST][EXCEPTION].__class__:

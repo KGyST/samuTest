@@ -2,9 +2,10 @@ import copy
 
 import hashlib
 import os.path
+import types
 
 from common.constants import *
-from common.privateFunctions import md5Collector
+from common.privateFunctions import md5Collector, get_original_function_name
 import sys
 from importlib import import_module
 from common.ICodec import *
@@ -75,11 +76,9 @@ class _Dumper:
         _bDump = Dumper.bDump
         Dumper.bDump = False
 
-        from common.privateFunctions import get_original_function_name
-
         self.sModule, self.sClass, self.sFunction = get_original_function_name(self.func)
 
-        _mod = import_module(self.sModule)
+        import_module(self.sModule)
 
         self.collectedMD5S.update(md5Collector(self.dumperInstance.codec, self.sRelativeDir))
 
@@ -104,7 +103,7 @@ class _Dumper:
                 # FIXME
                 if self.bDump() == True:
                     self.dump()
-        Dumper.bDump = _bDump
+            Dumper.bDump = _bDump
         return self.result_
 
     @property
@@ -113,14 +112,15 @@ class _Dumper:
             MODULE_NAME: self.sModule,
             CLASS_NAME: self.sClass,
             FUNC_NAME: self.sFunction,
-            ARGS: self._get_module(self.args_),
-            KWARGS: self._get_module(self.kwargs_),
+            ARGS: (self.args_ if not isinstance(self.func, types.MethodType) else [self.preSelf_, *self.args_]),
+            KWARGS: (self.kwargs_),
         }
 
     @property
     def sTestMD5(self) -> str:
         if self._sTestMD5 == None:
-            self._sTestMD5 = hashlib.md5(self.dumperInstance.codec.dumps(self.dPre).encode("ansi")).hexdigest()[:self.dumperInstance.nNameHex]
+            _pre = self.dPre
+            self._sTestMD5 = hashlib.md5(self.dumperInstance.codec.dumps(_pre).encode("ansi")).hexdigest()[:self.dumperInstance.nNameHex]
         return self._sTestMD5
 
     @property
@@ -158,60 +158,19 @@ class _Dumper:
                    PRE: {},
                    POST: {}}
 
-        dResult[PRE][SELF] = self._get_module(self.preSelf_)
-        dResult[PRE][CLASS] = self._get_module(self.preClass_)
+        dResult[PRE][SELF] = self.preSelf_
+        dResult[PRE][CLASS] = self.preClass_
         # dResult[PRE][GLOBAL] = self._preGlobal
-        dResult[POST][SELF] = self._get_module(self.postSelf_)
-        dResult[POST][CLASS] = self._get_module(self.postClass_)
+        dResult[POST][SELF] = self.postSelf_
+        dResult[POST][CLASS] = self.postClass_
         # dResult[POST][GLOBAL] = self._postGlobal
-        dResult[POST][RESULT] = self._get_module(self.result_)
-        dResult[POST][EXCEPTION] = self._get_module(self.exception_)
+        dResult[POST][RESULT] = self.result_
+        dResult[POST][EXCEPTION] = self.exception_
 
         if (not os.path.exists(self.sFullPath)
                 or self.dumperInstance.bOverwrite
                 or self.sTest == CURRENT):
             self.dumperInstance.codec.dump(self.sFullPath, dResult)
-
-    def _get_module(self, obj: object):
-        """
-        Replaces '__main__' module to the actual module name of any object.
-
-        :param obj: any object, preferably not a primitive type (having __dict__) and from the __main__ module
-        :return: the object with the replaced module
-        """
-        if hasattr(obj, "__module__") and obj.__module__ == "__main__":
-            if isinstance(obj, type):
-                sClass = obj.__name__
-            else:
-                sClass = obj.__class__.__name__
-            _class = getattr(sys.modules.get(self.sModule, None), sClass, None)
-            if _class and inspect.isclass(_class) and _class.__module__ != 'builtins':
-                obj.__module__ = _class.__module__
-            if not isinstance(obj, type):
-                for attr_name in dir(obj):
-                    try:
-                        attr_value = getattr(obj, attr_name)
-                        if attr_value.__class__.__module__ != "builtins":
-                            updated_attr_value = self._get_module(attr_value)
-                            setattr(obj, attr_name, self._get_module(updated_attr_value))
-                    except (AttributeError, TypeError):
-                        # Catch and handle any AttributeError (read-only attributes, etc.)
-                        pass
-        elif isinstance(obj, (list, tuple, set)):
-            obj = type(obj)(self._get_module(item) for item in obj)
-        elif isinstance(obj, dict):
-            obj = {k: self._get_module(v) for k, v in obj.items()}
-        # elif not isinstance(obj, type):
-        #     for attr_name in dir(obj):
-        #         try:
-        #             attr_value = getattr(obj, attr_name)
-        #             if attr_value.__class__.__module__ != "builtins":
-        #                 updated_attr_value = self._get_module(attr_value)
-        #                 setattr(obj, attr_name, self._get_module(updated_attr_value))
-        #         except (AttributeError, TypeError):
-        #             # Catch and handle any AttributeError (read-only attributes, etc.)
-        #             pass
-        return obj
 
 
 class Dumper:

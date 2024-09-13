@@ -2,25 +2,10 @@
     "module": "classTestClient",
     "class_name": "ClassTestee",
     "function": "member_method",
-    "args": {
-        "py/tuple": [
-            2
-        ]
-    },
-    "kwargs": {},
-    "MD5": "faeeafd2df13",
-    "data_pre": {
-        "self": {
+    "args": [
+        {
             "py/property": {
                 "classVariable": 6,
-                "class_method": {
-                    "py/property": {},
-                    "py/object": "builtins.method"
-                },
-                "member_method": {
-                    "py/property": {},
-                    "py/object": "builtins.method"
-                },
                 "member_method_that_throws_exception": {
                     "py/function": "classTestClient.ClassTestee.member_method_that_throws_exception"
                 },
@@ -32,26 +17,23 @@
             "instance_variable": 2,
             "nestedInstance": {
                 "py/property": {
-                    "_privateMemberMethod": {
-                        "py/property": {},
-                        "py/object": "builtins.method"
-                    },
-                    "classMethod": {
-                        "py/property": {},
-                        "py/object": "builtins.method"
-                    },
                     "nestedClassVariable": 1,
-                    "puclicMemberMethod": {
-                        "py/property": {},
-                        "py/object": "builtins.method"
-                    },
                     "staticMethod": {
                         "py/function": "classTestClient.ClassToBeNested.staticMethod"
                     }
                 },
                 "py/object": "classTestClient.ClassToBeNested",
                 "nestedInstanceVariable": 2
-            }
+            },
+            "_someProperty": 2
+        },
+        2
+    ],
+    "kwargs": {},
+    "MD5": "53e52955c446",
+    "data_pre": {
+        "self": {
+            "py/id": 2
         },
         "class": null
     },
@@ -60,12 +42,10 @@
             "py/property": {
                 "classVariable": 6,
                 "class_method": {
-                    "py/property": {},
-                    "py/object": "builtins.method"
+                    "py/id": 3
                 },
                 "member_method": {
-                    "py/property": {},
-                    "py/object": "builtins.method"
+                    "py/id": 4
                 },
                 "member_method_that_throws_exception": {
                     "py/function": "classTestClient.ClassTestee.member_method_that_throws_exception"
@@ -78,26 +58,15 @@
             "instance_variable": 4,
             "nestedInstance": {
                 "py/property": {
-                    "_privateMemberMethod": {
-                        "py/property": {},
-                        "py/object": "builtins.method"
-                    },
-                    "classMethod": {
-                        "py/property": {},
-                        "py/object": "builtins.method"
-                    },
                     "nestedClassVariable": 1,
-                    "puclicMemberMethod": {
-                        "py/property": {},
-                        "py/object": "builtins.method"
-                    },
                     "staticMethod": {
                         "py/function": "classTestClient.ClassToBeNested.staticMethod"
                     }
                 },
                 "py/object": "classTestClient.ClassToBeNested",
                 "nestedInstanceVariable": 2
-            }
+            },
+            "_someProperty": 2
         },
         "class": null,
         "result": 4,
