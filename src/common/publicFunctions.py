@@ -1,14 +1,15 @@
 import os
 from typing import Callable
 
+
 class DefaultResult:
     #FIXME __repr__ or __str__
-    def __init__(self, p_result):
-        if hasattr(p_result, "__dict__"):
-            self.__dict__ = p_result.__dict__
+    def __init__(self, result):
+        if hasattr(result, "__dict__"):
+            self.__dict__ = result.__dict__
         else:
-            self.__value = p_result
-        self.__class = p_result.__class__
+            self.__value = result
+        self.__class = result.__class__
 
     def __eq__(self, other):
         if isinstance(other, self.__class) or isinstance(other, DefaultResult) and self.__class == other.__class:
@@ -41,16 +42,8 @@ def case_filter_func(file_name:str, extension:str, filter_char:str=".",  cases_t
             and os.path.splitext(file_name)[1] == extension \
             and file_name[0] != filter_char
 
-# def filename_filter_func(file_name:str, extension:str, filter_char:str=".") -> bool:
-#     """
-#     Filter by filename and extension
-#     :param file_name: file name
-#     :return:
-#     """
-#     return os.path.splitext(file_name)[1] == extension \
-#     and file_name[0] != filter_char
 
-def default_comparer_func(obj:'DefaultResult', func:'Callable', func_args:list, func_kwargs:dict, expected_result):
+def default_comparer_func(obj:'DefaultResult', func:'Callable', func_args:list, func_kwargs:dict, expected_result=None):
     """
     :param obj:
     :param func:
@@ -65,6 +58,11 @@ def default_comparer_func(obj:'DefaultResult', func:'Callable', func_args:list, 
     # test_data.update({"result": ResultClass(testResult)})
     # __eq__ etc being defined in ResultClass
     obj.assertEqual(DefaultResult(expected_result), DefaultResult(testResult))
+    return testResult
+
+
+def get_file_path(result:dict, root_folder_name:str, error:bool=False)->str:
+    return ""
 
 def get_file_path(result:dict, root_folder_name:str, error:bool=False)->str:
     return ""

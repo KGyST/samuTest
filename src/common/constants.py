@@ -12,15 +12,20 @@ FUNC_NAME   = "function"
 MODULE_NAME = "module"
 CLASS_NAME  = "class_name"
 MD5         = "MD5"
+PATH        = "path"
 
-INST_PRE    = "instance_data_pre"
-INST_POST   = "instance_data_post"
-GLOBAL_PRE    = "instance_data_pre"
-GLOBAL_POST   = "instance_data_post"
+PRE          = "data_pre"
+POST         = "data_post"
 
 EXCEPTION   = "exception"
 RESULT      = "result"
+SELF        = "self"
+CLASS       = "class"
+GLOBAL      = "globals"
 
 TEST_ITEMS  = "tests"
 TEST_ERRORS = "_errors"
 CURRENT     = "current"
+
+BUILTINS = 'builtins.'
+MAIN = '__main__'
