@@ -45,7 +45,6 @@ class _Dumper:
 
         self.preGlobal_ = None
         self.postGlobal_ = None
-        self._sTestMD5 = None
 
     def __get__(self, instance, owner):
         if not Dumper.bDump:
@@ -73,6 +72,7 @@ class _Dumper:
             return self.func(*argsWrap, **kwargsWrap)
         _bDump = Dumper.bDump
         Dumper.bDump = False
+        self._sTestMD5 = None
 
         self.sModule, self.sClass, self.sFunction = get_original_function_name(self.func)
 
@@ -116,9 +116,9 @@ class _Dumper:
 
     @property
     def sTestMD5(self) -> str:
-        # if self._sTestMD5 == None:
-        _pre = self.dPre
-        self._sTestMD5 = hashlib.md5(self.dumperInstance.codec.dumps(_pre).encode("ansi")).hexdigest()[:self.dumperInstance.nNameHex]
+        if self._sTestMD5 == None:
+            _pre = self.dPre
+            self._sTestMD5 = hashlib.md5(self.dumperInstance.codec.dumps(_pre).encode("ansi")).hexdigest()[:self.dumperInstance.nNameHex]
         return self._sTestMD5
 
     @property
