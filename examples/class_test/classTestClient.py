@@ -42,6 +42,7 @@ class ClassTestee:
         self.instance_variable = param
         self.nestedInstance = ClassToBeNested()
         self._someProperty = param
+        self._somePrivateMember = param
 
     @Dumper()
     def __str__(self) -> str:
@@ -88,6 +89,7 @@ class ClassTestee:
         self._someProperty = value
 
     # FIXME assertions
+    # FIXME __iter__() handling
 
 
 @Dumper()

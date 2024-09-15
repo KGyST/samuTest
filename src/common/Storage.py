@@ -1,9 +1,10 @@
 import unittest
-from common.publicFunctions import *
-from typing import Callable
-from common.Collector import *
-from common.ICodec import *
-from common.privateFunctions import _get_original_function
+
+from .Collector import *
+from .ICodec import *
+from .privateFunctions import _get_original_function
+from .constants import *
+from .publicFunctions import *
 
 
 class StorageTestSuite(unittest.TestSuite):

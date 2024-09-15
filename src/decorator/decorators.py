@@ -118,7 +118,7 @@ class _Dumper:
     def sTestMD5(self) -> str:
         # if self._sTestMD5 == None:
         _pre = self.dPre
-        self._sTestMD5 = hashlib.md5(self.dumperInstance.codec.dumps(_pre).encode("ansi")).hexdigest()[:self.dumperInstance.nNameHex]
+        self._sTestMD5 = hashlib.md5(self.dumperInstance.codec.dumps(_pre).encode("utf-8")).hexdigest()[:self.dumperInstance.nNameHex]
         return self._sTestMD5
 
     @property

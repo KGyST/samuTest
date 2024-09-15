@@ -1,4 +1,4 @@
-from common.Storage import StorageTestSuite
+from src import StorageTestSuite
 
 
 class ClassTestSuite(StorageTestSuite):
