@@ -4,7 +4,7 @@
     "function": "callerFunction",
     "args": {
         "py/tuple": [
-            2
+            -1
         ]
     },
     "kwargs": {},
@@ -16,7 +16,7 @@
     "data_post": {
         "self": null,
         "class": null,
-        "result": 3,
+        "result": 0,
         "exception": null
     }
 }

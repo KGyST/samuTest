@@ -14,9 +14,9 @@
         "class": null
     },
     "data_post": {
-        "result": 1,
-        "exception": null,
         "self": null,
-        "class": null
+        "class": null,
+        "result": 1,
+        "exception": null
     }
 }

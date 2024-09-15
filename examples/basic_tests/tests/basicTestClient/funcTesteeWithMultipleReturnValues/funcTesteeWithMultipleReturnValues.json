@@ -14,14 +14,14 @@
         "class": null
     },
     "data_post": {
+        "self": null,
+        "class": null,
         "result": {
             "py/tuple": [
                 1,
                 1.0
             ]
         },
-        "exception": null,
-        "self": null,
-        "class": null
+        "exception": null
     }
 }
