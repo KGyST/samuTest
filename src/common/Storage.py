@@ -1,7 +1,7 @@
 import unittest
 
 from .Collector import *
-from .ICodec import *
+from .JSONCodec import *
 from .privateFunctions import _get_original_function
 from .constants import *
 from .publicFunctions import *
@@ -52,18 +52,18 @@ class StorageTestCase(unittest.TestCase):
 
             try:
                 import importlib
-                module = importlib.import_module(self.testData[MODULE_NAME])
+                module = importlib.import_module(self.testData.module)
 
-                if CLASS_NAME in self.testData and self.testData[CLASS_NAME]:
-                    _class = getattr(module, self.testData[CLASS_NAME])
-                    _func = getattr(_class, self.testData[FUNC_NAME])
+                if self.testData.className:
+                    _class = getattr(module, self.testData.className)
+                    _func = getattr(_class, self.testData.function)
                 else:
-                    _func = getattr(module, self.testData[FUNC_NAME])
+                    _func = getattr(module, self.testData.function)
                 _func =_get_original_function(_func)
 
                 testResult = self.suite.fComparer(obj, _func, self.testData[ARGS], self.testData[KWARGS], self.testData[POST][RESULT])
             except Exception as e:
-                if e.__class__ == self.testData[POST][EXCEPTION].__class__:
+                if e.__class__ == self.testData.postState.exception.__class__:
                     return
                 elif e.__class__ == AssertionError:
                     self._dump_data({POST: {

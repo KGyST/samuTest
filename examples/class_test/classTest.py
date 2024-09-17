@@ -1,5 +1,4 @@
-from src import StorageTestSuite
-
+from common import StorageTestSuite
 
 class ClassTestSuite(StorageTestSuite):
     def __init__(self):

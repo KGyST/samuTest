@@ -7,9 +7,10 @@ import types
 from common.constants import *
 from common.privateFunctions import md5Collector, get_original_function_name
 from importlib import import_module
-from common.ICodec import *
+from common.JSONCodec import *
 from types import FunctionType
 from collections.abc import Callable
+from data.ProgramState import ProgramState, PreState, PostState
 
 
 class _Dumper:
@@ -45,7 +46,6 @@ class _Dumper:
 
         self.preGlobal_ = None
         self.postGlobal_ = None
-        self._sTestMD5 = None
 
     def __get__(self, instance, owner):
         if not Dumper.bDump:
@@ -73,6 +73,7 @@ class _Dumper:
             return self.func(*argsWrap, **kwargsWrap)
         _bDump = Dumper.bDump
         Dumper.bDump = False
+        self._sTestMD5 = None
 
         self.sModule, self.sClass, self.sFunction = get_original_function_name(self.func)
 
@@ -105,20 +106,20 @@ class _Dumper:
         return self.result_
 
     @property
-    def dPre(self) -> dict:
-        return {
-            MODULE_NAME: self.sModule,
-            CLASS_NAME: self.sClass,
-            FUNC_NAME: self.sFunction,
-            ARGS: (self.args_ if not isinstance(self.func, types.MethodType) else [self.preSelf_, *self.args_]),
-            KWARGS: (self.kwargs_),
-        }
+    def dPre(self) -> 'ProgramState':
+        return ProgramState(
+                self.sFunction,
+                self.sClass,
+                self.sModule,
+                self.args_ if not isinstance(self.func, types.MethodType) else [self.preSelf_, *self.args_],
+                self.kwargs_,
+                JSONCodec, )
 
     @property
     def sTestMD5(self) -> str:
-        # if self._sTestMD5 == None:
-        _pre = self.dPre
-        self._sTestMD5 = hashlib.md5(self.dumperInstance.codec.dumps(_pre).encode("utf-8")).hexdigest()[:self.dumperInstance.nNameHex]
+        if self._sTestMD5 == None:
+            _pre = self.dPre
+            self._sTestMD5 = hashlib.md5(self.dumperInstance.codec.dumps(_pre).encode("utf-8")).hexdigest()[:self.dumperInstance.nNameHex]
         return self._sTestMD5
 
     @property
@@ -151,24 +152,21 @@ class _Dumper:
         else:
             _class = None
 
-        dResult = {**self.dPre,
-                   MD5: self.sTestMD5,
-                   PRE: {},
-                   POST: {}}
+        result = ProgramState(
+            self.sFunction,
+            self.sClass,
+            self.sModule,
+            self.args_ if not isinstance(self.func, types.MethodType) else [self.preSelf_, *self.args_],
+            self.kwargs_,
+            JSONCodec, )
 
-        dResult[PRE][SELF] = self.preSelf_
-        dResult[PRE][CLASS] = self.preClass_
-        # dResult[PRE][GLOBAL] = self._preGlobal
-        dResult[POST][SELF] = self.postSelf_
-        dResult[POST][CLASS] = self.postClass_
-        # dResult[POST][GLOBAL] = self._postGlobal
-        dResult[POST][RESULT] = self.result_
-        dResult[POST][EXCEPTION] = self.exception_
+        result.preState = PreState(self.preSelf_)
+        result.postState = PostState(self.result_ ,self.postSelf_, self.exception_)
 
         if (not os.path.exists(self.sFullPath)
                 or self.dumperInstance.bOverwrite
                 or self.sTest == CURRENT):
-            self.dumperInstance.codec.dump(self.sFullPath, dResult)
+            self.dumperInstance.codec.dump(self.sFullPath, result)
 
 
 class Dumper:

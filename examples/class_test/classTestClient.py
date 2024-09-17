@@ -88,6 +88,15 @@ class ClassTestee:
     def someProperty(self, value):
         self._someProperty = value
 
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        self._somePrivateMember += 1
+        if self._somePrivateMember >= 10:
+            raise StopIteration
+        return self._somePrivateMember
+
     # FIXME assertions
     # FIXME __iter__() handling
 
@@ -116,4 +125,7 @@ if __name__ == "__main__":
     print(ClassTestee.static_method(2))
 
     print(some_function("Something"))
+
+    # for _i in classTestee_member_object:
+    #     print(_i)
 

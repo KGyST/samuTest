@@ -1,93 +1,34 @@
 {
-    "module": "classTestClient",
-    "class_name": "ClassTestee",
     "function": "member_method_that_throws_exception",
+    "className": "ClassTestee",
+    "module": "classTestClient",
     "args": [
         {
-            "py/property": {
-                "classVariable": 7,
-                "someProperty": 3,
-                "static_method": {
-                    "py/function": "classTestClient.ClassTestee.static_method"
-                }
-            },
-            "py/object": "classTestClient.ClassTestee",
-            "_someProperty": 3,
             "instance_variable": 4,
             "nestedInstance": {
-                "py/property": {
-                    "nestedClassVariable": 1,
-                    "staticMethod": {
-                        "py/function": "classTestClient.ClassToBeNested.staticMethod"
-                    }
-                },
-                "py/object": "classTestClient.ClassToBeNested",
                 "nestedInstanceVariable": 2
-            }
+            },
+            "_someProperty": 3,
+            "_somePrivateMember": 2
         }
     ],
     "kwargs": {},
-    "MD5": "d2742e03dd99",
-    "data_pre": {
-        "self": {
-            "py/id": 2
-        },
-        "class": null
+    "preState": {
+        "selfOrClass": null,
+        "globals": null
     },
-    "data_post": {
-        "self": {
-            "py/property": {
-                "classVariable": 7,
-                "class_method": {
-                    "py/id": 3
-                },
-                "member_method": {
-                    "py/id": 4
-                },
-                "member_method_that_throws_exception": {
-                    "py/id": 5
-                },
-                "someProperty": 3,
-                "static_method": {
-                    "py/function": "classTestClient.ClassTestee.static_method"
-                }
-            },
-            "py/object": "classTestClient.ClassTestee",
-            "_someProperty": 3,
+    "postState": {
+        "selfOrClass": {
             "instance_variable": 4,
             "nestedInstance": {
-                "py/property": {
-                    "nestedClassVariable": 1,
-                    "staticMethod": {
-                        "py/function": "classTestClient.ClassToBeNested.staticMethod"
-                    }
-                },
-                "py/object": "classTestClient.ClassToBeNested",
                 "nestedInstanceVariable": 2
-            }
-        },
-        "class": null,
-        "result": null,
-        "exception": {
-            "py/property": {
-                "add_note": {
-                    "py/function": "classTestClient.ExampleException.add_note"
-                },
-                "args": [],
-                "exceptionClassVariable": "ExampleException Class Variable",
-                "with_traceback": {
-                    "py/function": "classTestClient.ExampleException.with_traceback"
-                }
             },
-            "py/reduce": [
-                {
-                    "py/type": "classTestClient.ExampleException"
-                },
-                {
-                    "py/tuple": []
-                },
-                {}
-            ]
-        }
-    }
+            "_someProperty": 3,
+            "_somePrivateMember": 2
+        },
+        "globals": null,
+        "result": null,
+        "exception": {}
+    },
+    "_sMD5": null
 }
