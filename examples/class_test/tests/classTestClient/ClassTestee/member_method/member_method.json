@@ -1,35 +1,55 @@
 {
-    "function": "member_method",
-    "className": "ClassTestee",
-    "module": "classTestClient",
-    "args": [
-        {
-            "instance_variable": 2,
-            "nestedInstance": {
-                "nestedInstanceVariable": 2
-            },
-            "_someProperty": 3,
-            "_somePrivateMember": 2
+    "py/property": {
+        "_flatten": {
+            "py/property": {},
+            "py/object": "builtins.method"
         },
-        2
-    ],
-    "kwargs": {},
-    "preState": {
-        "selfOrClass": null,
-        "globals": null
-    },
-    "postState": {
-        "selfOrClass": {
-            "instance_variable": 4,
-            "nestedInstance": {
-                "nestedInstanceVariable": 2
-            },
-            "_someProperty": 3,
-            "_somePrivateMember": 2
+        "_restore": {
+            "py/property": {},
+            "py/object": "builtins.method"
         },
-        "globals": null,
-        "result": 4,
-        "exception": null
+        "codec": {
+            "py/type": "common.JSONCodec.JSONCodec"
+        },
+        "md5": null,
+        "nNameHex": 12
     },
-    "_sMD5": null
+    "py/object": "data.ProgramState.ProgramState",
+    "py/state": {
+        "function": "member_method",
+        "className": "ClassTestee",
+        "module": "classTestClient",
+        "args": [
+            {
+                "instance_variable": 2,
+                "nestedInstance": {
+                    "nestedInstanceVariable": 2
+                },
+                "_someProperty": 3,
+                "_somePrivateMember": 2
+            },
+            2
+        ],
+        "kwargs": {},
+        "preState": {
+            "selfOrClass": null,
+            "globals": null
+        },
+        "postState": {
+            "selfOrClass": {
+                "instance_variable": 4,
+                "nestedInstance": {
+                    "nestedInstanceVariable": 2
+                },
+                "_someProperty": 3,
+                "_somePrivateMember": 2
+            },
+            "globals": null,
+            "result": 4,
+            "exception": null
+        },
+        "_sMD5": null,
+        "name": null,
+        "path": null
+    }
 }

@@ -31,24 +31,24 @@ class ExampleException(Exception):
 class ClassTestee:
     classVariable = 0
 
-    @Dumper(active=isFunctionDumperActive)
+    # @Dumper(active=isFunctionDumperActive)
     def __new__(cls, *args, **kwargs):
         _instance = super().__new__(cls)
         _instance.__class__.classVariable += 1
         return _instance
 
-    @Dumper(active=isFunctionDumperActive)
+    # @Dumper(active=isFunctionDumperActive)
     def __init__(self, param):
         self.instance_variable = param
         self.nestedInstance = ClassToBeNested()
         self._someProperty = param
         self._somePrivateMember = param
 
-    @Dumper()
+    # @Dumper()
     def __str__(self) -> str:
         return f'ClassTestee: {str(self.instance_variable)}'
 
-    @Dumper()
+    # @Dumper()
     @classmethod
     def class_method(cls, param=1) -> str:
         print(f"BEGIN class_method, ClassTestee.classVariable = {ClassTestee.classVariable}")
@@ -56,7 +56,7 @@ class ClassTestee:
         print(f"END class_method, ClassTestee.classVariable = {ClassTestee.classVariable}")
         return "classmethod called"
 
-    @Dumper()
+    # @Dumper()
     @staticmethod
     def static_method(param=1) -> str:
         print(f"static_method called {param}")
@@ -70,7 +70,7 @@ class ClassTestee:
         print(f"END member_method called, instance_variable = {self.instance_variable}")
         return self.instance_variable
 
-    @Dumper(active=True, exceptions=(ExampleException, ))
+    # @Dumper(active=True, exceptions=(ExampleException, ))
     def member_method_that_throws_exception(self):
         print(f"member_method_that_throws_exception called, instance_variable = {self.instance_variable}")
         raise ExampleException()
@@ -101,7 +101,7 @@ class ClassTestee:
     # FIXME __iter__() handling
 
 
-@Dumper()
+# @Dumper()
 def some_function(param="Nothing"):
     print(f"some_function called, param = {param}")
     print(param)
@@ -112,20 +112,20 @@ if __name__ == "__main__":
     classTestee_member_object = ClassTestee(2)
     classTestee_member_object.someProperty = 3
 
-    print(classTestee_member_object)
-    print(classTestee_member_object.class_method(2))
-    print(classTestee_member_object.static_method(2))
+    # print(classTestee_member_object)
+    # print(classTestee_member_object.class_method(2))
+    # print(classTestee_member_object.static_method(2))
     print(classTestee_member_object.member_method(2))
-    print(classTestee_member_object.someProperty)
-    try:
-        print(classTestee_member_object.member_method_that_throws_exception())
-    except ExampleException:
-        pass
-    print(ClassTestee.class_method(2))
-    print(ClassTestee.static_method(2))
-
-    print(some_function("Something"))
-
+    # print(classTestee_member_object.someProperty)
+    # try:
+    #     print(classTestee_member_object.member_method_that_throws_exception())
+    # except ExampleException:
+    #     pass
+    # print(ClassTestee.class_method(2))
+    # print(ClassTestee.static_method(2))
+    #
+    # print(some_function("Something"))
+    #
     # for _i in classTestee_member_object:
     #     print(_i)
 
