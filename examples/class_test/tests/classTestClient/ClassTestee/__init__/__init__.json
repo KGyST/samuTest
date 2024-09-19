@@ -1,66 +1,36 @@
 {
-    "module": "classTestClient",
-    "class_name": "ClassTestee",
+    "py/object": "data.ProgramState.ProgramState",
     "function": "__init__",
+    "className": "ClassTestee",
+    "module": "classTestClient",
     "args": [
         {
-            "py/property": {
-                "classVariable": 2,
-                "member_method": {
-                    "py/function": "classTestClient.ClassTestee.member_method"
-                },
-                "member_method_that_throws_exception": {
-                    "py/function": "classTestClient.ClassTestee.member_method_that_throws_exception"
-                },
-                "someProperty": null
-            },
-            "py/object": "classTestClient.ClassTestee",
-            "_someProperty": null
+            "py/object": "classTestClient.ClassTestee"
         },
         2
     ],
     "kwargs": {},
-    "MD5": "edc582790f7e",
-    "data_pre": {
-        "self": {
-            "py/id": 2
-        },
-        "class": null
+    "preState": {
+        "py/object": "data.ProgramState.PreState",
+        "selfOrClass": null,
+        "globals": null
     },
-    "data_post": {
-        "self": {
-            "py/property": {
-                "classVariable": 2,
-                "class_method": {
-                    "py/id": 3
-                },
-                "member_method": {
-                    "py/function": "classTestClient.ClassTestee.member_method"
-                },
-                "member_method_that_throws_exception": {
-                    "py/function": "classTestClient.ClassTestee.member_method_that_throws_exception"
-                },
-                "someProperty": 2,
-                "static_method": {
-                    "py/id": 5
-                }
-            },
+    "postState": {
+        "py/object": "data.ProgramState.PostState",
+        "selfOrClass": {
             "py/object": "classTestClient.ClassTestee",
-            "_someProperty": 2,
             "instance_variable": 2,
             "nestedInstance": {
-                "py/property": {
-                    "nestedClassVariable": 1,
-                    "staticMethod": {
-                        "py/function": "classTestClient.ClassToBeNested.staticMethod"
-                    }
-                },
                 "py/object": "classTestClient.ClassToBeNested",
                 "nestedInstanceVariable": 2
-            }
+            },
+            "_someProperty": 2,
+            "_somePrivateMember": 2
         },
-        "class": null,
+        "globals": null,
         "result": null,
         "exception": null
-    }
+    },
+    "name": null,
+    "path": null
 }

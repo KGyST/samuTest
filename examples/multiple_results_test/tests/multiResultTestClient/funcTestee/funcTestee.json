@@ -1,21 +1,23 @@
 {
-    "module": "multiResultTestClient",
-    "class_name": "",
+    "py/object": "data.ProgramState.ProgramState",
     "function": "funcTestee",
+    "className": "",
+    "module": "multiResultTestClient",
     "args": {
         "py/tuple": [
             100
         ]
     },
     "kwargs": {},
-    "MD5": "13caa53b1109",
-    "data_pre": {
-        "self": null,
-        "class": null
+    "preState": {
+        "py/object": "data.ProgramState.PreState",
+        "selfOrClass": null,
+        "globals": null
     },
-    "data_post": {
-        "self": null,
-        "class": null,
+    "postState": {
+        "py/object": "data.ProgramState.PostState",
+        "selfOrClass": null,
+        "globals": null,
         "result": {
             "py/tuple": [
                 0.01,
@@ -23,5 +25,7 @@
             ]
         },
         "exception": null
-    }
+    },
+    "name": null,
+    "path": null
 }

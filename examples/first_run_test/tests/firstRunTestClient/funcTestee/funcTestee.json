@@ -1,11 +1,11 @@
 {
     "py/object": "data.ProgramState.ProgramState",
-    "function": "class_method",
-    "className": "ClassTestee",
-    "module": "classTestClient",
+    "function": "funcTestee",
+    "className": "",
+    "module": "firstRunTestClient",
     "args": {
         "py/tuple": [
-            2
+            100
         ]
     },
     "kwargs": {},
@@ -18,7 +18,7 @@
         "py/object": "data.ProgramState.PostState",
         "selfOrClass": null,
         "globals": null,
-        "result": "classmethod called",
+        "result": 0.01,
         "exception": null
     },
     "name": null,

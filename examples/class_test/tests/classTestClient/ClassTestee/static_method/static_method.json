@@ -1,26 +1,26 @@
 {
-    "module": "classTestClient",
-    "class_name": "ClassTestee",
+    "py/object": "data.ProgramState.ProgramState",
     "function": "static_method",
+    "className": "ClassTestee",
+    "module": "classTestClient",
     "args": {
         "py/tuple": [
             2
         ]
     },
     "kwargs": {},
-    "MD5": "6da9df29b7f3",
-    "data_pre": {
-        "self": null,
-        "class": {
-            "py/type": "classTestClient.ClassTestee"
-        }
+    "preState": {
+        "py/object": "data.ProgramState.PreState",
+        "selfOrClass": null,
+        "globals": null
     },
-    "data_post": {
-        "self": null,
-        "class": {
-            "py/type": "classTestClient.ClassTestee"
-        },
+    "postState": {
+        "py/object": "data.ProgramState.PostState",
+        "selfOrClass": null,
+        "globals": null,
         "result": "staticmethod called",
         "exception": null
-    }
+    },
+    "name": null,
+    "path": null
 }

@@ -4,6 +4,19 @@ import shutil
 from common.constants import MD5, TEST_ITEMS
 from common.publicFunctions import *
 
+def md5Collector( folder:str=TEST_ITEMS,
+                  cases_only: str = "",
+                  case_filter_func: Callable=case_filter_func,
+                  ext:str = ".json") -> dict[str, str]:
+    dResult = {}
+    for sFilePath in caseFileCollector(folder, cases_only, case_filter_func, ext):
+        import jsonpickle
+        with open(os.path.join(folder, sFilePath), "r") as jf:
+            dCase = jsonpickle.loads(jf.read())
+            if MD5 in dCase:
+                sMD5 = dCase[MD5]
+                dResult[sMD5] = sFilePath
+    return dResult
 
 def md5Collector(codec,
                  folder: str = TEST_ITEMS,
@@ -12,9 +25,9 @@ def md5Collector(codec,
     dResult = {}
     for sFilePath in caseFileCollector(folder, cases_only, case_filter_func, codec.sExt):
         dCase = codec.read(os.path.join(folder, sFilePath))
-        if MD5 in dCase:
-            sMD5 = dCase[MD5]
-            dResult[sMD5] = sFilePath
+        # if MD5 in dCase:
+        #     sMD5 = dCase[MD5]
+        #     dResult[sMD5] = sFilePath
     return dResult
 
 
@@ -108,7 +121,6 @@ def _get_original_function(func: 'Callable') -> 'Callable':
                     return _get_original_function(_callable)
         except (ValueError, IndexError, AttributeError):
             return func
-
     return func
 
 

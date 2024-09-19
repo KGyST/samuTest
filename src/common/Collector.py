@@ -10,14 +10,16 @@ class FileCollector:
         if os.path.exists(self.sFolderPath):
             sCaseS = glob.glob('**/*' + codec.sExt, root_dir=self.sFolderPath, recursive=True)
             for _sCase in sCaseS:
-                _dCase = codec.read(os.path.join(self.sFolderPath, _sCase))
-                _dCase[PATH] = _sCase
-                if NAME not in _dCase:
+                _dCase = codec.read(_path := os.path.join(self.sFolderPath, _sCase))
+                _dCase.codec = codec
+                _dCase.path = _path
+                _dCase.path = _sCase
+                if not _dCase.name:
                     # Test has NO given name, so let it be the filename
-                    _dCase[NAME] = os.path.splitext(".".join(_sCase.split(os.path.sep)))[0]
-                elif not "." in _dCase[NAME]:
+                    _dCase.name = os.path.splitext(".".join(_sCase.split(os.path.sep)))[0]
+                elif not "." in _dCase.name:
                     # Test has a given name, but path is to be inferred from folder path
-                    _dCase[NAME] = ".".join([*_sCase.split(os.path.sep)[:-1], _dCase[NAME]])
+                    _dCase.name = ".".join([*_sCase.split(os.path.sep)[:-1], _dCase.name])
                 self._caseS.append(_dCase)
 
     def __iter__(self) -> 'FileCollector':

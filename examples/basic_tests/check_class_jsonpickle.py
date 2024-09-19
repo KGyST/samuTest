@@ -6,12 +6,12 @@ class MyClass(object):
 
 obj = MyClass()
 
-# KiÃ­rja az objektum publikus tulajdonsÃ¡gait
+# Kiírja az objektum publikus tulajdonságait
 json_data = encode(obj)
 print(json_data)
 # {"x": 1, "y": 2}
 
-# KiÃ­rja az osztÃ¡lyvÃ¡ltozÃ³kat is
+# Kiírja az osztályváltozókat is
 json_data = encode(obj, include_properties=True)
 print(json_data)
 # {"x": 1, "y": 2, "__class__": "MyClass", "__module__": "__main__"}

@@ -1,38 +1,32 @@
 {
-    "module": "classTestClient",
-    "class_name": "ClassTestee",
+    "py/object": "data.ProgramState.ProgramState",
     "function": "__new__",
+    "className": "ClassTestee",
+    "module": "classTestClient",
     "args": {
         "py/tuple": [
             {
-                "py/type": "classTestClient.ClassTestee"
+                "py/type": "classTestClient.ClassTestee",
+                "classVariable": 1
             },
             2
         ]
     },
     "kwargs": {},
-    "MD5": "7eeae1b262f4",
-    "data_pre": {
-        "self": null,
-        "class": null
+    "preState": {
+        "py/object": "data.ProgramState.PreState",
+        "selfOrClass": null,
+        "globals": null
     },
-    "data_post": {
-        "self": null,
-        "class": null,
+    "postState": {
+        "py/object": "data.ProgramState.PostState",
+        "selfOrClass": null,
+        "globals": null,
         "result": {
-            "py/property": {
-                "classVariable": 1,
-                "member_method": {
-                    "py/function": "classTestClient.ClassTestee.member_method"
-                },
-                "member_method_that_throws_exception": {
-                    "py/function": "classTestClient.ClassTestee.member_method_that_throws_exception"
-                },
-                "someProperty": null
-            },
-            "py/object": "classTestClient.ClassTestee",
-            "_someProperty": null
+            "py/object": "classTestClient.ClassTestee"
         },
         "exception": null
-    }
+    },
+    "name": null,
+    "path": null
 }

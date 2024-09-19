@@ -1,22 +1,26 @@
 {
-    "module": "classTestClient",
-    "class_name": "",
+    "py/object": "data.ProgramState.ProgramState",
     "function": "some_function",
+    "className": "",
+    "module": "classTestClient",
     "args": {
         "py/tuple": [
             "Something"
         ]
     },
     "kwargs": {},
-    "MD5": "1cb7a79cd773",
-    "data_pre": {
-        "self": null,
-        "class": null
+    "preState": {
+        "py/object": "data.ProgramState.PreState",
+        "selfOrClass": null,
+        "globals": null
     },
-    "data_post": {
-        "self": null,
-        "class": null,
+    "postState": {
+        "py/object": "data.ProgramState.PostState",
+        "selfOrClass": null,
+        "globals": null,
         "result": "Something",
         "exception": null
-    }
+    },
+    "name": null,
+    "path": null
 }

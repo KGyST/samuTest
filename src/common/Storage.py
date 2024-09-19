@@ -1,9 +1,10 @@
 import unittest
-from common.publicFunctions import *
-from typing import Callable
-from common.Collector import *
-from common.ICodec import *
-from common.privateFunctions import _get_original_function
+
+from .Collector import *
+from .JSONCodec import *
+from .privateFunctions import _get_original_function
+from .constants import *
+from .publicFunctions import *
 
 
 class StorageTestSuite(unittest.TestSuite):
@@ -40,44 +41,36 @@ class StorageTestCase(unittest.TestCase):
         setattr(StorageTestCase, func.__name__, func)
         super().__init__(func.__name__)
 
-    def _dump_data(self, result: dict):
-        self.testData.update(result)
-        self.suite.cData.dump(os.path.join(self.suite.sErrorPath, self.testData[PATH]), self.testData)
-        raise
-
     def StorageTestFunctionFactory(self) -> 'Callable':
         def func(obj):
             testResult = None
 
             try:
                 import importlib
-                module = importlib.import_module(self.testData[MODULE_NAME])
+                module = importlib.import_module(self.testData.module)
 
-                if CLASS_NAME in self.testData and self.testData[CLASS_NAME]:
-                    _class = getattr(module, self.testData[CLASS_NAME])
-                    _func = getattr(_class, self.testData[FUNC_NAME])
+                if self.testData.className:
+                    _class = getattr(module, self.testData.className)
+                    _func = getattr(_class, self.testData.function)
                 else:
-                    _func = getattr(module, self.testData[FUNC_NAME])
+                    _func = getattr(module, self.testData.function)
                 _func =_get_original_function(_func)
 
-                testResult = self.suite.fComparer(obj, _func, self.testData[ARGS], self.testData[KWARGS], self.testData[POST][RESULT])
+                testResult = self.suite.fComparer(obj, _func, self.testData.args, self.testData.kwargs, self.testData.postState.result)
             except Exception as e:
-                if e.__class__ == self.testData[POST][EXCEPTION].__class__:
+                if e.__class__ == self.testData.postState.exception.__class__:
                     return
                 elif e.__class__ == AssertionError:
-                    self._dump_data({POST: {
-                        RESULT: testResult,
-                        EXCEPTION: None}
-                        }
-                    )
+                    self.testData.result = testResult
+                    self.testData.exception = e
+                    self.testData.dump()
+                    raise
                 else:
-                    self._dump_data({POST: {
-                        RESULT: None,
-                        EXCEPTION: e, }
-                        }
-                    )
+                    self.testData.exception = e
+                    self.testData.dump()
+                    raise
                 return testResult
-        func.__name__ = self.testData[NAME]
+        func.__name__ = self.testData.name
 
         return func
 

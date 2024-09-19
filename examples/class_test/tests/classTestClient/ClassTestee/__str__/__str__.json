@@ -1,76 +1,42 @@
 {
-    "module": "classTestClient",
-    "class_name": "ClassTestee",
+    "py/object": "data.ProgramState.ProgramState",
     "function": "__str__",
+    "className": "ClassTestee",
+    "module": "classTestClient",
     "args": [
         {
-            "py/property": {
-                "classVariable": 3,
-                "member_method": {
-                    "py/function": "classTestClient.ClassTestee.member_method"
-                },
-                "member_method_that_throws_exception": {
-                    "py/function": "classTestClient.ClassTestee.member_method_that_throws_exception"
-                },
-                "someProperty": 3
-            },
             "py/object": "classTestClient.ClassTestee",
-            "_someProperty": 3,
             "instance_variable": 2,
             "nestedInstance": {
-                "py/property": {
-                    "nestedClassVariable": 1,
-                    "staticMethod": {
-                        "py/function": "classTestClient.ClassToBeNested.staticMethod"
-                    }
-                },
                 "py/object": "classTestClient.ClassToBeNested",
                 "nestedInstanceVariable": 2
-            }
+            },
+            "_someProperty": 3,
+            "_somePrivateMember": 2
         }
     ],
     "kwargs": {},
-    "MD5": "8fcf1a9c8ff5",
-    "data_pre": {
-        "self": {
-            "py/id": 2
-        },
-        "class": null
+    "preState": {
+        "py/object": "data.ProgramState.PreState",
+        "selfOrClass": null,
+        "globals": null
     },
-    "data_post": {
-        "self": {
-            "py/property": {
-                "classVariable": 3,
-                "class_method": {
-                    "py/id": 3
-                },
-                "member_method": {
-                    "py/function": "classTestClient.ClassTestee.member_method"
-                },
-                "member_method_that_throws_exception": {
-                    "py/function": "classTestClient.ClassTestee.member_method_that_throws_exception"
-                },
-                "someProperty": 3,
-                "static_method": {
-                    "py/id": 5
-                }
-            },
+    "postState": {
+        "py/object": "data.ProgramState.PostState",
+        "selfOrClass": {
             "py/object": "classTestClient.ClassTestee",
-            "_someProperty": 3,
             "instance_variable": 2,
             "nestedInstance": {
-                "py/property": {
-                    "nestedClassVariable": 1,
-                    "staticMethod": {
-                        "py/function": "classTestClient.ClassToBeNested.staticMethod"
-                    }
-                },
                 "py/object": "classTestClient.ClassToBeNested",
                 "nestedInstanceVariable": 2
-            }
+            },
+            "_someProperty": 3,
+            "_somePrivateMember": 2
         },
-        "class": null,
+        "globals": null,
         "result": "ClassTestee: 2",
         "exception": null
-    }
+    },
+    "name": null,
+    "path": null
 }
