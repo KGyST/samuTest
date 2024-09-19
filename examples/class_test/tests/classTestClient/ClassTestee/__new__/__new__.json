@@ -1,11 +1,15 @@
 {
     "py/object": "data.ProgramState.ProgramState",
-    "function": "funcTestee",
-    "className": "",
-    "module": "multiResultTestClient",
+    "function": "__new__",
+    "className": "ClassTestee",
+    "module": "classTestClient",
     "args": {
         "py/tuple": [
-            100
+            {
+                "py/type": "classTestClient.ClassTestee",
+                "classVariable": 1
+            },
+            2
         ]
     },
     "kwargs": {},
@@ -19,10 +23,7 @@
         "selfOrClass": null,
         "globals": null,
         "result": {
-            "py/tuple": [
-                0.01,
-                100
-            ]
+            "py/object": "classTestClient.ClassTestee"
         },
         "exception": null
     },

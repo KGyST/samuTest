@@ -25,9 +25,9 @@ def md5Collector(codec,
     dResult = {}
     for sFilePath in caseFileCollector(folder, cases_only, case_filter_func, codec.sExt):
         dCase = codec.read(os.path.join(folder, sFilePath))
-        if MD5 in dCase:
-            sMD5 = dCase[MD5]
-            dResult[sMD5] = sFilePath
+        # if MD5 in dCase:
+        #     sMD5 = dCase[MD5]
+        #     dResult[sMD5] = sFilePath
     return dResult
 
 

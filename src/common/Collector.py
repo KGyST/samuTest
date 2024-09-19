@@ -1,6 +1,5 @@
 import glob
 from common.constants import *
-from data.ProgramState import PostState, PreState, ProgramState
 
 
 class FileCollector:
@@ -11,7 +10,9 @@ class FileCollector:
         if os.path.exists(self.sFolderPath):
             sCaseS = glob.glob('**/*' + codec.sExt, root_dir=self.sFolderPath, recursive=True)
             for _sCase in sCaseS:
-                _dCase = codec.read(os.path.join(self.sFolderPath, _sCase))
+                _dCase = codec.read(_path := os.path.join(self.sFolderPath, _sCase))
+                _dCase.codec = codec
+                _dCase.path = _path
                 _dCase.path = _sCase
                 if not _dCase.name:
                     # Test has NO given name, so let it be the filename

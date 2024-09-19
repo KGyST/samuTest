@@ -15,7 +15,6 @@ When running tests ("Playing"), the test runner function reads all data files, c
 - A `FunctionData` class, with `PreFunctiodData(FunctionData)` and `PostFunctionData(FunctionData)` subclasses, also for mocked functions. Maybe checking state inbetween.
   - Global variable handling pre/post, handled by the same `FunctionData` class
   - Function mocking
-- Options to be added:
 - Parametrization, new parameters
   - `run_only`
 - Test fixtures and `__init__.json` 
@@ -42,6 +41,8 @@ When running tests ("Playing"), the test runner function reads all data files, c
 - 1000s of cases: sorting
 - Assertions
 - Logging facility integration instead of prints
+- Self.tests: running all the examples: record and play
+- `__slots__` handling
 
 ## Version history
 - 0.02: 231123 Object-oriented functions except for class attributes and `__new__()` 

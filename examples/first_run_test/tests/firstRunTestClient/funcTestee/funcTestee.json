@@ -2,7 +2,7 @@
     "py/object": "data.ProgramState.ProgramState",
     "function": "funcTestee",
     "className": "",
-    "module": "multiResultTestClient",
+    "module": "firstRunTestClient",
     "args": {
         "py/tuple": [
             100
@@ -18,12 +18,7 @@
         "py/object": "data.ProgramState.PostState",
         "selfOrClass": null,
         "globals": null,
-        "result": {
-            "py/tuple": [
-                0.01,
-                100
-            ]
-        },
+        "result": 0.01,
         "exception": null
     },
     "name": null,

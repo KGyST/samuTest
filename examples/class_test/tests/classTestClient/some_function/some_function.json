@@ -1,11 +1,11 @@
 {
     "py/object": "data.ProgramState.ProgramState",
-    "function": "funcTestee",
+    "function": "some_function",
     "className": "",
-    "module": "multiResultTestClient",
+    "module": "classTestClient",
     "args": {
         "py/tuple": [
-            100
+            "Something"
         ]
     },
     "kwargs": {},
@@ -18,12 +18,7 @@
         "py/object": "data.ProgramState.PostState",
         "selfOrClass": null,
         "globals": null,
-        "result": {
-            "py/tuple": [
-                0.01,
-                100
-            ]
-        },
+        "result": "Something",
         "exception": null
     },
     "name": null,

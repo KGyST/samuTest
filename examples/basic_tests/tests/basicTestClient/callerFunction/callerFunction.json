@@ -1,22 +1,26 @@
 {
-    "module": "basicTestClient",
-    "class_name": "",
+    "py/object": "data.ProgramState.ProgramState",
     "function": "callerFunction",
+    "className": "",
+    "module": "basicTestClient",
     "args": {
         "py/tuple": [
             2
         ]
     },
     "kwargs": {},
-    "MD5": "0b819a34ad75",
-    "data_pre": {
-        "self": null,
-        "class": null
+    "preState": {
+        "py/object": "data.ProgramState.PreState",
+        "selfOrClass": null,
+        "globals": null
     },
-    "data_post": {
-        "self": null,
-        "class": null,
+    "postState": {
+        "py/object": "data.ProgramState.PostState",
+        "selfOrClass": null,
+        "globals": null,
         "result": 3,
         "exception": null
-    }
+    },
+    "name": null,
+    "path": null
 }

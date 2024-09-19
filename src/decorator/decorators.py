@@ -142,8 +142,8 @@ class _Dumper:
 
     @property
     def sFullPath(self) -> str:
-        if os.getenv('PYCHARM_HOSTED') != '1':
-            return os.path.join(self.sFullDir, self.sTestMD5 + self.dumperInstance.codec.sExt)
+        if os.getenv('PYCHARM_HOSTED') != '1' and not os.path.exists(_path := os.path.join(self.sFullDir, self.sTestMD5 + self.dumperInstance.codec.sExt)):
+            return _path
         else:
             _sLastDirName = self.sFullDir.split("\\")[-1]
             return os.path.join(self.sFullDir, _sLastDirName + self.dumperInstance.codec.sExt)

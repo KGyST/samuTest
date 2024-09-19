@@ -1,27 +1,31 @@
 {
-    "module": "basicTestClient",
-    "class_name": "",
+    "py/object": "data.ProgramState.ProgramState",
     "function": "funcTesteeWithMultipleReturnValues",
+    "className": "",
+    "module": "basicTestClient",
     "args": {
         "py/tuple": [
-            1
+            2
         ]
     },
     "kwargs": {},
-    "MD5": "1176b9fba236",
-    "data_pre": {
-        "self": null,
-        "class": null
+    "preState": {
+        "py/object": "data.ProgramState.PreState",
+        "selfOrClass": null,
+        "globals": null
     },
-    "data_post": {
+    "postState": {
+        "py/object": "data.ProgramState.PostState",
+        "selfOrClass": null,
+        "globals": null,
         "result": {
             "py/tuple": [
-                1,
-                1.0
+                2,
+                0.5
             ]
         },
-        "exception": null,
-        "self": null,
-        "class": null
-    }
+        "exception": null
+    },
+    "name": null,
+    "path": null
 }
