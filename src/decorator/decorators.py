@@ -142,7 +142,11 @@ class _Dumper:
 
     @property
     def sFullPath(self) -> str:
-        return os.path.join(self.sFullDir, self.sTestMD5 + self.dumperInstance.codec.sExt)
+        if os.getenv('PYCHARM_HOSTED') != '1':
+            return os.path.join(self.sFullDir, self.sTestMD5 + self.dumperInstance.codec.sExt)
+        else:
+            _sLastDirName = self.sFullDir.split("\\")[-1]
+            return os.path.join(self.sFullDir, _sLastDirName + self.dumperInstance.codec.sExt)
 
     def dump(self):
         if self.postClass_ is not None:

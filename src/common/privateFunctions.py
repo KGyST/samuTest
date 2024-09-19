@@ -121,7 +121,6 @@ def _get_original_function(func: 'Callable') -> 'Callable':
                     return _get_original_function(_callable)
         except (ValueError, IndexError, AttributeError):
             return func
-
     return func
 
 

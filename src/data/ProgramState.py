@@ -1,6 +1,7 @@
 from common.ICodec import ICodec
 import hashlib
-
+from common.constants import MAIN
+from common.privateFunctions import _get_calling_module_name
 
 class ProgramState:
     nNameHex = None
@@ -27,6 +28,9 @@ class ProgramState:
         self.postState = None
         self._sMD5 = None
 
+        self.name = None
+        self.path = None
+
     @property
     def md5(self):
         if self._sMD5:
@@ -46,7 +50,9 @@ class ProgramState:
             'kwargs': self._flatten(self.kwargs),
             'preState': self._flatten(self.preState),
             'postState': self._flatten(self.postState),
-            '_sMD5': self._sMD5
+            '_sMD5': self._sMD5,
+            'name': self.name,
+            'path': self.path,
         }
         return state
 
@@ -62,23 +68,41 @@ class ProgramState:
         self.preState = self._restore(state.get('preState'))
         self.postState = self._restore(state.get('postState'))
         self._sMD5 = state.get('_sMD5')
+        self.name = state.get('name')
+        self.path = state.get('path')
+
+    def _isFlattable(self, value: object = None, key: str | None = None) -> bool:
+        if callable(value) and not isinstance(value, type):
+            return False
+        if key and key.startswith('__'):
+            return False
+        if isinstance(value, property):
+            return False
+        return True
 
     def _flatten(self, obj):
         """
         Recursively flatten nested objects.
         """
         if hasattr(obj, "__dict__"):
-            data = {}
-            for attr, value in obj.__dict__.items():
-                if not callable(value) and not attr.startswith('__'):
-                    data[attr] = self._flatten(value)
+            if isinstance(obj, type):
+                if obj.__module__ == MAIN:
+                    obj.__module__ = _get_calling_module_name()
+                data = {'py/type': f"{obj.__module__}.{obj.__name__}",}
+            else:
+                if obj.__class__.__module__ == MAIN:
+                    obj.__class__.__module__ = _get_calling_module_name()
+                data = {'py/object': f"{obj.__class__.__module__}.{obj.__class__.__name__}",}
+            for key, value in obj.__dict__.items():
+                if self._isFlattable(value, key):
+                    data[key] = self._flatten(value)
             return data
         elif isinstance(obj, dict):
-            return {key: self._flatten(val) for key, val in obj.items()}
+            return {key: self._flatten(val) for key, val in obj.items() if self._isFlattable(val)}
         elif isinstance(obj, list):
-            return [self._flatten(item) for item in obj]
+            return [self._flatten(item) for item in obj if self._isFlattable(item)]
         elif isinstance(obj, tuple):
-            return tuple(self._flatten(item) for item in obj)
+            return tuple(self._flatten(item) for item in obj if self._isFlattable(item))
         return obj
 
     def _restore(self, obj):
@@ -118,19 +142,20 @@ class StateBase:
         """
         Serialize the state of the base class including nested objects.
         """
-        state = {
-            'py/object': f"{self.__class__.__module__}.{self.__class__.__name__}",
-            'selfOrClass': ProgramState._flatten(self.selfOrClass),
-            'globals': ProgramState._flatten(self.globals)
-        }
+        # state = {
+        #     'py/object': f"{self.__class__.__module__}.{self.__class__.__name__}",
+        #     'selfOrClass': ProgramState._flatten(self.selfOrClass),
+        #     'globals': ProgramState._flatten(self.globals)
+        # }
+        state = self.__dict__.copy()
         return state
 
-    def __setstate__(self, state):
-        """
-        Restore the state of the base class including nested objects.
-        """
-        self.selfOrClass = ProgramState._restore(state.get('selfOrClass'))
-        self.globals = ProgramState._restore(state.get('globals'))
+    # def __setstate__(self, state):
+    #     """
+    #     Restore the state of the base class including nested objects.
+    #     """
+    #     self.selfOrClass = ProgramState._restore(state.get('selfOrClass'))
+    #     self.globals = ProgramState._restore(state.get('globals'))
 
 
 class PreState(StateBase):

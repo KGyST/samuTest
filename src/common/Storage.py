@@ -61,7 +61,7 @@ class StorageTestCase(unittest.TestCase):
                     _func = getattr(module, self.testData.function)
                 _func =_get_original_function(_func)
 
-                testResult = self.suite.fComparer(obj, _func, self.testData[ARGS], self.testData[KWARGS], self.testData[POST][RESULT])
+                testResult = self.suite.fComparer(obj, _func, self.testData.args, self.testData.kwargs, self.testData.postState.result)
             except Exception as e:
                 if e.__class__ == self.testData.postState.exception.__class__:
                     return
@@ -78,7 +78,7 @@ class StorageTestCase(unittest.TestCase):
                         }
                     )
                 return testResult
-        func.__name__ = self.testData[NAME]
+        func.__name__ = self.testData.name
 
         return func
 

@@ -6,86 +6,6 @@ from .ICodec import ICodec
 from data.ProgramState import PostState, PreState, ProgramState
 
 
-class ProgramStateHandler(jsonpickle.handlers.BaseHandler):
-    def _flatten(self, obj):
-        if hasattr(obj, "__dict__"):
-            data = {}
-
-            for attr, value in obj.__dict__.items():
-                if not callable(value) and not attr.startswith('__') or attr.startswith('_'):
-                    data[attr] = self._flatten(value)
-            data.pop("__iter__", None)
-            data.pop("__next__", None)
-
-            return data
-        elif isinstance(obj, dict):
-            data = {}
-
-            for attr, value in obj.items():
-                if not callable(value) and not attr.startswith('__') or attr.startswith('_'):
-                    data[attr] = self._flatten(value)
-            return data
-        elif isinstance(obj, list):
-            data = []
-
-            for value in obj:
-                if not callable(value):
-                    data.append(self._flatten(value))
-            return data
-        elif isinstance(obj, tuple):
-            data = []
-
-            for value in obj:
-                if not callable(value):
-                    data.append(self._flatten(value))
-            return tuple(data)
-        return obj
-
-
-    def flatten(self, obj, data):
-        data = {"py/object": f"{obj.__class__.__module__}.{obj.__class__.__name__}"}
-
-        for attr, value in obj.__dict__.items():
-            data[attr] = self._flatten(value)
-        return data
-
-    def _restore(self, obj, data):
-        """
-        Helper method to recursively restore attributes from flattened data.
-        """
-        if isinstance(data, dict):
-            for attr, value in data.items():
-                if isinstance(value, dict) and attr in obj.__dict__:
-                    # Handle nested objects
-                    nested_obj = obj.__dict__[attr]
-                    self._restore(nested_obj, value)
-                else:
-                    setattr(obj, attr, value)
-        elif isinstance(data, list):
-            return [self._restore({}, value) for value in data]
-        elif isinstance(data, tuple):
-            return tuple(self._restore({}, value) for value in data)
-        return data
-
-    def restore(self, data):
-        """
-        Restore the object using the flattened data.
-        """
-        if 'className' in data and 'module' in data:
-            module = __import__(data['module'])
-            class_ = getattr(module, data['className'])
-            obj = class_.__new__(class_)
-
-            if 'args' in data:
-                args_data = data['args'][0]
-                self._restore(obj, args_data)
-            if 'postState' in data and 'selfOrClass' in data['postState']:
-                self._restore(obj, data['postState']['selfOrClass'])
-            return obj
-        return super().restore(data)
-
-# jsonpickle.handlers.register(ProgramState, ProgramStateHandler)
-
 class JSONCodec(ICodec):
     sExt = ".json"
     _module = ""
@@ -113,14 +33,8 @@ class JSONCodec(ICodec):
     def dumps(data) -> str:
         from decorator import Dumper
         Dumper.bDump = False
-        while True:
-            try:
-                _dumps = jsonpickle.dumps(data, indent=4, include_properties=True)
-                break
-            except AttributeError as e:
-                setattr(e.obj, e.name, None)
+        _dumps = json.dumps(data.__getstate__(), indent=4)
         return _dumps
-        # return JSONCodec.clean(_dumps)
 
     @staticmethod
     def dump(path: str, data: dict):
