@@ -12,7 +12,7 @@ class StorageTestSuite(unittest.TestSuite):
                  path: str = TEST_ITEMS,
                  error_path: str = TEST_ITEMS+TEST_ERRORS,
                  collector=FileCollector,
-                 codec=JSONCodec,
+                 codec: 'ICodec' = JSONCodec,
                  comparer_function: Callable = default_comparer_func,
                  ):
         """
@@ -28,7 +28,6 @@ class StorageTestSuite(unittest.TestSuite):
         for case in collector(path, codec):
             _item = StorageTestCase(case, self)
             self.addTest(_item)
-
         super().__init__(self._tests)
 
 
@@ -54,7 +53,7 @@ class StorageTestCase(unittest.TestCase):
                     _func = getattr(_class, self.testData.function)
                 else:
                     _func = getattr(module, self.testData.function)
-                _func =_get_original_function(_func)
+                _func = _get_original_function(_func)
 
                 testResult = self.suite.fComparer(obj, _func, self.testData.args, self.testData.kwargs, self.testData.postState.result)
             except Exception as e:

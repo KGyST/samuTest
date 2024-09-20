@@ -3,14 +3,14 @@ import copy
 import hashlib
 import os.path
 import types
-
-from common.constants import *
-from common.privateFunctions import md5Collector, get_original_function_name
 from importlib import import_module
-from common.JSONCodec import *
 from types import FunctionType
 from collections.abc import Callable
-from data.ProgramState import ProgramState, PreState, PostState
+
+from ..common.privateFunctions import md5Collector, get_original_function_name
+from ..common.JSONCodec import *
+from ..data.ProgramState import ProgramState, PreState, PostState
+from ..common.constants import *
 
 
 class _Dumper:

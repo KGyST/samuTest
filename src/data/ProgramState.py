@@ -1,7 +1,8 @@
-from common.ICodec import ICodec
 import hashlib
-from common.constants import MAIN
-from common.privateFunctions import _get_calling_module_name
+
+from ..common.ICodec import ICodec
+from ..common.constants import MAIN
+from ..common.privateFunctions import _get_calling_module_name
 
 
 class ProgramState:
@@ -132,6 +133,10 @@ class ProgramState:
             return [self._flatten(item) for item in obj if self._isFlattable(item)]
         elif isinstance(obj, tuple):
             return {'py/tuple': [self._flatten(item) for item in obj if self._isFlattable(item)]}
+        elif isinstance(obj, set):
+            return {'py/set': [self._flatten(item) for item in obj if self._isFlattable(item)]}
+        elif isinstance(obj, bytes):
+            return obj.decode('utf-8')
         return obj
 
     # def _restore(self, obj):

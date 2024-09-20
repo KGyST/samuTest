@@ -1,5 +1,5 @@
 import glob
-from common.constants import *
+from ..common.constants import *
 
 
 class FileCollector:

@@ -1,9 +1,10 @@
-from common.privateFunctions import open_and_create_folders
 import json
-from common.constants import MAIN, BUILTINS, MODULE_NAME
 import jsonpickle
+
 from .ICodec import ICodec
-from data.ProgramState import ProgramState
+from ..data.ProgramState import ProgramState
+from ..common.privateFunctions import open_and_create_folders
+from ..common.constants import MAIN, BUILTINS, MODULE_NAME
 
 
 class JSONCodec(ICodec):
@@ -19,7 +20,7 @@ class JSONCodec(ICodec):
         JSONCodec.find_and_import_classes(path)
         jf = open(path, "r").read()
         try:
-            from decorator import Dumper
+            from ..decorator import Dumper
             Dumper.bDump = False
             assert isinstance(_result := jsonpickle.loads(jf), ProgramState)
             return _result
@@ -33,7 +34,7 @@ class JSONCodec(ICodec):
 
     @staticmethod
     def dumps(data) -> str:
-        from decorator import Dumper
+        from ..decorator import Dumper
         Dumper.bDump = False
         _dumps = json.dumps(data.__getstate__(), indent=4)
         return _dumps
@@ -80,42 +81,4 @@ class JSONCodec(ICodec):
         elif isinstance(importData, list):
             for item in importData:
                 JSONCodec._find_and_import_classes(item)
-
-    # @staticmethod
-    # def clean(j: str):
-    #     dJson = json.loads(j)
-    #     JSONCodec._module = dJson[MODULE_NAME]
-    #     dJson = JSONCodec._clean(dJson)
-    #     return json.dumps(dJson, indent=4)
-    #
-    # @staticmethod
-    # def _clean(element):
-    #     if isinstance(element, dict):
-    #         _dElement = {}
-    #         for k, item in element.items():
-    #             if not JSONCodec._isBuiltin(item):
-    #                 if k == JSONCodec.PY_OBJECT or k == JSONCodec.PY_FUNCTION or k == JSONCodec.PY_TYPE:
-    #                     if item.startswith(MAIN):
-    #                         item = str.replace(item, MAIN, JSONCodec._module)
-    #                 item = JSONCodec._clean(item)
-    #                 _dElement[k] = item
-    #         element = _dElement
-    #     elif isinstance(element, list) or isinstance(element, tuple):
-    #         _lElement = []
-    #         for item in element:
-    #             if not JSONCodec._isBuiltin(item):
-    #                 item = JSONCodec._clean(item)
-    #                 _lElement.append(item)
-    #         element = _lElement
-    #         if isinstance(element, tuple):
-    #             element = tuple(element)
-    #     return element
-    #
-    # @staticmethod
-    # def _isBuiltin(item):
-    #     if isinstance(item, dict):
-    #         if JSONCodec.PY_OBJECT in item:
-    #             if item[JSONCodec.PY_OBJECT].startswith(BUILTINS):
-    #                 return True
-    #     return False
 
