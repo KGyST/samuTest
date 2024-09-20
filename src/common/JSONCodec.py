@@ -1,11 +1,10 @@
 import json
 import jsonpickle
 
-from .ICodec import ICodec
-from ..data.ProgramState import ProgramState
-from ..common.privateFunctions import open_and_create_folders
-from ..common.constants import MAIN, BUILTINS, MODULE_NAME
-
+from samuTeszt.src.data.ProgramState import ProgramState
+from samuTeszt.src.common.privateFunctions import open_and_create_folders
+from samuTeszt.src.common.constants import MAIN, BUILTINS, MODULE_NAME
+from samuTeszt.src.common.ICodec import ICodec
 
 class JSONCodec(ICodec):
     sExt = ".json"
@@ -20,7 +19,7 @@ class JSONCodec(ICodec):
         JSONCodec.find_and_import_classes(path)
         jf = open(path, "r").read()
         try:
-            from ..decorator import Dumper
+            from samuTeszt.src.decorator import Dumper
             Dumper.bDump = False
             assert isinstance(_result := jsonpickle.loads(jf), ProgramState)
             return _result

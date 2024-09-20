@@ -1,8 +1,9 @@
 import glob
 import os.path
 import shutil
-from ..common.constants import MD5, TEST_ITEMS
-from ..common.publicFunctions import *
+from samuTeszt.src.common.constants import MD5, TEST_ITEMS
+from samuTeszt.src.common.publicFunctions import *
+
 
 def md5Collector( folder:str=TEST_ITEMS,
                   cases_only: str = "",
@@ -100,7 +101,7 @@ def _get_original_function(func: 'Callable') -> 'Callable':
     :param func: The decorated function or bound method
     :return: The original undecorated function
     """
-    from ..decorator.decorators import _Dumper
+    from samuTeszt.src.decorator.decorators import _Dumper
 
     if hasattr(func, '__self__') and isinstance(func.__self__, _Dumper):
         return func.__self__.func

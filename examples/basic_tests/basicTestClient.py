@@ -1,5 +1,5 @@
-from decorator.decorators import Dumper
-from helpers import ZeroDivisionErrorCatcher
+from samuTeszt.src.decorator.decorators import Dumper
+from samuTeszt.examples.helpers import ZeroDivisionErrorCatcher
 
 # glob_variable = 1
 

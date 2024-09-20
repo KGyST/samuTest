@@ -4,7 +4,7 @@ import hashlib
 import os.path
 import types
 from importlib import import_module
-from types import FunctionType
+# from types import FunctionType
 from collections.abc import Callable
 
 from ..common.privateFunctions import md5Collector, get_original_function_name
@@ -37,8 +37,8 @@ class _Dumper:
 
         self.args_ = None
         self.kwargs_ = None
-        self.preClass_ = None
-        self.postClass_ = None
+        # self.preClass_ = None
+        # self.postClass_ = None
         self.preSelf_ = None
         self.postSelf_ = None
         self.result_ = None
@@ -53,13 +53,13 @@ class _Dumper:
         Dumper.bDump = False
         # https://stackoverflow.com/questions/78928486/how-to-deduce-whether-a-classmethod-is-called-on-an-instance-or-on-a-class
         if isinstance(self.func, classmethod):
-            self.preClass_ = copy.deepcopy(owner)
+            self.preSelf_ = copy.deepcopy(owner)
             self.func = self.func.__get__(owner, owner)
-            self.postClass_ = owner
+            self.postSelf_ = owner
         elif isinstance(self.func, staticmethod):
-            self.preClass_ = copy.deepcopy(owner)
+            self.preSelf_ = copy.deepcopy(owner)
             self.func = self.func.__get__(None, owner)
-            self.postClass_ = owner
+            self.postSelf_ = owner
         else:
             self.preSelf_ = copy.deepcopy(instance)
             self.func = self.func.__get__(instance, owner)
@@ -98,10 +98,10 @@ class _Dumper:
             if self.bDump and _bDump:
                 if not self.sTestMD5 in self.collectedMD5S or self.dumperInstance.bOverwrite:
                     self.dump()
-            elif isinstance(_bDump, FunctionType):
-                # FIXME
-                if self.bDump() == True:
-                    self.dump()
+            # elif isinstance(_bDump, FunctionType):
+            #     # FIXME
+            #     if self.bDump() == True:
+            #         self.dump()
             Dumper.bDump = _bDump
         return self.result_
 
@@ -149,13 +149,6 @@ class _Dumper:
             return _path
 
     def dump(self):
-        if self.postClass_ is not None:
-            _class = self.postClass_
-        elif self.postSelf_ is not None:
-            _class = self.postSelf_.__class__
-        else:
-            _class = None
-
         result = ProgramState(
             self.sFunction,
             self.sClass,

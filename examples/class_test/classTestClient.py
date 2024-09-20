@@ -1,4 +1,6 @@
-from decorator import Dumper
+
+from samuTeszt.src.decorator.decorators import Dumper
+
 
 # ------- Global settings example --------------------
 isFunctionDumperActive = True
