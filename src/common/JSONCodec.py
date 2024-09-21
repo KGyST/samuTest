@@ -1,7 +1,7 @@
 import json
 import jsonpickle
 
-from samuTeszt.src.data.ProgramState import ProgramState
+from samuTeszt.src.data.FunctionState import FunctionState
 from samuTeszt.src.common.privateFunctions import open_and_create_folders
 from samuTeszt.src.common.constants import MAIN, BUILTINS, MODULE_NAME
 from samuTeszt.src.common.ICodec import ICodec
@@ -15,31 +15,31 @@ class JSONCodec(ICodec):
     PY_TYPE = 'py/type'
 
     @staticmethod
-    def read(path: str) -> 'ProgramState':
+    def read(path: str) -> 'FunctionState':
         JSONCodec.find_and_import_classes(path)
         jf = open(path, "r").read()
         try:
             from samuTeszt.src.decorator import Dumper
             Dumper.bDump = False
-            assert isinstance(_result := jsonpickle.loads(jf), ProgramState)
+            assert isinstance(_result := jsonpickle.loads(jf), FunctionState)
             return _result
         except Exception as e:
             raise JSONCodec.StorageException(e)
 
     @staticmethod
-    def reads(data: str) -> 'ProgramState':
-        assert isinstance(_result := jsonpickle.loads(data), ProgramState)
+    def reads(data: str) -> 'FunctionState':
+        assert isinstance(_result := jsonpickle.loads(data), FunctionState)
         return _result
 
     @staticmethod
-    def dumps(data) -> str:
-        from ..decorator import Dumper
+    def dumps(data: 'FunctionState') -> str:
+        from samuTeszt import Dumper
         Dumper.bDump = False
         _dumps = json.dumps(data.__getstate__(), indent=4)
         return _dumps
 
     @staticmethod
-    def dump(path: str, data: dict):
+    def dump(path: str, data: 'FunctionState'):
         with open_and_create_folders(path, "w") as fOutput:
             fOutput.write(JSONCodec.dumps(data))
 
@@ -48,7 +48,6 @@ class JSONCodec(ICodec):
         """
         Import modules that define classes dumped in test cases
         Recursively calls _find_and_import_classes
-        FIXME to abstract not to be json-dependent
         :param path: test case data file path
         :return: None
         """

@@ -9,7 +9,8 @@ from collections.abc import Callable
 
 from ..common.privateFunctions import md5Collector, get_original_function_name
 from ..common.JSONCodec import *
-from ..data.ProgramState import ProgramState, PreState, PostState
+from ..data.FunctionState import FunctionState, PreState, PostState
+from ..data.FileState import FileState
 from ..common.constants import *
 
 
@@ -17,7 +18,6 @@ class _Dumper:
     """
     Decorator functor to modify the tested functions
     """
-
     # FIXME mocked functions
     # FIXME global vars handling
 
@@ -79,8 +79,6 @@ class _Dumper:
 
         import_module(self.sModule)
 
-        self.collectedMD5S.update(md5Collector(self.dumperInstance.codec, self.sRelativeDir))
-
         self.args_ = copy.deepcopy(argsWrap)
         self.kwargs_ = copy.deepcopy(kwargsWrap)
 
@@ -96,8 +94,7 @@ class _Dumper:
             raise
         finally:
             if self.bDump and _bDump:
-                if not self.sTestMD5 in self.collectedMD5S or self.dumperInstance.bOverwrite:
-                    self.dump()
+                self.dump()
             # elif isinstance(_bDump, FunctionType):
             #     # FIXME
             #     if self.bDump() == True:
@@ -105,80 +102,43 @@ class _Dumper:
             Dumper.bDump = _bDump
         return self.result_
 
-    @property
-    def dPre(self) -> 'ProgramState':
-        return ProgramState(
-                self.sFunction,
-                self.sClass,
-                self.sModule,
-                self.args_ if not isinstance(self.func, types.MethodType) else [self.preSelf_, *self.args_],
-                self.kwargs_,
-                JSONCodec, )
-
-    @property
-    def sTestMD5(self) -> str:
-        if self._sTestMD5 == None:
-            _pre = self.dPre
-            self._sTestMD5 = hashlib.md5(self.dumperInstance.codec.dumps(_pre).encode("utf-8")).hexdigest()[:self.dumperInstance.nNameHex]
-        return self._sTestMD5
-
-    @property
-    def sDullyQualifiedTest(self) -> str:
-        if self.sClass:
-            return ".".join([self.sModule, self.sClass, self.sFunction])
-        else:
-            return ".".join([self.sModule, self.sFunction])
-
-    @property
-    def sRelativeDir(self) -> str:
-        if self.sClass:
-            return os.path.join(self.sModule, self.sClass, self.sFunction)
-        else:
-            return os.path.join(self.sModule, self.sFunction)
-
-    @property
-    def sFullDir(self) -> str:
-        return os.path.join(self.dumperInstance.sTestRootDir, self.sRelativeDir)
-
-    @property
-    def sFullPath(self) -> str:
-        if not os.path.exists(_path := os.path.join(self.sFullDir, self.sTestMD5 + self.dumperInstance.codec.sExt)) and os.getenv('PYCHARM_HOSTED') != '1':
-            _sLastDirName = self.sFullDir.split("\\")[-1]
-            return os.path.join(self.sFullDir, _sLastDirName + self.dumperInstance.codec.sExt)
-        else:
-            return _path
-
     def dump(self):
-        result = ProgramState(
+        _result = FunctionState(
             self.sFunction,
             self.sClass,
             self.sModule,
             self.args_ if not isinstance(self.func, types.MethodType) else [self.preSelf_, *self.args_],
             self.kwargs_,
-            JSONCodec, )
+            self.dumperInstance.codec, )
 
-        result.preState = PreState(self.preSelf_)
-        result.postState = PostState(self.result_ ,self.postSelf_, self.exception_)
+        _resultFile = FileState(_result, self.dumperInstance.sTestRootDir)
+        _md5s = md5Collector(self.dumperInstance.codec, _resultFile.sRelativeDir)
 
-        if (not os.path.exists(self.sFullPath)
+        if _result.md5 in _md5s and not self.dumperInstance.bOverwrite:
+            return
+
+        _result.preState = PreState(self.preSelf_)
+        _result.postState = PostState(self.result_, self.postSelf_, self.exception_)
+
+        if (not os.path.exists(_resultFile.sFullPath)
                 or self.dumperInstance.bOverwrite
                 or self.sTest == CURRENT):
-            self.dumperInstance.codec.dump(self.sFullPath, result)
+            self.dumperInstance.codec.dump(_resultFile.sFullPath, _result)
 
 
 class Dumper:
     bDump = True
 
     def __init__(self,
-            codec: 'ICodec' = JSONCodec,
-            overwrite: bool = True,
-            target_dir: str = TEST_ITEMS,  # place everything into this dir
-            active=False,  # global on/off switch of the test dumper
-            # FIXME should be a (lambda) function based on criteria
-            # FIXME when ran by test_runner, active should be False all the time
-            exceptions: tuple[type] = (AssertionError, ),
-            are_exceptions_included: bool = True,
-            hex_name_length: int = 12, *args, **kwargs):
+                codec: 'ICodec' = JSONCodec,
+                overwrite: bool = True,
+                target_dir: str = TEST_ITEMS,  # place everything into this dir
+                active=False,  # global on/off switch of the test dumper
+                # FIXME should be a (lambda) function based on criteria
+                # FIXME when ran by test_runner, active should be False all the time
+                exceptions: tuple[type] = (AssertionError, ),
+                are_exceptions_included: bool = True,
+                hex_name_length: int = 12, *args, **kwargs):
         self.dumper_instance = None
         self.bDump = active
         self.sTestRootDir = target_dir

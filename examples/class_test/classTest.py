@@ -1,4 +1,4 @@
-from common import StorageTestSuite
+from samuTeszt.src.common import StorageTestSuite
 
 class ClassTestSuite(StorageTestSuite):
     def __init__(self):

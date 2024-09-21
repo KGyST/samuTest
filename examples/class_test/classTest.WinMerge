@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project>
 	<paths>
-		<left>E:\Git\Python_modules\dev\samuTest\examples\class_test\tests</left>
-		<right>E:\Git\Python_modules\dev\samuTest\examples\class_test\tests_errors</right>
+		<left>E:\Git\Python_modules\dev\samuTeszt\examples\class_test\tests</left>
+		<right>E:\Git\Python_modules\dev\samuTeszt\examples\class_test\tests_errors</right>
 		<filter>*.*</filter>
 		<subfolders>1</subfolders>
 		<left-readonly>0</left-readonly>

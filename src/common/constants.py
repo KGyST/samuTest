@@ -29,3 +29,7 @@ CURRENT     = "current"
 
 BUILTINS = 'builtins.'
 MAIN = '__main__'
+
+ENCODING = 'utf-8'
+HOSTED = 'PYCHARM_HOSTED'
+

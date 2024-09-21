@@ -1,11 +1,12 @@
 import hashlib
+import os
 
-from ..common.ICodec import ICodec
-from ..common.constants import MAIN
-from ..common.privateFunctions import _get_calling_module_name
+from samuTeszt.src.common.ICodec import ICodec
+from samuTeszt.src.common.constants import MAIN, ENCODING
+from samuTeszt.src.common.privateFunctions import _get_calling_module_name
 
 
-class ProgramState:
+class FunctionState:
     nNameHex = None
     codec = None
 
@@ -31,16 +32,16 @@ class ProgramState:
         self._sMD5 = None
 
         self.name = None
-        self.path = None
+        self._fullyQualifiedList = []
 
-    def dump(self, *args, **kwargs):
-        return self.codec.dump(self.path, self, *args, **kwargs)
+    def dump(self, path: str, *args, **kwargs):
+        return self.codec.dump(path, self, *args, **kwargs)
 
     def dumps(self, *args, **kwargs):
         return self.codec.dumps(*args, **kwargs)
 
-    def load(self, *args, **kwargs):
-        return self.codec.load(self.path, *args, **kwargs)
+    def load(self, path: str, *args, **kwargs):
+        return self.codec.load(path, *args, **kwargs)
 
     def loads(self, *args, **kwargs):
         return self.codec.loads(*args, **kwargs)
@@ -61,17 +62,28 @@ class ProgramState:
     # def exception(self):
     #     return self.postState.exception
 
+    def getFullyQualifiedTestName(self, separator: str = '.') -> str:
+        if not self._fullyQualifiedList:
+            if self.className:
+                self._fullyQualifiedList = [self.module, self.className, self.function]
+            else:
+                self._fullyQualifiedList = [self.module, self.function]
+        return separator.join(self._fullyQualifiedList)
+
+    def setFullyQualifiedTestName(self, value: str, separator: str = '.'):
+        self._fullyQualifiedList, self.name = (_list := value.split(separator))[:-1], _list[-1]
+
     @property
     def md5(self):
-        if self._sMD5:
-            self._sMD5 = hashlib.md5(self.__class__.codec.dumps(self.preState).encode("ansi")).hexdigest()[:self.__class__.nNameHex]
+        if not self._sMD5:
+            self._sMD5 = hashlib.md5(self.__class__.codec.dumps(self.preState).encode(ENCODING)).hexdigest()[:self.__class__.nNameHex]
         return self._sMD5
 
     def __getstate__(self):
         """
         Serialize the object state including nested objects.
-        Currently only for json
         """
+        # Currently there is no need for __setstate__
         state = {
             'py/object': f"{self.__class__.__module__}.{self.__class__.__name__}",
             'function': self.function,
@@ -82,7 +94,6 @@ class ProgramState:
             'preState': self._flatten(self.preState),
             'postState': self._flatten(self.postState),
             'name': self.name,
-            'path': self.path,
         }
         return state
 
@@ -99,6 +110,9 @@ class ProgramState:
         """
         Recursively flatten nested objects.
         """
+        # FIXME referencing
+        # 'py/id'
+        # 'py/ref'
         if hasattr(obj, "__dict__"):
             if isinstance(obj, type):
                 if obj.__module__ == MAIN:
@@ -121,7 +135,7 @@ class ProgramState:
         elif isinstance(obj, set):
             return {'py/set': [self._flatten(item) for item in obj if self._isFlattable(item)]}
         elif isinstance(obj, bytes):
-            return obj.decode('utf-8')
+            return obj.decode(ENCODING)
         return obj
 
 

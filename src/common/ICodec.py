@@ -19,11 +19,11 @@ class ICodec(ABC):
 
     @staticmethod
     @abstractmethod
-    def dumps(data: dict) -> str:
+    def dumps(data) -> str:
         raise NotImplementedError()
 
     @staticmethod
     @abstractmethod
-    def dump(path: str, data: dict):
+    def dump(path: str, data):
         raise NotImplementedError()
 

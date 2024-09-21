@@ -1,6 +1,6 @@
 import os
 from typing import Callable
-
+# from samuTeszt.src.common.Storage import StorageTestCase
 
 class DefaultResult:
     #FIXME __repr__ or __str__
@@ -43,7 +43,7 @@ def case_filter_func(file_name:str, extension:str, filter_char:str=".",  cases_t
             and file_name[0] != filter_char
 
 
-def default_comparer_func(obj:'DefaultResult', func:'Callable', func_args:list, func_kwargs:dict, expected_result=None):
+def default_comparer_func(obj, func: 'Callable', func_args: list, func_kwargs: dict, expected_result=None):
     """
     :param obj:
     :param func:
@@ -58,5 +58,8 @@ def default_comparer_func(obj:'DefaultResult', func:'Callable', func_args:list, 
     # test_data.update({"result": ResultClass(testResult)})
     # __eq__ etc being defined in ResultClass
     obj.assertEqual(DefaultResult(expected_result), DefaultResult(testResult))
+    # TODO doesn't check self with postSelf etc.:
+    # if _postSelfOrClass := obj.testData.postState.selfOrClass:
+    #     obj.assertEqual(DefaultResult(func_args[0]), DefaultResult(_postSelfOrClass))
     return testResult
 

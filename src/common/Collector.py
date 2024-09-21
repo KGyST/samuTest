@@ -1,6 +1,7 @@
 import glob
 from samuTeszt.src.common.constants import *
-
+# from samuTeszt.src.data import ProgramState
+from samuTeszt.src.data import FileState
 
 class FileCollector:
     def __init__(self, path: str, codec):
@@ -12,20 +13,21 @@ class FileCollector:
             for _sCase in sCaseS:
                 _dCase = codec.read(_path := os.path.join(self.sFolderPath, _sCase))
                 _dCase.codec = codec
-                _dCase.path = _path
-                _dCase.path = _sCase
+                # _dCase.path = _path
                 if not _dCase.name:
                     # Test has NO given name, so let it be the filename
-                    _dCase.name = os.path.splitext(".".join(_sCase.split(os.path.sep)))[0]
+                    # _dCase.name = os.path.splitext(".".join(_sCase.split(os.path.sep)))[0]
+                    _dCase.setFullyQualifiedTestName(os.path.splitext(_sCase)[0], os.path.sep)
                 elif not "." in _dCase.name:
                     # Test has a given name, but path is to be inferred from folder path
-                    _dCase.name = ".".join([*_sCase.split(os.path.sep)[:-1], _dCase.name])
+                    # _dCase.name = ".".join([*_sCase.split(os.path.sep)[:-1], _dCase.name])
+                    _dCase.setFullyQualifiedTestName(os.path.splitext(_sCase)[0], os.path.sep)
                 self._caseS.append(_dCase)
 
     def __iter__(self) -> 'FileCollector':
         return self
 
-    def __next__(self) -> dict:
+    def __next__(self):
         self._index += 1
 
         if self._index < len(self._caseS):

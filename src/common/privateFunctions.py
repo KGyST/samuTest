@@ -1,28 +1,23 @@
 import glob
 import os.path
 import shutil
-from samuTeszt.src.common.constants import MD5, TEST_ITEMS
+from samuTeszt.src.common.constants import TEST_ITEMS
 from samuTeszt.src.common.publicFunctions import *
 
-
-def md5Collector( folder:str=TEST_ITEMS,
-                  cases_only: str = "",
-                  case_filter_func: Callable=case_filter_func,
-                  ext:str = ".json") -> dict[str, str]:
-    dResult = {}
-    for sFilePath in caseFileCollector(folder, cases_only, case_filter_func, ext):
-        import jsonpickle
-        with open(os.path.join(folder, sFilePath), "r") as jf:
-            dCase = jsonpickle.loads(jf.read())
-            if MD5 in dCase:
-                sMD5 = dCase[MD5]
-                dResult[sMD5] = sFilePath
-    return dResult
 
 def md5Collector(codec,
                  folder: str = TEST_ITEMS,
                  cases_only: str = "",
                  case_filter_func: Callable = case_filter_func) -> dict[str, str]:
+    """
+    Collects MD5s of test cases
+    :param codec: codec
+    :param folder: where to collect
+    :param cases_only:
+    :param case_filter_func:
+    :return:
+    """
+    # TODO
     dResult = {}
     for sFilePath in caseFileCollector(folder, cases_only, case_filter_func, codec.sExt):
         dCase = codec.read(os.path.join(folder, sFilePath))
@@ -51,7 +46,7 @@ def generateFolder(folder_path: str, force_delete: bool = False):
     """
     :param folder_path:
     :param force_delete:
-    :return:
+    :return: None
     """
     if os.path.exists(folder_path):
         if force_delete:
@@ -83,7 +78,7 @@ def open_and_create_folders(file: str, mode: str):
 def _get_calling_module_name() -> str:
     """
     Gets the module name from its filename if the module itself is the __main__
-    :return:
+    :return: the module_name: str
     """
     import inspect
     frame = inspect.currentframe().f_back
@@ -128,7 +123,10 @@ def _get_original_function(func: 'Callable') -> 'Callable':
 def get_original_function_name(func: 'Callable') -> tuple[str, str, str]:
     """
     Get the real function name considering module names, class names, decorators, etc.
+    :param func: a function
+    :return: (module_name: str, class_name: str, function_name: str)
     """
+
     module_name, class_name, func_name = None, None, func.__name__
 
     # Extract the original function from the closure attribute of the wrapper
