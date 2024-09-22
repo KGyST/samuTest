@@ -1,8 +1,9 @@
 import os
 from typing import Callable
 # from samuTeszt.src.common.Storage import StorageTestCase
+from samuTeszt.src.data.Equatable import Equatable
 
-class DefaultResult:
+class DefaultResult(Equatable):
     #FIXME __repr__ or __str__
     def __init__(self, result):
         if hasattr(result, "__dict__"):
@@ -11,13 +12,13 @@ class DefaultResult:
             self.__value = result
         self.__class = result.__class__
 
-    def __eq__(self, other):
-        if isinstance(other, self.__class) or isinstance(other, DefaultResult) and self.__class == other.__class:
-            if hasattr(self, "__dict__"):
-                return self.__dict__ == other.__dict__
-            else:
-                return self.__value == other
-        return False
+    # def __eq__(self, other):
+    #     if isinstance(other, self.__class) or isinstance(other, DefaultResult) and self.__class == other.__class:
+    #         if hasattr(self, "__dict__"):
+    #             return self.__dict__ == other.__dict__
+    #         else:
+    #             return self.__value == other
+    #     return False
 
     def __repr__(self):
         from pprint import pformat
@@ -59,7 +60,7 @@ def default_comparer_func(obj, func: 'Callable', func_args: list, func_kwargs: d
     # __eq__ etc being defined in ResultClass
     obj.assertEqual(DefaultResult(expected_result), DefaultResult(testResult))
     # TODO doesn't check self with postSelf etc.:
-    # if _postSelfOrClass := obj.testData.postState.selfOrClass:
-    #     obj.assertEqual(DefaultResult(func_args[0]), DefaultResult(_postSelfOrClass))
+    if _postSelfOrClass := obj.testData.postState.selfOrClass:
+        obj.assertEqual(DefaultResult(func_args[0]), DefaultResult(_postSelfOrClass))
     return testResult
 

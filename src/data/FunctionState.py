@@ -4,9 +4,9 @@ import os
 from samuTeszt.src.common.ICodec import ICodec
 from samuTeszt.src.common.constants import MAIN, ENCODING
 from samuTeszt.src.common.privateFunctions import _get_calling_module_name
+from samuTeszt.src.data.Equatable import Equatable
 
-
-class FunctionState:
+class FunctionState(Equatable):
     nNameHex = None
     codec = None
 
@@ -111,6 +111,7 @@ class FunctionState:
         Recursively flatten nested objects.
         """
         # FIXME referencing
+        # FIXME __slots__: both handling and use
         # 'py/id'
         # 'py/ref'
         if hasattr(obj, "__dict__"):
@@ -139,14 +140,10 @@ class FunctionState:
         return obj
 
 
-class StateBase:
+class StateBase(Equatable):
     def __init__(self):
         self.selfOrClass = None
         self.globals = None
-
-    def __eq__(self, other: "StateBase"):
-        ...
-
 
 class PreState(StateBase):
     def __init__(self, pre_self, pre_globals=None):
