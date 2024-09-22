@@ -1,46 +1,45 @@
+from typing import Callable
+
+
 class Equatable:
     """
     Class checking two objects are equal by members' value
     """
-    def __eq__(self, other):
-        return self.__class__._eq(self, other)
 
-    @classmethod
-    def _eq(cls, first, second):
-        if first is second:
-            return True
-        if type(first) is not type(second):
-            return False
-        if hasattr(first, '__dict__'):
-            if first.__dict__.keys() ^ second.__dict__.keys():
-                return False
-            for k in first.__dict__.keys():
-                if not cls._eq(first.__dict__[k], second.__dict__[k]):
-                    return False
-        elif hasattr(first, '__slots__') and hasattr(second, '__slots__'):
-            for slot in first.__slots__:
-                if not cls._eq(getattr(first, slot), getattr(second, slot)):
-                    return False
-        elif isinstance(first, dict):
-            if first.keys() ^ second.keys():
-                return False
-            for k in first.keys():
-                if not cls._eq(first[k], second[k]):
-                    return False
-        elif isinstance(first, set) or isinstance(first, frozenset):
-            return first == second
-        elif isinstance(first, (list, tuple)):
-            if len(first) != len(second):
-                return False
-            for value1, value2 in zip(first, second):
-                if not cls._eq(value1, value2):
-                    return False
-        elif isinstance(first, (bytes, bytearray, memoryview, int, float, complex, str)):
-            return first == second
-        else:
-            return first is second
-        return True
+    def __eq__(self, other: 'Equatable'):
+        return self.__hash__() == other.__hash__()
 
     def __ne__(self, other):
         return not self == other
+
+    def __hash__(self):
+        return contentBasedHash(self)
+
+
+def contentBasedHash(obj):
+    """
+    :param obj:
+    :return:
+    """
+    hash_value = 0
+
+    if hasattr(obj, '__dict__'):
+        for key in sorted(obj.__dict__.keys()):
+            if not isinstance(obj.__dict__[key], Callable):
+                hash_value ^= contentBasedHash(key) ^ contentBasedHash(obj.__dict__[key])
+    elif hasattr(obj, '__slots__'):
+        for slot in sorted(obj.__slots__):
+            if not isinstance(slot, Callable):
+                hash_value ^= contentBasedHash(slot) ^ contentBasedHash(getattr(obj, slot))
+    elif isinstance(obj, dict):
+        for key in sorted(obj.keys()):
+            hash_value ^= contentBasedHash(key) ^ contentBasedHash(obj[key])
+    elif isinstance(obj, (list, set, )):
+        for key in sorted(obj):
+            hash_value ^= contentBasedHash(key)
+    elif isinstance(obj, (int, float, str, bool, tuple, bytes, frozenset)):
+        hash_value = hash(obj)
+    else:
+        hash_value = 0
+    return hash_value
 

@@ -6,12 +6,14 @@ from samuTeszt.src.decorator.decorators import Dumper
 isFunctionDumperActive = True
 # ----------------------------------------------------
 
+
 class ClassToBeNested:
     nestedClassVariable = 1
+
     def __init__(self):
         self.nestedInstanceVariable = 2
 
-    def puclicMemberMethod(self):
+    def publicMemberMethod(self):
         pass
 
     def _privateMemberMethod(self):
@@ -31,6 +33,8 @@ class ExampleException(Exception):
 
 
 class ClassTestee:
+    # FIXME __slots__ handling
+    # __slots__ = ('instance_variable', 'nestedInstance', '_someProperty', '_somePrivateMember', )
     classVariable = 0
 
     @Dumper(active=isFunctionDumperActive)
@@ -100,7 +104,6 @@ class ClassTestee:
         return self._somePrivateMember
 
     # FIXME assertions
-    # FIXME __iter__() handling
 
 
 @Dumper()
@@ -130,4 +133,3 @@ if __name__ == "__main__":
 
     for _i in classTestee_member_object:
         print(_i)
-

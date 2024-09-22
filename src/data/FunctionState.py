@@ -1,14 +1,16 @@
 import hashlib
-import os
 
 from samuTeszt.src.common.ICodec import ICodec
 from samuTeszt.src.common.constants import MAIN, ENCODING
 from samuTeszt.src.common.privateFunctions import _get_calling_module_name
-from samuTeszt.src.data.Equatable import Equatable
+from samuTeszt.src.data.Equatable import Equatable, contentBasedHash
+
 
 class FunctionState(Equatable):
-    nNameHex = None
+    nNameHex = 12
     codec = None
+    __slots__ = ('function', 'className', 'module', 'args', 'kwargs', 'preState', 'postState', '_sMD5',
+               'name', '_fullyQualifiedList', '_dIDS', '_maxId',)
 
     def __init__(self,
                  function_name: str,
@@ -33,6 +35,16 @@ class FunctionState(Equatable):
 
         self.name = None
         self._fullyQualifiedList = []
+        self._dIDS = {}
+        self._maxId = 0
+
+    @classmethod
+    def setNameHex(cls, hex_name_length: int):
+        cls.nNameHex = hex_name_length
+
+    @classmethod
+    def  setCodec(cls, codec: 'ICodec'):
+        cls.codec = codec
 
     def dump(self, path: str, *args, **kwargs):
         return self.codec.dump(path, self, *args, **kwargs)
@@ -84,6 +96,7 @@ class FunctionState(Equatable):
         Serialize the object state including nested objects.
         """
         # Currently there is no need for __setstate__
+        # self._scan(self)
         state = {
             'py/object': f"{self.__class__.__module__}.{self.__class__.__name__}",
             'function': self.function,
@@ -106,6 +119,40 @@ class FunctionState(Equatable):
             return False
         return True
 
+    def _setID(self, obj):
+        if isinstance(obj, (int, str, float, bool)):
+            return
+        _hash = contentBasedHash(obj)
+
+        if _hash not in self._dIDS:
+            self._dIDS[_hash] = obj
+        else:
+            if not isinstance(self._dIDS[_hash], int):
+                self._dIDS[_hash] = self._maxId
+                self._maxId += 1
+        # return self._dIDS[_hash]
+
+    def _scan(self, obj):
+        if hasattr(obj, "__dict__") and self.__dict__:
+            for k, v in obj.__dict__:
+                self._setID(getattr(obj, v))
+                self._scan(getattr(obj, v))
+        elif hasattr(obj, "__slots__"):
+            for item in obj.__slots__:
+                self._setID(getattr(obj, item))
+                self._scan(getattr(obj, item))
+        elif isinstance(obj, dict):
+            for k, v in obj.items():
+                self._setID(v)
+                self._scan(v)
+        elif isinstance(obj, (list, tuple, set)):
+            for item in obj:
+                self._setID(item)
+                self._scan(item)
+        # else:
+        #     self._setID(obj)
+        # self._dIDS = {k: v for k, v in self._dIDS.items() if isinstance(v, int)}
+
     def _flatten(self, obj):
         """
         Recursively flatten nested objects.
@@ -114,7 +161,7 @@ class FunctionState(Equatable):
         # FIXME __slots__: both handling and use
         # 'py/id'
         # 'py/ref'
-        if hasattr(obj, "__dict__"):
+        if hasattr(obj, "__dict__") or hasattr(obj, "__slots__"):
             if isinstance(obj, type):
                 if obj.__module__ == MAIN:
                     obj.__module__ = _get_calling_module_name()
@@ -123,9 +170,16 @@ class FunctionState(Equatable):
                 if obj.__class__.__module__ == MAIN:
                     obj.__class__.__module__ = _get_calling_module_name()
                 data = {'py/object': f"{obj.__class__.__module__}.{obj.__class__.__name__}",}
-            for key, value in obj.__dict__.items():
-                if self._isFlattable(value, key):
-                    data[key] = self._flatten(value)
+            if hasattr(obj, '__dict__'):
+                for key, value in obj.__dict__.items():
+                    if self._isFlattable(value, key):
+                        data[key] = self._flatten(value)
+            if hasattr(obj, '__slots__'):
+                for key in obj.__slots__:
+                    if hasattr(obj, key):
+                        value = getattr(obj, key)
+                        if self._isFlattable(value, key):
+                            data[key] = self._flatten(value)
             return data
         elif isinstance(obj, dict):
             return {key: self._flatten(val) for key, val in obj.items() if self._isFlattable(val)}
@@ -141,9 +195,12 @@ class FunctionState(Equatable):
 
 
 class StateBase(Equatable):
+    __slots__ = ('selfOrClass', 'globals', )
+
     def __init__(self):
         self.selfOrClass = None
         self.globals = None
+
 
 class PreState(StateBase):
     def __init__(self, pre_self, pre_globals=None):
@@ -153,10 +210,12 @@ class PreState(StateBase):
 
 
 class PostState(StateBase):
+    __slots__ = ('result', 'exception', 'selfOrClass', 'globals', )
+
     def __init__(self, result, post_self, exception, post_globals=None):
         super().__init__()
-        self.result = result
         self.selfOrClass = post_self
-        self.exception = exception
         self.globals = post_globals
+        self.result = result
+        self.exception = exception
 

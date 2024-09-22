@@ -17,9 +17,11 @@ Advantages of this approach:
 - It's possible to create a large number of tests (thousands) and later select only those that tend to fail to shed light of the weak points of a unit 
 ## TODOs
 
-- A `FunctionData` class, with `PreFunctiodData(FunctionData)` and `PostFunctionData(FunctionData)` subclasses, also for mocked functions. Maybe checking state inbetween.
+- Expanding testable objects' range:
   - Global variable handling pre/post, handled by the same `FunctionData` class
   - Function mocking
+  - Property handling (.setter etc.)
+  - `__slots__` handling
 - Parametrization, new parameters
   - `run_only`
 - Test fixtures and `__init__.json` 
@@ -30,14 +32,12 @@ Advantages of this approach:
   - Simple test runner, PyCharm integration
 - Config object
   - .json, .yaml, .xml
-    - these encoders plus pickler as DI
-  - Dumping into a database instead of files
+  - Dumping into a database instead of files (Mongo)
 - `current.json` issues rotating (.001, .002 etc)
   - Driving it through a local bool variable
 - `@JSONFunctionDumper` to be able to be run as `@JSONFunctionDumper` (not only as `@JSONFunctionDumper()`)
 - If `tests` is not a subfolder of the tested function, it's not possible to import the module (no `folder.module`)
 - A `isValid()` function for all Codecs (`tryToInterpret()`)
-- Property handling (.setter etc.)
 
 ---
 
@@ -48,7 +48,6 @@ Advantages of this approach:
 - Logging facility integration instead of prints
 - Lazy working
 - Self.tests: running all the examples: record and play
-- `__slots__` handling
 
 ## Version history
 - 0.02: 231123 Object-oriented functions except for class attributes and `__new__()` 

@@ -3,8 +3,9 @@ from typing import Callable
 # from samuTeszt.src.common.Storage import StorageTestCase
 from samuTeszt.src.data.Equatable import Equatable
 
+
 class DefaultResult(Equatable):
-    #FIXME __repr__ or __str__
+    # FIXME __repr__ or __str__
     def __init__(self, result):
         if hasattr(result, "__dict__"):
             self.__dict__ = result.__dict__
@@ -12,21 +13,17 @@ class DefaultResult(Equatable):
             self.__value = result
         self.__class = result.__class__
 
-    # def __eq__(self, other):
-    #     if isinstance(other, self.__class) or isinstance(other, DefaultResult) and self.__class == other.__class:
-    #         if hasattr(self, "__dict__"):
-    #             return self.__dict__ == other.__dict__
-    #         else:
-    #             return self.__value == other
-    #     return False
-
     def __repr__(self):
         from pprint import pformat
         _dict = {k: v for k, v in self.__dict__.items() if k not in self.__class__.__dict__ }
         return pformat(_dict)
 
 
-def case_filter_func(file_name:str, extension:str, filter_char:str=".",  cases_to_be_tested:str="" , delimiter:str=";") -> bool:
+def case_filter_func(file_name: str,
+                     extension: str,
+                     filter_char: str = ".",
+                     cases_to_be_tested: str = "",
+                     delimiter: str = ";") -> bool:
     """
     Allows to run against only a list of cases, including or excluding extension, like .json
     :param file_name:
@@ -55,7 +52,7 @@ def default_comparer_func(obj, func: 'Callable', func_args: list, func_kwargs: d
     """
     testResult = func(*func_args, **func_kwargs)
 
-    #FIXME to modify into something like this:
+    # FIXME to modify into something like this:
     # test_data.update({"result": ResultClass(testResult)})
     # __eq__ etc being defined in ResultClass
     obj.assertEqual(DefaultResult(expected_result), DefaultResult(testResult))
@@ -63,4 +60,7 @@ def default_comparer_func(obj, func: 'Callable', func_args: list, func_kwargs: d
     if _postSelfOrClass := obj.testData.postState.selfOrClass:
         obj.assertEqual(DefaultResult(func_args[0]), DefaultResult(_postSelfOrClass))
     return testResult
+
+
+
 

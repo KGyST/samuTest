@@ -1,6 +1,6 @@
 import copy
 
-import hashlib
+# import hashlib
 import os.path
 import types
 from importlib import import_module
@@ -18,7 +18,7 @@ class _Dumper:
     """
     Decorator functor to modify the tested functions
     """
-    # FIXME mocked functions
+    # FIXME mocked external stateful functions
     # FIXME global vars handling
 
     bDump: bool | Callable = True
@@ -37,8 +37,6 @@ class _Dumper:
 
         self.args_ = None
         self.kwargs_ = None
-        # self.preClass_ = None
-        # self.postClass_ = None
         self.preSelf_ = None
         self.postSelf_ = None
         self.result_ = None
@@ -135,7 +133,6 @@ class Dumper:
                 target_dir: str = TEST_ITEMS,  # place everything into this dir
                 active=False,  # global on/off switch of the test dumper
                 # FIXME should be a (lambda) function based on criteria
-                # FIXME when ran by test_runner, active should be False all the time
                 exceptions: tuple[type] = (AssertionError, ),
                 are_exceptions_included: bool = True,
                 hex_name_length: int = 12, *args, **kwargs):
