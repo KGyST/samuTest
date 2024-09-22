@@ -1,8 +1,8 @@
 import os.path
-from common.Storage import StorageTestSuite
+from common.Storage import FileTestSuite
 
 
-class BasicStorageTestClient(StorageTestSuite):
+class BasicFileTestClient(FileTestSuite):
     def __init__(self):
         super().__init__(path="tests", error_path=os.path.join("..", "errors"))
 

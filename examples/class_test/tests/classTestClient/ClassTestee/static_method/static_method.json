@@ -1,5 +1,5 @@
 {
-    "py/object": "data.ProgramState.ProgramState",
+    "py/object": "samuTeszt.src.data.FunctionState.FunctionState",
     "function": "static_method",
     "className": "ClassTestee",
     "module": "classTestClient",
@@ -10,17 +10,18 @@
     },
     "kwargs": {},
     "preState": {
-        "py/object": "data.ProgramState.PreState",
+        "py/object": "samuTeszt.src.data.FunctionState.PreState",
         "selfOrClass": null,
         "globals": null
     },
     "postState": {
-        "py/object": "data.ProgramState.PostState",
-        "selfOrClass": null,
-        "globals": null,
+        "py/object": "samuTeszt.src.data.FunctionState.PostState",
         "result": "staticmethod called",
-        "exception": null
+        "exception": null,
+        "selfOrClass": {
+            "py/type": "classTestClient.ClassTestee"
+        },
+        "globals": null
     },
-    "name": null,
-    "path": null
+    "name": null
 }

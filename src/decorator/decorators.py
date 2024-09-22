@@ -112,8 +112,8 @@ class _Dumper:
         _resultFile = FileState(_result, self.dumperInstance.sTestRootDir)
         _md5s = md5Collector(self.dumperInstance.codec, _resultFile.sRelativeDir)
 
-        if _result.md5 in _md5s and not self.dumperInstance.bOverwrite:
-            return
+        # if _result.md5 in _md5s and not self.dumperInstance.bOverwrite:
+        #     return
 
         _result.preState = PreState(self.preSelf_)
         _result.postState = PostState(self.result_, self.postSelf_, self.exception_)

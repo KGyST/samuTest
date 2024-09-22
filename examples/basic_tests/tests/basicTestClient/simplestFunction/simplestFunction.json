@@ -1,26 +1,25 @@
 {
-    "py/object": "data.ProgramState.ProgramState",
+    "py/object": "samuTeszt.src.data.FunctionState.FunctionState",
     "function": "simplestFunction",
     "className": "",
     "module": "basicTestClient",
     "args": {
         "py/tuple": [
-            2
+            -1
         ]
     },
     "kwargs": {},
     "preState": {
-        "py/object": "data.ProgramState.PreState",
+        "py/object": "samuTeszt.src.data.FunctionState.PreState",
         "selfOrClass": null,
         "globals": null
     },
     "postState": {
-        "py/object": "data.ProgramState.PostState",
+        "py/object": "samuTeszt.src.data.FunctionState.PostState",
+        "result": 0,
+        "exception": null,
         "selfOrClass": null,
-        "globals": null,
-        "result": 3,
-        "exception": null
+        "globals": null
     },
-    "name": null,
-    "path": null
+    "name": null
 }

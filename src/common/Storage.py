@@ -8,7 +8,7 @@ from .publicFunctions import *
 from samuTeszt.src.data.FileState import FileState
 
 
-class StorageTestSuite(unittest.TestSuite):
+class FileTestSuite(unittest.TestSuite):
     def __init__(self,
                  path: str = TEST_ITEMS,
                  error_path: str = TEST_ITEMS+TEST_ERRORS,
@@ -26,19 +26,19 @@ class StorageTestSuite(unittest.TestSuite):
 
         for case in collector(path, codec):
             _fileData = FileState(case, path, error_path)
-            _item = StorageTestCase(_fileData, self)
+            _item = FileTestCase(_fileData, self)
             self.addTest(_item)
         super().__init__(self._tests)
 
 
-class StorageTestCase(unittest.TestCase):
-    def __init__(self, data: 'FileState', suite: 'StorageTestSuite'):
+class FileTestCase(unittest.TestCase):
+    def __init__(self, data: 'FileState', suite: 'FileTestSuite'):
         self.fileData = data
         self.testData = data.functionState
         self.suite = suite
 
         func = self.StorageTestFunctionFactory()
-        setattr(StorageTestCase, func.__name__, func)
+        setattr(FileTestCase, func.__name__, func)
         super().__init__(func.__name__)
 
     def StorageTestFunctionFactory(self) -> 'Callable':

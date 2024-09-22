@@ -45,10 +45,11 @@ class FileState:
         Filename of the actual test (without extension)
         :return:
         """
+        _sLastDirName = self.sFullDir.split(os.path.sep)[-1]
         if _name := self.functionState.name:
             return _name
-        elif not os.path.exists(os.path.join(self.sFullDir, (_sLastDirName := self.sFullDir.split(os.path.sep)[-1]) + self.functionState.codec.sExt)
-                and os.getenv('PYCHARM_HOSTED') != '1'):
+        elif (os.getenv('PYCHARM_HOSTED') == '1'
+              and not os.path.exists(os.path.join(self.sFullDir, _sLastDirName) + self.functionState.codec.sExt)):
             return _sLastDirName
         else:
             return self.md5

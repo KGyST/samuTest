@@ -21,7 +21,9 @@ Advantages of this approach:
   - Global variable handling pre/post, handled by the same `FunctionData` class
   - Function mocking
   - Property handling (.setter etc.)
-  - `__slots__` handling
+  - `__slots__` handling, not working with:
+    - `__new__`
+    - static and class methods
 - Parametrization, new parameters
   - `run_only`
 - Test fixtures and `__init__.json` 
@@ -48,6 +50,7 @@ Advantages of this approach:
 - Logging facility integration instead of prints
 - Lazy working
 - Self.tests: running all the examples: record and play
+- Reorganize classes' cooperation (avoiding circular imports)
 
 ## Version history
 - 0.02: 231123 Object-oriented functions except for class attributes and `__new__()` 

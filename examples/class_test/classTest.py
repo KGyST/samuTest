@@ -1,6 +1,6 @@
-from samuTeszt.src.common import StorageTestSuite
+from samuTeszt.src.common import FileTestSuite
 
-class ClassTestSuite(StorageTestSuite):
+class ClassTestSuite(FileTestSuite):
     def __init__(self):
         super().__init__()
 

@@ -1,6 +1,5 @@
 import os
 from typing import Callable
-# from samuTeszt.src.common.Storage import StorageTestCase
 from samuTeszt.src.data.Equatable import Equatable
 
 
@@ -52,9 +51,6 @@ def default_comparer_func(obj, func: 'Callable', func_args: list, func_kwargs: d
     """
     testResult = func(*func_args, **func_kwargs)
 
-    # FIXME to modify into something like this:
-    # test_data.update({"result": ResultClass(testResult)})
-    # __eq__ etc being defined in ResultClass
     obj.assertEqual(DefaultResult(expected_result), DefaultResult(testResult))
     # TODO doesn't check self with postSelf etc.:
     if _postSelfOrClass := obj.testData.postState.selfOrClass:

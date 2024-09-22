@@ -17,7 +17,7 @@ def md5Collector(codec,
     :param case_filter_func:
     :return:
     """
-    # TODO
+    # TODO doesn't seem to work
     dResult = {}
     for sFilePath in caseFileCollector(folder, cases_only, case_filter_func, codec.sExt):
         dCase = codec.read(os.path.join(folder, sFilePath))

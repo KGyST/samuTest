@@ -8,6 +8,7 @@ isFunctionDumperActive = True
 
 
 class ClassToBeNested:
+    __slots__ = ('nestedInstanceVariable', )
     nestedClassVariable = 1
 
     def __init__(self):
@@ -34,7 +35,7 @@ class ExampleException(Exception):
 
 class ClassTestee:
     # FIXME __slots__ handling
-    # __slots__ = ('instance_variable', 'nestedInstance', '_someProperty', '_somePrivateMember', )
+    __slots__ = ('instance_variable', 'nestedInstance', '_someProperty', '_somePrivateMember', )
     classVariable = 0
 
     @Dumper(active=isFunctionDumperActive)

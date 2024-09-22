@@ -113,6 +113,7 @@ class FunctionState(Equatable):
     def _isFlattable(self, value: object = None, key: str | None = None) -> bool:
         if callable(value) and not isinstance(value, type):
             return False
+        # if key and key != '__slots__' and key.startswith('__'):
         if key and key.startswith('__'):
             return False
         if isinstance(value, property):
@@ -170,16 +171,17 @@ class FunctionState(Equatable):
                 if obj.__class__.__module__ == MAIN:
                     obj.__class__.__module__ = _get_calling_module_name()
                 data = {'py/object': f"{obj.__class__.__module__}.{obj.__class__.__name__}",}
-            if hasattr(obj, '__dict__'):
-                for key, value in obj.__dict__.items():
-                    if self._isFlattable(value, key):
-                        data[key] = self._flatten(value)
             if hasattr(obj, '__slots__'):
                 for key in obj.__slots__:
                     if hasattr(obj, key):
                         value = getattr(obj, key)
-                        if self._isFlattable(value, key):
+                        member_descriptor_type = type(FunctionState.function)
+                        if self._isFlattable(value, key) and not isinstance(value, member_descriptor_type):
                             data[key] = self._flatten(value)
+            elif hasattr(obj, '__dict__'):
+                for key, value in obj.__dict__.items():
+                    if self._isFlattable(value, key):
+                        data[key] = self._flatten(value)
             return data
         elif isinstance(obj, dict):
             return {key: self._flatten(val) for key, val in obj.items() if self._isFlattable(val)}
