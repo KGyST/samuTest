@@ -7,7 +7,8 @@ class DefaultResult(Equatable):
     # FIXME __repr__ or __str__
     def __init__(self, result):
         if hasattr(result, "__dict__"):
-            self.__dict__ = result.__dict__
+            # if isinstance(__dict__, mappingproxy):
+            self.__dict__ = result.__dict__ if isinstance(result.__dict__, dict) else dict(result.__dict__)
         else:
             self.__value = result
         self.__class = result.__class__
@@ -52,8 +53,7 @@ def default_comparer_func(obj, func: 'Callable', func_args: list, func_kwargs: d
     testResult = func(*func_args, **func_kwargs)
 
     obj.assertEqual(DefaultResult(expected_result), DefaultResult(testResult))
-    # TODO doesn't check self with postSelf etc.:
-    if _postSelfOrClass := obj.testData.postState.selfOrClass:
+    if obj.testData.preState.selfOrClass and (_postSelfOrClass := obj.testData.postState.selfOrClass):
         obj.assertEqual(DefaultResult(func_args[0]), DefaultResult(_postSelfOrClass))
     return testResult
 

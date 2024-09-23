@@ -113,7 +113,7 @@ def _get_original_function(func: 'Callable') -> 'Callable':
     if hasattr(func, '__closure__') and func.__closure__:
         try:
             for cell in func.__closure__:
-                if isinstance(_callable := cell.cell_contents, Callable) and not isinstance(_callable, type):
+                if isinstance((_callable := cell.cell_contents), Callable) and not isinstance(_callable, type):
                     return _get_original_function(_callable)
         except (ValueError, IndexError, AttributeError):
             return func

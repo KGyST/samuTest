@@ -34,7 +34,6 @@ class ExampleException(Exception):
 
 
 class ClassTestee:
-    # FIXME __slots__ handling
     __slots__ = ('instance_variable', 'nestedInstance', '_someProperty', '_somePrivateMember', )
     classVariable = 0
 

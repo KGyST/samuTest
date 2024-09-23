@@ -1,4 +1,4 @@
-from typing import Callable
+from typing import Callable, Union, Any
 
 
 class Equatable:
@@ -16,30 +16,44 @@ class Equatable:
         return contentBasedHash(self)
 
 
-def contentBasedHash(obj):
+def contentBasedHash(obj: Any, visited=None) -> int:
     """
-    :param obj:
-    :return:
+    Generates a content-based hash value for an object.
+
+    :param obj: The object to hash
+    :param visited: Set of already visited objects to prevent circular references
+    :return: Hash value
     """
+    if visited is None:
+        visited = set()
+
+    if (obj_id := id(obj)) in visited:
+        return 0
+    visited.add(obj_id)
+
     hash_value = 0
 
     if hasattr(obj, '__dict__'):
         for key in sorted(obj.__dict__.keys()):
             if not isinstance(obj.__dict__[key], Callable):
-                hash_value ^= contentBasedHash(key) ^ contentBasedHash(obj.__dict__[key])
+                hash_value ^= contentBasedHash(key, visited) ^ contentBasedHash(obj.__dict__[key], visited)
     elif hasattr(obj, '__slots__'):
-        for slot in sorted(obj.__slots__):
-            if not isinstance(slot, Callable):
-                hash_value ^= contentBasedHash(slot) ^ contentBasedHash(getattr(obj, slot))
+        for slot in obj.__slots__:
+            # just for uninitalized __slots__ right after __new__
+            if hasattr(obj, slot):
+                hash_value ^= contentBasedHash(slot, visited) ^ contentBasedHash(getattr(obj, slot), visited)
     elif isinstance(obj, dict):
         for key in sorted(obj.keys()):
-            hash_value ^= contentBasedHash(key) ^ contentBasedHash(obj[key])
-    elif isinstance(obj, (list, set, )):
-        for key in sorted(obj):
-            hash_value ^= contentBasedHash(key)
+            hash_value ^= contentBasedHash(key, visited) ^ contentBasedHash(obj[key], visited)
+    elif isinstance(obj, (list, set)):
+        for item in obj:
+            hash_value ^= contentBasedHash(item, visited)
     elif isinstance(obj, (int, float, str, bool, tuple, bytes, frozenset)):
         hash_value = hash(obj)
+    elif obj is None:
+        hash_value = hash(None)
     else:
         hash_value = 0
+
     return hash_value
 

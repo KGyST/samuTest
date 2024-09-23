@@ -21,9 +21,6 @@ Advantages of this approach:
   - Global variable handling pre/post, handled by the same `FunctionData` class
   - Function mocking
   - Property handling (.setter etc.)
-  - `__slots__` handling, not working with:
-    - `__new__`
-    - static and class methods
 - Parametrization, new parameters
   - `run_only`
 - Test fixtures and `__init__.json` 

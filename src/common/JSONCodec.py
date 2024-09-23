@@ -28,7 +28,7 @@ class JSONCodec(ICodec):
 
     @staticmethod
     def reads(data: str) -> 'FunctionState':
-        assert isinstance(_result := jsonpickle.loads(data), FunctionState)
+        assert isinstance((_result := jsonpickle.loads(data)), FunctionState)
         return _result
 
     @staticmethod
