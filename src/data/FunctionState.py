@@ -35,8 +35,10 @@ class FunctionState(Equatable):
 
         self.name = None
         self._fullyQualifiedList = []
+
         self._dIDS = {}
-        self._maxId = 0
+        self._iMaxID = 1
+
 
     @classmethod
     def setNameHex(cls, hex_name_length: int):
@@ -120,48 +122,22 @@ class FunctionState(Equatable):
             return False
         return True
 
-    def _setID(self, obj):
-        if isinstance(obj, (int, str, float, bool)):
-            return
-        _hash = contentBasedHash(obj)
-
-        if _hash not in self._dIDS:
-            self._dIDS[_hash] = obj
-        else:
-            if not isinstance(self._dIDS[_hash], int):
-                self._dIDS[_hash] = self._maxId
-                self._maxId += 1
-        # return self._dIDS[_hash]
-
-    def _scan(self, obj):
-        if hasattr(obj, "__dict__") and self.__dict__:
-            for k, v in obj.__dict__:
-                self._setID(getattr(obj, v))
-                self._scan(getattr(obj, v))
-        elif hasattr(obj, "__slots__"):
-            for item in obj.__slots__:
-                self._setID(getattr(obj, item))
-                self._scan(getattr(obj, item))
-        elif isinstance(obj, dict):
-            for k, v in obj.items():
-                self._setID(v)
-                self._scan(v)
-        elif isinstance(obj, (list, tuple, set)):
-            for item in obj:
-                self._setID(item)
-                self._scan(item)
-        # else:
-        #     self._setID(obj)
-        # self._dIDS = {k: v for k, v in self._dIDS.items() if isinstance(v, int)}
+    # def _setID(self, obj):
+    #     if (_hash := contentBasedHash(obj)) in self._dIDS:
+    #         return {'py/id': self._dIDS[_hash]}
+    #     else:
+    #         self._dIDS[_hash] = self._iMaxID
+    #         self._iMaxID += 1
 
     def _flatten(self, obj):
         """
         Recursively flatten nested objects.
         """
         # FIXME referencing
-        # FIXME __slots__: both handling and use
         # 'py/id'
         # 'py/ref'
+        _hash = contentBasedHash(obj)
+
         if hasattr(obj, "__dict__") or hasattr(obj, "__slots__"):
             if isinstance(obj, type):
                 if obj.__module__ == MAIN:

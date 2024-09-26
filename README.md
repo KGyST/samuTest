@@ -12,14 +12,16 @@ When running tests ("Playing"), the test runner function reads all data files, c
 Advantages of this approach:
 - No need to write tests manually
 - One can apply tests later in the development phase (not to all functions but to those that are problematic)
-- If the system is capable to detect erroneous behaviour, tests can be created when it's reached
-- It's possible to reproduce any erroneous behaviour by running the appropriate test (for development of the problematic unit)
-- It's possible to create a large number of tests (thousands) and later select only those that tend to fail to shed light of the weak points of a unit 
+- If the system is capable to detect erroneous behaviour (like, by raising exceptions), tests can be created when it's reached
+- It's possible to reproduce any erroneous behaviour by running the appropriate test (for bugfix/development of the problematic unit). No time needed to reproduce the program state (like, "click through" to reach the state)
+- It's possible to create a large number (thousands) of tests and later select only those that tend to fail to shed light of the weak points of a unit
+- As they are data records, it is possible to put them into a database.
+
 ## TODOs
 
 - Expanding testable objects' range:
   - Global variable handling pre/post, handled by the same `FunctionData` class
-  - Function mocking
+  - Mocking of called stateful/resource heavy functions
   - Property handling (.setter etc.)
 - Parametrization, new parameters
   - `run_only`
@@ -28,7 +30,7 @@ Advantages of this approach:
   - Case names
   - Importing issues
 - Test runner:
-  - Simple test runner, PyCharm integration
+  - Simple test runner (no need to write a tester class), PyCharm integration
 - Config object
   - .json, .yaml, .xml
   - Dumping into a database instead of files (Mongo)
@@ -48,6 +50,8 @@ Advantages of this approach:
 - Lazy working
 - Self.tests: running all the examples: record and play
 - Reorganize classes' cooperation (avoiding circular imports)
+- ObjectWalker class: serializing an object
+- `py/hash`
 
 ## Version history
 - 0.02: 231123 Object-oriented functions except for class attributes and `__new__()` 
