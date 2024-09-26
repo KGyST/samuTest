@@ -37,24 +37,24 @@ class ClassTestee:
     __slots__ = ('instance_variable', 'nestedInstance', '_someProperty', '_somePrivateMember', )
     classVariable = 0
 
-    # @Dumper(active=isFunctionDumperActive)
+    @Dumper(active=isFunctionDumperActive)
     def __new__(cls, *args, **kwargs):
         _instance = super().__new__(cls)
         _instance.__class__.classVariable += 1
         return _instance
 
-    # @Dumper(active=isFunctionDumperActive)
+    @Dumper(active=isFunctionDumperActive)
     def __init__(self, param):
         self.instance_variable = param
         self.nestedInstance = ClassToBeNested()
         self._someProperty = param
         self._somePrivateMember = param
 
-    # @Dumper()
+    @Dumper()
     def __str__(self) -> str:
         return f'ClassTestee: {str(self.instance_variable)}'
 
-    # @Dumper()
+    @Dumper()
     @classmethod
     def class_method(cls, param=1) -> str:
         print(f"BEGIN class_method, ClassTestee.classVariable = {ClassTestee.classVariable}")
@@ -62,7 +62,7 @@ class ClassTestee:
         print(f"END class_method, ClassTestee.classVariable = {ClassTestee.classVariable}")
         return "classmethod called"
 
-    # @Dumper()
+    @Dumper()
     @staticmethod
     def static_method(param=1) -> str:
         print(f"static_method called {param}")
@@ -76,7 +76,7 @@ class ClassTestee:
         print(f"END member_method called, instance_variable = {self.instance_variable}")
         return self.instance_variable
 
-    # @Dumper(active=True, exceptions=(ExampleException, ))
+    @Dumper(active=True, exceptions=(ExampleException, ))
     def member_method_that_throws_exception(self):
         print(f"member_method_that_throws_exception called, instance_variable = {self.instance_variable}")
         raise ExampleException()
@@ -106,7 +106,7 @@ class ClassTestee:
     # FIXME assertions
 
 
-# @Dumper()
+@Dumper()
 def some_function(param="Nothing"):
     print(f"some_function called, param = {param}")
     print(param)

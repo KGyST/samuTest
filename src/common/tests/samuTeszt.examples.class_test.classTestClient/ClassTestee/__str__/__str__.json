@@ -1,0 +1,41 @@
+{
+    "py/object": "samuTeszt.src.data.FunctionState.FunctionState",
+    "function": "__str__",
+    "className": "ClassTestee",
+    "module": "samuTeszt.examples.class_test.classTestClient",
+    "args": [
+        {
+            "py/object": "samuTeszt.examples.class_test.classTestClient.ClassTestee",
+            "instance_variable": 2,
+            "nestedInstance": {
+                "py/object": "samuTeszt.examples.class_test.classTestClient.ClassToBeNested",
+                "nestedInstanceVariable": 2
+            },
+            "_someProperty": 3,
+            "_somePrivateMember": 2
+        }
+    ],
+    "kwargs": {},
+    "preState": {
+        "py/object": "samuTeszt.src.data.FunctionState.PreState",
+        "selfOrClass": null,
+        "globals": null
+    },
+    "postState": {
+        "py/object": "samuTeszt.src.data.FunctionState.PostState",
+        "result": "ClassTestee: 2",
+        "exception": null,
+        "selfOrClass": {
+            "py/object": "samuTeszt.examples.class_test.classTestClient.ClassTestee",
+            "instance_variable": 2,
+            "nestedInstance": {
+                "py/object": "samuTeszt.examples.class_test.classTestClient.ClassToBeNested",
+                "nestedInstanceVariable": 2
+            },
+            "_someProperty": 3,
+            "_somePrivateMember": 2
+        },
+        "globals": null
+    },
+    "name": null
+}

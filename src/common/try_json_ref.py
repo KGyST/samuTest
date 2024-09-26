@@ -10,58 +10,82 @@ class ClassToBeNested:
     pass
 
 class ClassTestee:
-    _dHash = {}
-
-    def _getHash(self, obj):
-        try:
-            if HASH in obj:
-                _hash = obj[HASH]
-                hash_ = self.__class__._dHash[_hash]
-                return hash_
-        except Exception:
-            _hash = contentBasedHash(obj)
-            self.__class__._dHash[_hash] = obj
-            return obj
-
     def __setstate__(self, state):
+        _dHash = {}
+
+        def _getHash(obj):
+            try:
+                if HASH in obj:
+                    _hash = obj[HASH]
+                    return _dHash[_hash]
+            except TypeError:
+                _hash = contentBasedHash(obj)
+                _dHash[_hash] = obj
+                return obj
+
         for key, value in state.items():
-            state[key] = self._getHash(value)
+            state[key] = _getHash(value)
         self.__dict__ = state
 
     def __getstate__(self):
-        return self.__dict__
+        _sHash = set()
+
+        def _setHash(obj):
+            _hash = contentBasedHash(obj)
+            if _hash in _sHash:
+                return {HASH: _hash}
+            _sHash.add(_hash)
+            try:
+                for k, v in obj.__dict__.items():
+                    _sHash.add(contentBasedHash(k))
+            except AttributeError:
+                pass
+            return obj
+
+        # _result = {}
+        # for key, value in self.__dict__.items():
+        #     _result[key] = self._setHash(value)
+        # return _result
+        return {key: _setHash(value) for key, value in self.__dict__.items()}
 
 
-modified_json = jsonpickle.encode(ClassTestee())
-
-modified_json = '''
+original_json = '''
 {
     "py/object": "__main__.ClassTestee", 
     "py/state": 
     {
-    "instance_variable": 2, 
-    "nestedInstance": 
+        "instance_variable": 2, 
+        "nestedInstance": 
         {
-        "py/object": "__main__.ClassToBeNested",
-        "nestedInstanceVariable": 10
+            "py/object": "__main__.ClassToBeNested",
+            "nestedInstanceVariable":         
+            {
+                "py/object": "__main__.ClassToBeNested",
+                "nestedInstanceVariable": 10
+            }
         }, 
-    "nestedInstance2": 
+        "nestedInstance2": 
         {
-        "py/hash": -3185606141063167895
+            "py/object": "__main__.ClassToBeNested",
+            "nestedInstanceVariable":         
+            {
+                "py/object": "__main__.ClassToBeNested",
+                "nestedInstanceVariable": 10
+            }
         }, 
-    "_someProperty": 3, 
-    "_somePrivateMember": 4
+        "_someProperty": 3, 
+        "_somePrivateMember": 4
     }
 }
 '''
 
-# from pprint import pprint
-# pprint(modified_json)
+original_obj = jsonpickle.decode(original_json)
 
-restored_obj = jsonpickle.decode(modified_json)
+encode_ = jsonpickle.encode(original_obj)
+pprint(encode_)
 
-# print("Restored Object:")
-# print(vars(restored_obj))
+restored_obj = jsonpickle.decode(encode_)
 
-pprint(jsonpickle.encode(restored_obj))
+print("Restored Object:")
+print(vars(restored_obj))
 

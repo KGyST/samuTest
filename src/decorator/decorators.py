@@ -77,6 +77,7 @@ class _Dumper:
 
         import_module(self.sModule)
 
+        # FIXME only deepcopy if modified: descriptor
         self.args_ = copy.deepcopy(argsWrap)
         self.kwargs_ = copy.deepcopy(kwargsWrap)
 

@@ -52,6 +52,7 @@ Advantages of this approach:
 - Reorganize classes' cooperation (avoiding circular imports)
 - ObjectWalker class: serializing an object
 - `py/hash`
+- `py/json`
 
 ## Version history
 - 0.02: 231123 Object-oriented functions except for class attributes and `__new__()` 

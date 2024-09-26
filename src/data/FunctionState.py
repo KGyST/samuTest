@@ -101,14 +101,17 @@ class FunctionState(Equatable):
         # self._scan(self)
         state = {
             'py/object': f"{self.__class__.__module__}.{self.__class__.__name__}",
-            'function': self.function,
-            'className': self.className,
-            'module': self.module,
-            'args': self._flatten(self.args),
-            'kwargs': self._flatten(self.kwargs),
-            'preState': self._flatten(self.preState),
-            'postState': self._flatten(self.postState),
-            'name': self.name,
+            'py/state':
+                {
+                    'function': self.function,
+                    'className': self.className,
+                    'module': self.module,
+                    'args': self._flatten(self.args),
+                    'kwargs': self._flatten(self.kwargs),
+                    'preState': self._flatten(self.preState),
+                    'postState': self._flatten(self.postState),
+                    'name': self.name,
+            }
         }
         return state
 

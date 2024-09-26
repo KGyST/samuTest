@@ -2,13 +2,12 @@
     "py/object": "samuTeszt.src.data.FunctionState.FunctionState",
     "function": "__new__",
     "className": "ClassTestee",
-    "module": "classTestClient",
+    "module": "samuTeszt.examples.class_test.classTestClient",
     "args": {
         "py/tuple": [
             {
-                "py/type": "classTestClient.ClassTestee"
-            },
-            2
+                "py/type": "samuTeszt.examples.class_test.classTestClient.ClassTestee"
+            }
         ]
     },
     "kwargs": {},
@@ -20,11 +19,11 @@
     "postState": {
         "py/object": "samuTeszt.src.data.FunctionState.PostState",
         "result": {
-            "py/object": "classTestClient.ClassTestee"
+            "py/object": "samuTeszt.examples.class_test.classTestClient.ClassTestee"
         },
         "exception": null,
         "selfOrClass": null,
         "globals": null
     },
-    "name": "__new__"
+    "name": null
 }

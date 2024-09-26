@@ -23,13 +23,13 @@ def contentBasedHash(obj: Any, visited=None) -> int:
     :param visited: Set of already visited objects to prevent circular references
     :return: Hash value
     """
-    # if visited is None:
-    #     visited = set()
-    #
-    # if (obj_id := id(obj)) in visited:
-    #     return 0
-    # visited.add(obj_id)
-    #
+    if visited is None:
+        visited = set()
+
+    if (obj_id := id(obj)) in visited:
+        return 0
+    visited.add(obj_id)
+
     hash_value = 0
 
     if hasattr(obj, '__dict__'):
