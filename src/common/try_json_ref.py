@@ -10,6 +10,27 @@ class ClassToBeNested:
     pass
 
 class ClassTestee:
+    def __getstate__(self):
+        _sHash = set()
+
+        def _setHash(obj):
+            _hash = contentBasedHash(obj)
+            if _hash in _sHash:
+                return {HASH: _hash}
+            _sHash.add(_hash)
+            # try:
+            #     for k, v in obj.__dict__.items():
+            #         _sHash.add(contentBasedHash(k))
+            # except AttributeError:
+            #     pass
+            return obj
+
+        # _result = {}
+        # for key, value in self.__dict__.items():
+        #     _result[key] = _setHash(value)
+        # return _result
+        return {key: _setHash(value) for key, value in self.__dict__.items()}
+
     def __setstate__(self, state):
         _dHash = {}
 
@@ -26,27 +47,6 @@ class ClassTestee:
         for key, value in state.items():
             state[key] = _getHash(value)
         self.__dict__ = state
-
-    def __getstate__(self):
-        _sHash = set()
-
-        def _setHash(obj):
-            _hash = contentBasedHash(obj)
-            if _hash in _sHash:
-                return {HASH: _hash}
-            _sHash.add(_hash)
-            try:
-                for k, v in obj.__dict__.items():
-                    _sHash.add(contentBasedHash(k))
-            except AttributeError:
-                pass
-            return obj
-
-        # _result = {}
-        # for key, value in self.__dict__.items():
-        #     _result[key] = self._setHash(value)
-        # return _result
-        return {key: _setHash(value) for key, value in self.__dict__.items()}
 
 
 original_json = '''

@@ -5,6 +5,8 @@ from samuTeszt.src.common.constants import MAIN, ENCODING
 from samuTeszt.src.common.privateFunctions import _get_calling_module_name
 from samuTeszt.src.data.Equatable import Equatable, contentBasedHash
 
+HASH_PY = "py/hash"
+
 
 class FunctionState(Equatable):
     nNameHex = 12
@@ -97,8 +99,66 @@ class FunctionState(Equatable):
         """
         Serialize the object state including nested objects.
         """
-        # Currently there is no need for __setstate__
-        # self._scan(self)
+        _sHash = set()
+
+        def _isFlattable(value: object = None, key: str | None = None) -> bool:
+            if callable(value) and not isinstance(value, type):
+                return False
+            # if key and key != '__slots__' and key.startswith('__'):
+            if key and key.startswith('__'):
+                return False
+            if isinstance(value, property):
+                return False
+            return True
+
+        def _flatten(obj):
+            """
+            Recursively flatten nested objects.
+            """
+            if _bHash := True:
+                if not isinstance(obj, (int, type(None))):
+                    _hash = contentBasedHash(obj)
+                    if _hash:
+                        if _hash in _sHash:
+                            return {HASH_PY: _hash}
+                        _sHash.add(_hash)
+
+            if hasattr(obj, "__dict__") or hasattr(obj, "__slots__"):
+                if isinstance(obj, type):
+                    if obj.__module__ == MAIN:
+                        obj.__module__ = _get_calling_module_name()
+                    data = {'py/type': f"{obj.__module__}.{obj.__name__}", }
+                else:
+                    if obj.__class__.__module__ == MAIN:
+                        obj.__class__.__module__ = _get_calling_module_name()
+                    data = {'py/object': f"{obj.__class__.__module__}.{obj.__class__.__name__}", }
+                if hasattr(obj, '__slots__'):
+                    for key in obj.__slots__:
+                        if hasattr(obj, key):
+                            # value = _setHash(getattr(obj, key))
+                            value = getattr(obj, key)
+                            member_descriptor_type = type(FunctionState.function)
+                            if _isFlattable(value, key) and not isinstance(value, member_descriptor_type):
+                                data[key] = _flatten(value)
+                elif hasattr(obj, '__dict__'):
+                    for key, value in obj.__dict__.items():
+                        if _isFlattable(value, key):
+                            data[key] = _flatten(value)
+                return data
+            elif isinstance(obj, dict):
+                return {key: _flatten(val) for key, val in obj.items() if _isFlattable(val)}
+            elif isinstance(obj, list):
+                return [_flatten(item) for item in obj if _isFlattable(item)]
+            elif isinstance(obj, tuple):
+                return {'py/tuple': [_flatten(item) for item in obj if _isFlattable(item)]}
+            elif isinstance(obj, set):
+                return {'py/set': [_flatten(item) for item in obj if _isFlattable(item)]}
+            elif isinstance(obj, bytes):
+                return obj.decode(ENCODING)
+            # if _hash:
+            #     data.update({HASH_PY: _hash})
+            return obj
+
         state = {
             'py/object': f"{self.__class__.__module__}.{self.__class__.__name__}",
             'py/state':
@@ -106,73 +166,14 @@ class FunctionState(Equatable):
                     'function': self.function,
                     'className': self.className,
                     'module': self.module,
-                    'args': self._flatten(self.args),
-                    'kwargs': self._flatten(self.kwargs),
-                    'preState': self._flatten(self.preState),
-                    'postState': self._flatten(self.postState),
+                    'args': _flatten(self.args),
+                    'kwargs': _flatten(self.kwargs),
+                    'preState': _flatten(self.preState),
+                    'postState': _flatten(self.postState),
                     'name': self.name,
             }
         }
         return state
-
-    def _isFlattable(self, value: object = None, key: str | None = None) -> bool:
-        if callable(value) and not isinstance(value, type):
-            return False
-        # if key and key != '__slots__' and key.startswith('__'):
-        if key and key.startswith('__'):
-            return False
-        if isinstance(value, property):
-            return False
-        return True
-
-    # def _setID(self, obj):
-    #     if (_hash := contentBasedHash(obj)) in self._dIDS:
-    #         return {'py/id': self._dIDS[_hash]}
-    #     else:
-    #         self._dIDS[_hash] = self._iMaxID
-    #         self._iMaxID += 1
-
-    def _flatten(self, obj):
-        """
-        Recursively flatten nested objects.
-        """
-        # FIXME referencing
-        # 'py/id'
-        # 'py/ref'
-        _hash = contentBasedHash(obj)
-
-        if hasattr(obj, "__dict__") or hasattr(obj, "__slots__"):
-            if isinstance(obj, type):
-                if obj.__module__ == MAIN:
-                    obj.__module__ = _get_calling_module_name()
-                data = {'py/type': f"{obj.__module__}.{obj.__name__}",}
-            else:
-                if obj.__class__.__module__ == MAIN:
-                    obj.__class__.__module__ = _get_calling_module_name()
-                data = {'py/object': f"{obj.__class__.__module__}.{obj.__class__.__name__}",}
-            if hasattr(obj, '__slots__'):
-                for key in obj.__slots__:
-                    if hasattr(obj, key):
-                        value = getattr(obj, key)
-                        member_descriptor_type = type(FunctionState.function)
-                        if self._isFlattable(value, key) and not isinstance(value, member_descriptor_type):
-                            data[key] = self._flatten(value)
-            elif hasattr(obj, '__dict__'):
-                for key, value in obj.__dict__.items():
-                    if self._isFlattable(value, key):
-                        data[key] = self._flatten(value)
-            return data
-        elif isinstance(obj, dict):
-            return {key: self._flatten(val) for key, val in obj.items() if self._isFlattable(val)}
-        elif isinstance(obj, list):
-            return [self._flatten(item) for item in obj if self._isFlattable(item)]
-        elif isinstance(obj, tuple):
-            return {'py/tuple': [self._flatten(item) for item in obj if self._isFlattable(item)]}
-        elif isinstance(obj, set):
-            return {'py/set': [self._flatten(item) for item in obj if self._isFlattable(item)]}
-        elif isinstance(obj, bytes):
-            return obj.decode(ENCODING)
-        return obj
 
 
 class StateBase(Equatable):
