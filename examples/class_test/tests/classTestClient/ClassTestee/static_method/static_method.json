@@ -1,0 +1,31 @@
+{
+    "py/object": "samuTeszt.src.data.FunctionState.FunctionState",
+    "py/state": {
+        "function": "static_method",
+        "className": "ClassTestee",
+        "module": "classTestClient",
+        "args": {
+            "py/hash": 6909455589863252355,
+            "py/tuple": [
+                2
+            ]
+        },
+        "kwargs": {},
+        "preState": {
+            "py/object": "samuTeszt.src.data.FunctionState.PreState",
+            "selfOrClass": null,
+            "globals": null
+        },
+        "postState": {
+            "py/object": "samuTeszt.src.data.FunctionState.PostState",
+            "result": "staticmethod called",
+            "exception": null,
+            "selfOrClass": {
+                "py/hash": 3171744010344722429,
+                "py/type": "classTestClient.ClassTestee"
+            },
+            "globals": null
+        },
+        "name": null
+    }
+}

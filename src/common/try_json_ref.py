@@ -14,33 +14,62 @@ class ClassTestee:
         _sHash = set()
 
         def _setHash(obj):
+            _dict = None
+            if hasattr(obj, "__dict__"):
+                _dict = obj.__dict__
+            elif hasattr(obj, "__slots__"):
+                _dict = {k: getattr(obj, k) for k in obj.__slots__}
+            elif isinstance(obj, dict):
+                _dict = obj
             _hash = contentBasedHash(obj)
             if _hash in _sHash:
                 return {HASH: _hash}
+
+            if _dict:
+                for k, v in _dict.items():
+                    _dict[k] = _setHash(v)
+                _dict[HASH] = _hash
+            elif isinstance(obj, list):
+                obj = list(map(_setHash, obj))
             _sHash.add(_hash)
-            # try:
-            #     for k, v in obj.__dict__.items():
-            #         _sHash.add(contentBasedHash(k))
-            # except AttributeError:
-            #     pass
             return obj
 
-        # _result = {}
-        # for key, value in self.__dict__.items():
-        #     _result[key] = _setHash(value)
-        # return _result
-        return {key: _setHash(value) for key, value in self.__dict__.items()}
+        _result = {}
+        try:
+            for key, value in self.__dict__.items():
+                _result[key] = _setHash(value)
+        except Exception as e:
+            print(e)
+            raise
+        return _result
 
     def __setstate__(self, state):
         _dHash = {}
 
         def _getHash(obj):
-            try:
-                if HASH in obj:
-                    _hash = obj[HASH]
-                    return _dHash[_hash]
-            except TypeError:
-                _hash = contentBasedHash(obj)
+            if isinstance(obj, list):
+                return list(map(_getHash, obj))
+
+            if hasattr(obj, "__dict__"):
+                _dict = obj.__dict__
+            elif hasattr(obj, "__slots__"):
+                _dict = {k: getattr(obj, k) for k in obj.__slots__}
+            elif isinstance(obj, dict):
+                _dict = obj
+            else:
+                return obj
+
+            if not HASH in _dict:
+                return obj
+            else:
+                _hash = _dict[HASH]
+                _dict.pop(HASH)
+
+            for key, value in _dict.items():
+                _dict[key] = _getHash(value)
+            if _hash in _dHash:
+                return _dHash[_hash]
+            else:
                 _dHash[_hash] = obj
                 return obj
 
@@ -58,7 +87,7 @@ original_json = '''
         "nestedInstance": 
         {
             "py/object": "__main__.ClassToBeNested",
-            "nestedInstanceVariable":         
+            "nestedObject1":         
             {
                 "py/object": "__main__.ClassToBeNested",
                 "nestedInstanceVariable": 10
@@ -67,10 +96,34 @@ original_json = '''
         "nestedInstance2": 
         {
             "py/object": "__main__.ClassToBeNested",
-            "nestedInstanceVariable":         
+            "nestedObject2":         
             {
                 "py/object": "__main__.ClassToBeNested",
-                "nestedInstanceVariable": 10
+                "nestedObject21":         
+                {
+                    "py/object": "__main__.ClassToBeNested",
+                    "nestedInstanceVariable": 10
+                },
+                "nestedObject22":         
+                {
+                    "py/object": "__main__.ClassToBeNested",
+                    "nestedInstanceVariable": 10
+                },
+                "nestedObjectS":   
+                [      
+                    {
+                        "py/object": "__main__.ClassToBeNested",
+                        "nestedInstanceVariable": 10
+                    } ,
+                    {
+                        "py/object": "__main__.ClassToBeNested",
+                        "nestedInstanceVariable": 10
+                    },      
+                    {
+                        "py/object": "__main__.ClassToBeNested",
+                        "nestedInstanceVariable": 10
+                    }
+                ]
             }
         }, 
         "_someProperty": 3, 
@@ -87,5 +140,5 @@ pprint(encode_)
 restored_obj = jsonpickle.decode(encode_)
 
 print("Restored Object:")
-print(vars(restored_obj))
+# print(vars(restored_obj))
 

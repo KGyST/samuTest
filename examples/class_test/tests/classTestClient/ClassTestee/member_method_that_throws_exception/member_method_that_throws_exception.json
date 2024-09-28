@@ -1,0 +1,31 @@
+{
+    "py/object": "samuTeszt.src.data.FunctionState.FunctionState",
+    "py/state": {
+        "function": "member_method_that_throws_exception",
+        "className": "ClassTestee",
+        "module": "classTestClient",
+        "args": [
+            {
+                "py/hash": 3192097756
+            }
+        ],
+        "kwargs": {},
+        "preState": {
+            "py/object": "samuTeszt.src.data.FunctionState.PreState",
+            "selfOrClass": null,
+            "globals": null
+        },
+        "postState": {
+            "py/object": "samuTeszt.src.data.FunctionState.PostState",
+            "result": null,
+            "exception": {
+                "py/object": "classTestClient.ExampleException"
+            },
+            "selfOrClass": {
+                "py/hash": 3192097756
+            },
+            "globals": null
+        },
+        "name": null
+    }
+}

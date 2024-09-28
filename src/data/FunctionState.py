@@ -115,6 +115,7 @@ class FunctionState(Equatable):
             """
             Recursively flatten nested objects.
             """
+            _dHash = {}
             if _bHash := True:
                 if not isinstance(obj, (int, type(None))):
                     _hash = contentBasedHash(obj)
@@ -122,16 +123,17 @@ class FunctionState(Equatable):
                         if _hash in _sHash:
                             return {HASH_PY: _hash}
                         _sHash.add(_hash)
+                        _dHash = {HASH_PY: _hash}
 
             if hasattr(obj, "__dict__") or hasattr(obj, "__slots__"):
                 if isinstance(obj, type):
                     if obj.__module__ == MAIN:
                         obj.__module__ = _get_calling_module_name()
-                    data = {'py/type': f"{obj.__module__}.{obj.__name__}", }
+                    data = {**_dHash, 'py/type': f"{obj.__module__}.{obj.__name__}", }
                 else:
                     if obj.__class__.__module__ == MAIN:
                         obj.__class__.__module__ = _get_calling_module_name()
-                    data = {'py/object': f"{obj.__class__.__module__}.{obj.__class__.__name__}", }
+                    data = {**_dHash, 'py/object': f"{obj.__class__.__module__}.{obj.__class__.__name__}", }
                 if hasattr(obj, '__slots__'):
                     for key in obj.__slots__:
                         if hasattr(obj, key):
@@ -150,9 +152,9 @@ class FunctionState(Equatable):
             elif isinstance(obj, list):
                 return [_flatten(item) for item in obj if _isFlattable(item)]
             elif isinstance(obj, tuple):
-                return {'py/tuple': [_flatten(item) for item in obj if _isFlattable(item)]}
+                return {**_dHash, 'py/tuple': [_flatten(item) for item in obj if _isFlattable(item)]}
             elif isinstance(obj, set):
-                return {'py/set': [_flatten(item) for item in obj if _isFlattable(item)]}
+                return {**_dHash, 'py/set': [_flatten(item) for item in obj if _isFlattable(item)]}
             elif isinstance(obj, bytes):
                 return obj.decode(ENCODING)
             # if _hash:

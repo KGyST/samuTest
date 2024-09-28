@@ -23,6 +23,7 @@ Advantages of this approach:
   - Global variable handling pre/post, handled by the same `FunctionData` class
   - Mocking of called stateful/resource heavy functions
   - Property handling (.setter etc.)
+  - `float` handling
 - Parametrization, new parameters
   - `run_only`
 - Test fixtures and `__init__.json` 
@@ -40,6 +41,7 @@ Advantages of this approach:
 - If `tests` is not a subfolder of the tested function, it's not possible to import the module (no `folder.module`)
 - A `isValid()` function for all Codecs (`tryToInterpret()`)
 
+
 ---
 
 - Case tagging, plus via params
@@ -49,10 +51,12 @@ Advantages of this approach:
 - Logging facility integration instead of prints
 - Lazy working
 - Self.tests: running all the examples: record and play
-- Reorganize classes' cooperation (avoiding circular imports)
+  - Reorganize classes' cooperation (avoiding circular imports)
+    - Dividing testable and non-testable stuff for self-testing
 - ObjectWalker class: serializing an object
 - `py/hash`
 - `py/json`
+- `py/null`, `Null` class, test algebra, based on sets
 
 ## Version history
 - 0.02: 231123 Object-oriented functions except for class attributes and `__new__()` 

@@ -1,21 +1,12 @@
 {
     "py/object": "samuTeszt.src.data.FunctionState.FunctionState",
     "py/state": {
-        "function": "member_method",
+        "function": "__init__",
         "className": "ClassTestee",
         "module": "classTestClient",
         "args": [
             {
-                "py/hash": 3192097754,
-                "py/object": "classTestClient.ClassTestee",
-                "instance_variable": 2,
-                "nestedInstance": {
-                    "py/hash": 2596604663,
-                    "py/object": "classTestClient.ClassToBeNested",
-                    "nestedInstanceVariable": 2
-                },
-                "_someProperty": 3,
-                "_somePrivateMember": 2
+                "py/object": "classTestClient.ClassTestee"
             },
             2
         ],
@@ -27,16 +18,18 @@
         },
         "postState": {
             "py/object": "samuTeszt.src.data.FunctionState.PostState",
-            "result": 4,
+            "result": null,
             "exception": null,
             "selfOrClass": {
-                "py/hash": 3192097756,
+                "py/hash": 3192097755,
                 "py/object": "classTestClient.ClassTestee",
-                "instance_variable": 4,
+                "instance_variable": 2,
                 "nestedInstance": {
-                    "py/hash": 2596604663
+                    "py/hash": 2596604663,
+                    "py/object": "classTestClient.ClassToBeNested",
+                    "nestedInstanceVariable": 2
                 },
-                "_someProperty": 3,
+                "_someProperty": 2,
                 "_somePrivateMember": 2
             },
             "globals": null

@@ -1,0 +1,34 @@
+{
+    "py/object": "samuTeszt.src.data.FunctionState.FunctionState",
+    "py/state": {
+        "function": "__new__",
+        "className": "ClassTestee",
+        "module": "classTestClient",
+        "args": {
+            "py/hash": 4098457033868156629,
+            "py/tuple": [
+                {
+                    "py/hash": 3171744008848108328,
+                    "py/type": "classTestClient.ClassTestee"
+                },
+                2
+            ]
+        },
+        "kwargs": {},
+        "preState": {
+            "py/object": "samuTeszt.src.data.FunctionState.PreState",
+            "selfOrClass": null,
+            "globals": null
+        },
+        "postState": {
+            "py/object": "samuTeszt.src.data.FunctionState.PostState",
+            "result": {
+                "py/object": "classTestClient.ClassTestee"
+            },
+            "exception": null,
+            "selfOrClass": null,
+            "globals": null
+        },
+        "name": null
+    }
+}

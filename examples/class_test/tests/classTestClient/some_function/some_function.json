@@ -1,0 +1,30 @@
+{
+    "py/object": "samuTeszt.src.data.FunctionState.FunctionState",
+    "py/state": {
+        "function": "some_function",
+        "className": "",
+        "module": "classTestClient",
+        "args": {
+            "py/hash": -5225825365275942254,
+            "py/tuple": [
+                "Something"
+            ]
+        },
+        "kwargs": {},
+        "preState": {
+            "py/object": "samuTeszt.src.data.FunctionState.PreState",
+            "selfOrClass": null,
+            "globals": null
+        },
+        "postState": {
+            "py/object": "samuTeszt.src.data.FunctionState.PostState",
+            "result": {
+                "py/hash": 1243378187
+            },
+            "exception": null,
+            "selfOrClass": null,
+            "globals": null
+        },
+        "name": null
+    }
+}
