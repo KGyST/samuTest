@@ -116,37 +116,40 @@ class FunctionState(Equatable):
             Recursively flatten nested objects.
             """
             _dHash = {}
-            if _bHash := True:
-                if not isinstance(obj, (int, type(None))):
-                    _hash = contentBasedHash(obj)
-                    if _hash:
-                        if _hash in _sHash:
-                            return {HASH_PY: _hash}
-                        _sHash.add(_hash)
-                        _dHash = {HASH_PY: _hash}
+
+            if not isinstance(obj, (int, type(None))):
+                _hash = contentBasedHash(obj)
+                if _hash:
+                    if _hash in _sHash:
+                        return {HASH_PY: _hash}
+                    _sHash.add(_hash)
+                    _dHash = {HASH_PY: _hash}
 
             if hasattr(obj, "__dict__") or hasattr(obj, "__slots__"):
                 if isinstance(obj, type):
                     if obj.__module__ == MAIN:
                         obj.__module__ = _get_calling_module_name()
-                    data = {**_dHash, 'py/type': f"{obj.__module__}.{obj.__name__}", }
+                    result = {**_dHash, 'py/type': f"{obj.__module__}.{obj.__name__}", }
                 else:
                     if obj.__class__.__module__ == MAIN:
                         obj.__class__.__module__ = _get_calling_module_name()
-                    data = {**_dHash, 'py/object': f"{obj.__class__.__module__}.{obj.__class__.__name__}", }
+                    result = {**_dHash, 'py/object': f"{obj.__class__.__module__}.{obj.__class__.__name__}", }
                 if hasattr(obj, '__slots__'):
+                    # FIXME __slots__ currently cannot be hashed
+                    if HASH_PY in result:
+                        result.pop(HASH_PY)
                     for key in obj.__slots__:
                         if hasattr(obj, key):
                             # value = _setHash(getattr(obj, key))
                             value = getattr(obj, key)
                             member_descriptor_type = type(FunctionState.function)
                             if _isFlattable(value, key) and not isinstance(value, member_descriptor_type):
-                                data[key] = _flatten(value)
+                                result[key] = _flatten(value)
                 elif hasattr(obj, '__dict__'):
                     for key, value in obj.__dict__.items():
                         if _isFlattable(value, key):
-                            data[key] = _flatten(value)
-                return data
+                            result[key] = _flatten(value)
+                return result
             elif isinstance(obj, dict):
                 return {key: _flatten(val) for key, val in obj.items() if _isFlattable(val)}
             elif isinstance(obj, list):
@@ -158,7 +161,7 @@ class FunctionState(Equatable):
             elif isinstance(obj, bytes):
                 return obj.decode(ENCODING)
             # if _hash:
-            #     data.update({HASH_PY: _hash})
+            #     result.update({HASH_PY: _hash})
             return obj
 
         state = {
@@ -176,6 +179,39 @@ class FunctionState(Equatable):
             }
         }
         return state
+
+    def __setstate__(self, state):
+        _dHash = {}
+
+        def _getHash(obj):
+            if isinstance(obj, list):
+                return list(map(_getHash, obj))
+
+            if hasattr(obj, "__dict__"):
+                _dict = obj.__dict__
+            elif hasattr(obj, "__slots__"):
+                _dict = {k: getattr(obj, k) for k in obj.__slots__ if hasattr(obj, k)}
+            elif isinstance(obj, dict):
+                _dict = obj
+            else:
+                return obj
+
+            if HASH_PY not in _dict:
+                return obj
+            else:
+                _hash = _dict[HASH_PY]
+                _dict.pop(HASH_PY)
+
+            for k, v in _dict.items():
+                _dict[k] = _getHash(v)
+            if _hash in _dHash:
+                return _dHash[_hash]
+            else:
+                _dHash[_hash] = obj
+                return obj
+
+        for key, value in state.items():
+            setattr(self, key, _getHash(value))
 
 
 class StateBase(Equatable):

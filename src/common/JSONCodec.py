@@ -24,6 +24,7 @@ class JSONCodec(ICodec):
             assert isinstance(_result := jsonpickle.loads(jf), FunctionState)
             return _result
         except Exception as e:
+            # pass
             raise JSONCodec.StorageException(e)
 
     @staticmethod

@@ -5,10 +5,9 @@
         "className": "ClassTestee",
         "module": "classTestClient",
         "args": {
-            "py/hash": 4098457033868156629,
+            "py/hash": 3381428047,
             "py/tuple": [
                 {
-                    "py/hash": 3171744008848108328,
                     "py/type": "classTestClient.ClassTestee"
                 },
                 2

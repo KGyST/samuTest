@@ -6,7 +6,14 @@
         "module": "classTestClient",
         "args": [
             {
-                "py/hash": 3192097756
+                "py/object": "classTestClient.ClassTestee",
+                "instance_variable": 4,
+                "nestedInstance": {
+                    "py/object": "classTestClient.ClassToBeNested",
+                    "nestedInstanceVariable": 2
+                },
+                "_someProperty": 3,
+                "_somePrivateMember": 2
             }
         ],
         "kwargs": {},
@@ -22,7 +29,7 @@
                 "py/object": "classTestClient.ExampleException"
             },
             "selfOrClass": {
-                "py/hash": 3192097756
+                "py/hash": 750427334
             },
             "globals": null
         },

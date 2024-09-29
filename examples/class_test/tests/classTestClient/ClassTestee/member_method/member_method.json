@@ -6,11 +6,9 @@
         "module": "classTestClient",
         "args": [
             {
-                "py/hash": 3192097754,
                 "py/object": "classTestClient.ClassTestee",
                 "instance_variable": 2,
                 "nestedInstance": {
-                    "py/hash": 2596604663,
                     "py/object": "classTestClient.ClassToBeNested",
                     "nestedInstanceVariable": 2
                 },
@@ -30,11 +28,10 @@
             "result": 4,
             "exception": null,
             "selfOrClass": {
-                "py/hash": 3192097756,
                 "py/object": "classTestClient.ClassTestee",
                 "instance_variable": 4,
                 "nestedInstance": {
-                    "py/hash": 2596604663
+                    "py/hash": 3132605616
                 },
                 "_someProperty": 3,
                 "_somePrivateMember": 2

@@ -6,7 +6,6 @@
         "module": "classTestClient",
         "args": [
             {
-                "py/hash": 3171744010344722429,
                 "py/type": "classTestClient.ClassTestee"
             },
             2
@@ -22,7 +21,7 @@
             "result": "classmethod called",
             "exception": null,
             "selfOrClass": {
-                "py/hash": 3171744010344722429
+                "py/hash": 2010585504
             },
             "globals": null
         },

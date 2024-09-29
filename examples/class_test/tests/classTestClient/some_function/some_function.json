@@ -5,7 +5,6 @@
         "className": "",
         "module": "classTestClient",
         "args": {
-            "py/hash": -5225825365275942254,
             "py/tuple": [
                 "Something"
             ]
@@ -18,9 +17,7 @@
         },
         "postState": {
             "py/object": "samuTeszt.src.data.FunctionState.PostState",
-            "result": {
-                "py/hash": 1243378187
-            },
+            "result": "Something",
             "exception": null,
             "selfOrClass": null,
             "globals": null

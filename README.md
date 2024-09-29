@@ -19,6 +19,8 @@ Advantages of this approach:
 
 ## TODOs
 
+- Resilient testing: a test failure shouldn't crash the whole testing, exception handling
+  - Logging facility integration instead of prints
 - Expanding testable objects' range:
   - Global variable handling pre/post, handled by the same `FunctionData` class
   - Mocking of called stateful/resource heavy functions
@@ -26,7 +28,9 @@ Advantages of this approach:
   - `float` handling
 - Parametrization, new parameters
   - `run_only`
+- `py/hash`
 - Test fixtures and `__init__.json` 
+  - `py/null`, `Null` class, test algebra, based on sets
 - Packaging and distribution
   - Case names
   - Importing issues
@@ -48,15 +52,13 @@ Advantages of this approach:
   - Automatically tag when a test fails
 - 1000s of cases: sorting
 - Assertions
-- Logging facility integration instead of prints
 - Lazy working
 - Self.tests: running all the examples: record and play
   - Reorganize classes' cooperation (avoiding circular imports)
     - Dividing testable and non-testable stuff for self-testing
 - ObjectWalker class: serializing an object
-- `py/hash`
 - `py/json`
-- `py/null`, `Null` class, test algebra, based on sets
+- Listening whether an arg is changed and only deepcopy it if changed
 
 ## Version history
 - 0.02: 231123 Object-oriented functions except for class attributes and `__new__()` 

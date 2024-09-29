@@ -114,6 +114,11 @@ def some_function(param="Nothing"):
 
 
 if __name__ == "__main__":
+    import shutil, os
+
+    if os.path.exists(dir_path := os.path.join(os.getcwd(), 'tests')):
+        shutil.rmtree(dir_path)
+
     classTestee_member_object = ClassTestee(2)
     classTestee_member_object.someProperty = 3
 

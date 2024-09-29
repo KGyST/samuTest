@@ -1,7 +1,7 @@
 import glob
 from samuTeszt.src.common.constants import *
-# from samuTeszt.src.data import ProgramState
-from samuTeszt.src.data import FileState
+from samuTeszt.src.common.Logger import Logger
+
 
 class FileCollector:
     def __init__(self, path: str, codec):
@@ -11,18 +11,19 @@ class FileCollector:
         if os.path.exists(self.sFolderPath):
             sCaseS = glob.glob('**/*' + codec.sExt, root_dir=self.sFolderPath, recursive=True)
             for _sCase in sCaseS:
-                _dCase = codec.read(_path := os.path.join(self.sFolderPath, _sCase))
-                _dCase.codec = codec
-                # _dCase.path = _path
-                if not _dCase.name:
-                    # Test has NO given name, so let it be the filename
-                    # _dCase.name = os.path.splitext(".".join(_sCase.split(os.path.sep)))[0]
-                    _dCase.setFullyQualifiedTestName(os.path.splitext(_sCase)[0], os.path.sep)
-                elif not "." in _dCase.name:
-                    # Test has a given name, but path is to be inferred from folder path
-                    # _dCase.name = ".".join([*_sCase.split(os.path.sep)[:-1], _dCase.name])
-                    _dCase.setFullyQualifiedTestName(os.path.splitext(_sCase)[0], os.path.sep)
-                self._caseS.append(_dCase)
+                try:
+                    dCase = codec.read(_path := os.path.join(self.sFolderPath, _sCase))
+                    dCase.codec = codec
+                    if not dCase.name:
+                        # Test has NO given name, so let it be the filename
+                        dCase.setFullyQualifiedTestName(os.path.splitext(_sCase)[0], os.path.sep)
+                    elif not "." in dCase.name:
+                        # Test has a given name, but path is to be inferred from folder path
+                        dCase.setFullyQualifiedTestName(os.path.splitext(_sCase)[0], os.path.sep)
+                    self._caseS.append(dCase)
+                except Exception as e:
+                    Logger().error(f"File load failed: {e} {_path}")
+
 
     def __iter__(self) -> 'FileCollector':
         return self
